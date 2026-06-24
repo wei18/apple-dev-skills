@@ -84,7 +84,7 @@ In UIKit: `UIAccessibility.post(notification: .announcement, argument: "Level co
 withAnimation(reduceMotion ? nil : .easeInOut) { state.toggle() }
 ```
 
-- `\.accessibilityReduceTransparency` — remove blur / frosted-glass effects when true; use an opaque fill instead.
+- `\.accessibilityReduceTransparency` — remove blur / frosted-glass effects when true; use an opaque fill instead. **SwiftUI `.background(.ultraThinMaterial)` does NOT automatically drop its blur when Reduce Transparency is on — you must branch on `\.accessibilityReduceTransparency` manually and substitute a solid background.**
 - `\.accessibilityDifferentiateWithoutColor` — never rely on color alone to convey state; add an icon or label.
 - `\.colorSchemeContrast` (`.increased`) — if you draw custom backgrounds, check this and raise contrast when set.
 
@@ -110,7 +110,8 @@ idb screenshot <udid> after-ax5.png
 | 1.1.1 Non-text content | Meaningful images have text alternatives | `accessibilityLabel` on `Image` |
 | 1.4.3 Contrast (minimum) | ≥ 4.5:1 for normal text, 3:1 for large text | Check in Accessibility Inspector |
 | 1.4.4 Resize text | Text reflows up to 200% without loss of content | Dynamic Type + `ViewThatFits` |
-| 2.5.5 Target size | Interactive targets ≥ 44×44 CSS px (≈44pt on 1× devices) | `.contentShape` + padding |
+| 2.5.8 Target size (Minimum) — **AA** | Interactive targets ≥ 24×24 CSS px (WCAG 2.2 new AA criterion) | `.contentShape` + padding; the **AA conformance gate** |
+| 2.5.5 Target size — AAA | Interactive targets ≥ 44×44 CSS px (≈44pt on 1× devices) | Apple HIG minimum; stronger than AA — aim for this |
 
 App Review does not formally audit against WCAG, but the Human Interface Guidelines cite these thresholds and reviewers reject apps that are obviously unusable with VoiceOver or at accessibility text sizes.
 

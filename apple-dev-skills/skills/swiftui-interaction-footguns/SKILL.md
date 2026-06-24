@@ -43,7 +43,7 @@ A class of bugs that look fine in code but break at runtime. These have shipped 
 - **Do NOT gate layout on `@Environment(\.dynamicTypeSize)` inside a `fullScreenCover` / `sheet` modal.** The env value can read a **stale `.large`** there even while the Text views actually scale via UIFont metrics — so a `dynamicTypeSize.isAccessibilitySize ? VStack : HStack` reflow **never fires** and labels still clip off-screen (negative-x frame). (Proved in a real project: a game board presented in a modal; cells/labels enlarged but the gate read `.large`.) Use a **geometry-driven** layout instead — `ViewThatFits(in: .horizontal) { HStack; VStack }` picks the row/column from the *actual offered width*, no env read.
 - **`minimumScaleFactor` is WIDTH-driven** — it shrinks text too WIDE for its frame. It does **not** rescue a glyph that overflows **vertically**. A single digit "5" at AX5 is ~50–60pt tall in a 44pt pill → clipped top/bottom to a **blank** pill; `minimumScaleFactor` never engages and `.frame(maxHeight:)` alone just clips it.
 - **Fix for compact fixed-size controls** (digit pad, board chrome/header) that must stay legible without honoring full AX scaling: **cap the Dynamic Type** — `.dynamicTypeSize(...DynamicTypeSize.xLarge)`. The cap clamps only sizes ABOVE `.xLarge`, so default `.large` rendering — and committed snapshot baselines — stay **byte-identical**; surrounding content (e.g. 9×9 board cells) keeps scaling. Standard compact-numeric-control approach; geometry/UIFont-driven, so a modal's stale env can't defeat it.
-- **Snapshot tests do NOT prove a Dynamic Type fix.** A snapshot that injects `DynamicTypeSize.accessibility3` into an `NSHostingView` bypasses the modal env-propagation path and gives a **false pass** (real example: three rounds passed snapshots, all failed on device). **idb-sim-verify AX3 AND AX5 on a booted sim** (`simctl ui <udid> content_size accessibility-extra-extra-large` / `…-extra-extra-extra-large`), eyeball the screenshot — don't trust the injected-env snapshot.
+- **Snapshot tests do NOT prove a Dynamic Type fix.** A snapshot that injects `DynamicTypeSize.accessibility3` into an `NSHostingView` bypasses the modal env-propagation path and gives a **false pass** (real example: three rounds passed snapshots, all failed on device). **idb-sim-verify AX4 AND AX5 on a booted sim** (`simctl ui <udid> content_size accessibility-extra-extra-large` / `…-extra-extra-extra-large`), eyeball the screenshot — don't trust the injected-env snapshot. Size map: AX1=`accessibility-medium`, AX2=`accessibility-large`, AX3=`accessibility-extra-large`, AX4=`accessibility-extra-extra-large`, AX5=`accessibility-extra-extra-extra-large`.
 - Keep grids and critical regions fixed-metric (e.g. 9×9 board uses fixed cell metrics); let body/label text scale.
 
 ### Theme propagation to SwiftUI system controls
@@ -58,7 +58,7 @@ A class of bugs that look fine in code but break at runtime. These have shipped 
 ### Button / Picker styling
 
 - `.labelsHidden()` on `Picker` when the label is provided externally (avoids duplicated label rendering on Mac).
-- `.buttonStyle(.borderedProminent)` honours `.tint` only on iOS 17+ / macOS 14+; verify deployment target before relying on it.
+- `.buttonStyle(.borderedProminent)` honours `.tint` from **iOS 15+ / macOS 12+**; both APIs were introduced together in SwiftUI 3.
 
 ### Touch target minimums
 
@@ -75,6 +75,7 @@ A class of bugs that look fine in code but break at runtime. These have shipped 
 ### `@Observable` + `@Bindable`
 
 - Reading an `@Observable` model via `let vm = …` does not establish a binding scope; passing `vm` into a child that needs `@Bindable var vm` requires the child to redeclare with `@Bindable`. Forgetting this silently breaks two-way bindings (TextField, Toggle).
+- **Swift 6 mode:** `@Observable` view-models accessed from a View `body` must themselves be `@MainActor`-isolated (or all accessed properties must be `nonisolated`). A non-isolated `@Observable` class causes "Sending 'X' risks causing data races" because `View.body` is `@MainActor`-isolated. **Fix:** annotate the view-model class with `@MainActor`.
 
 ### View-model built inside a `navigationDestination` / factory closure
 

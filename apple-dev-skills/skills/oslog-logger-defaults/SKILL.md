@@ -40,9 +40,9 @@ Logger.engine.info("user \(userId, privacy: .public) loaded puzzle \(puzzleId)")
 
 ### What `.private` actually means (easily misunderstood)
 
-- `.private` content is **redacted in cross-device Console.app readouts** and **in sysdiagnose**.
+- `.private` content is **redacted wherever no debugger is attached** — this includes a TestFlight user viewing their own Console.app, not only "in someone else's sysdiagnose after release."
 - **When the local Xcode debugger is attached to a running process, private values are still visible.**
-- Implication: your own testers on a TestFlight build may still see private values in Console; full redaction only happens in someone else's sysdiagnose after release.
+- **`OSLogStore` exception**: app code can open `OSLogStore` for its own process and read `.private` entries without a debugger. An in-app log viewer can therefore bypass redaction entirely — never log raw PII even under `.private`.
 
 ## Deviation considerations
 

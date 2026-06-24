@@ -163,7 +163,7 @@ If any check fails, the fix lives in the SVG, not in a post-process pass — re-
 }
 ```
 
-Tinted entry present — `AppIcon-Tinted.png`, `appearance: luminosity / value: tinted`, universal idiom. No `AppIcon-macOS.appiconset/` (universal idiom covers macOS via auto-scale).
+Tinted entry present — `AppIcon-Tinted.png`, `appearance: luminosity / value: tinted`, universal idiom. **For iOS only** — the universal single PNG does NOT satisfy AppKit's macOS slots. macOS targets must use a separate `AppIcon-macOS.appiconset` with the explicit size ladder (see "macOS ladder reality check" above).
 
 ## Why qlmanage and not X
 
