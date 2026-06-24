@@ -24,21 +24,48 @@ Apple-platform apps and then genericized for reuse.
 
 ## Install
 
-### Option A — git submodule (Phase 1, available now)
+> Claude Code discovers shared skills through the **plugin** system, not by a bare
+> folder under `.claude/skills/`. This repo is both a plugin and a marketplace
+> (`.claude-plugin/marketplace.json` + `.claude-plugin/plugin.json`), so either
+> path below works.
+
+### Option A — global marketplace (simplest)
+
+In Claude Code:
+
+```
+/plugin marketplace add wei18/apple-dev-skills
+/plugin install apple-dev-skills@apple-dev-skills
+```
+
+Skills load globally (every project) as `apple-dev-skills:<skill-name>`.
+
+### Option B — vendored submodule, pinned per repo
+
+Vendor the library into one repo and pin its version, then register it as a
+**local-path marketplace at project scope** so it loads from the pinned submodule:
 
 ```bash
 git submodule add https://github.com/wei18/apple-dev-skills.git .claude/skills/apple-dev-skills
-git submodule update --init --recursive
+cd .claude/skills/apple-dev-skills && git checkout v0.1.0 && cd -
 ```
 
-Skills then appear in Claude Code as `apple-dev-skills:<skill-name>`. Pin to a tag
-for reproducibility:
+Then commit this to the repo's `.claude/settings.json` (collaborators are prompted
+to trust the workspace, after which it auto-registers):
 
-```bash
-cd .claude/skills/apple-dev-skills && git checkout v0.1.0
+```json
+{
+  "extraKnownMarketplaces": {
+    "apple-dev-skills": { "source": "./.claude/skills/apple-dev-skills" }
+  },
+  "enabledPlugins": { "apple-dev-skills@apple-dev-skills": true }
+}
 ```
 
-### Option B — npm
+A bare `git submodule add` **alone will not surface the skills** — the marketplace
+registration above is what makes Claude Code load them.
+
+### Option C — npm
 
 ⏳ Phase 2. The npm distribution path is not built yet.
 
