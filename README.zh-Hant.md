@@ -20,6 +20,7 @@
 | **1 — 抽離** | 把可移植 skills 從真實專案抽出、通用化、做成可 submodule 消費的 plugin | ✅ 完成 |
 | **2 — 獨立函式庫** | (a) README 當 SSOT/agenda ✓ · (b) **npm／`npx` 安裝路徑** ✓，經 [`skills`](https://github.com/vercel-labs/skills) CLI（`npx skills add wei18/apple-dev-skills`）把 `SKILL.md` 裝成扁平 skills——與命名空間 plugin 互補 · (c) 經 marketplace 目錄聚合其他 skill repo——機制見 [`claude-skill-plugin-packaging`](skills/claude-skill-plugin-packaging/SKILL.md) | ✅ 完成 |
 | **3 — 策展生態** | 巡了高星 Swift/Apple skill repo；**補上真正的缺口**（無障礙、依賴注入）為第一方 skill，並對與我們重疊者**推薦**而非收錄。決策：[CURATION.md](CURATION.md) | ✅ 完成 |
+| **4 — 填補 gap-map** | 為調查發現的缺口寫第一方 skill——SwiftData、App Intents、WidgetKit/Live Activities、效能工程。Liquid Glass 交給推薦外部。詳見 [ROADMAP.md](ROADMAP.md) | ✅ 完成 |
 
 ---
 
@@ -128,6 +129,15 @@ npx skills add wei18/apple-dev-skills --all -a claude-code         # 全部
 | `swiftui-state-and-composition` | SwiftUI 最佳實務——`@Observable` vs `ObservableObject` 遷移、single-source-of-truth 擁有權、view identity、組合、render 最小化（`swiftui-interaction-footguns` 的 positive 搭檔） |
 | `ios-accessibility-engineering` | SwiftUI & UIKit 具體的 VoiceOver／Dynamic Type／觸控目標／Reduce Motion 實作 + 稽核，含對 App Review 的 WCAG 2.2 對應 |
 | `swift-dependency-injection` | 經 protocol 注入 + 單一 composition root 的可測試接縫、SwiftUI environment vs 建構子注入、`@TaskLocal` 覆寫、Swift 6 `Sendable` 依賴規則 |
+
+### Apple frameworks & performance（4）
+
+| Skill | 一句話 |
+|---|---|
+| `swiftdata-persistence` | SwiftData 本地持久化——`@Model`／`@Query`／關聯／`VersionedSchema` 遷移／CloudKit-sync 限制／`@ModelActor`；SwiftData vs Core Data vs 純檔 |
+| `ios-performance-engineering` | 量測與修復效能——Instruments（Time Profiler／Hangs／SwiftUI）、CI 的 `xctrace`、hang/hitch 預算、啟動時間、記憶體與洩漏、二進位大小、MetricKit 現場遙測 |
+| `app-intents-and-shortcuts` | App Intents——`AppIntent`／`@Parameter`／`AppShortcutsProvider`／`AppEntity`、Siri 與 Spotlight、互動 widget 與 iOS 18 `ControlWidget`、focus filter、`@Dependency` 注入 |
+| `widgetkit-and-live-activities` | WidgetKit + ActivityKit——timeline provider 與 reload 策略、widget family、互動 `Button(intent:)`、Live Activities + Dynamic Island + APNs 推播更新、記憶體限制 |
 
 ---
 

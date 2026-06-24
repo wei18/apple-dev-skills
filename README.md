@@ -22,7 +22,9 @@ Apple-platform apps and then genericized for reuse.
 | **2 — Standalone library** | (a) README as SSOT/agenda ✓ · (b) an **npm / `npx` install path** ✓ via the [`skills`](https://github.com/vercel-labs/skills) CLI (`npx skills add wei18/apple-dev-skills`), which installs the `SKILL.md` files as flat skills — complementary to the namespaced plugin · (c) aggregating other skill repos via a marketplace catalog — mechanism in [`claude-skill-plugin-packaging`](skills/claude-skill-plugin-packaging/SKILL.md) | ✅ done |
 | **3 — Curate the ecosystem** | Surveyed high-star Swift/Apple skill repos; **adopted the genuine gaps** (accessibility, dependency injection) as first-party skills, and **recommend** best-of-breed externals rather than bundling skills that overlap ours. Decisions: [CURATION.md](CURATION.md) | ✅ done |
 
-Detailed status, spec→impl alignment, and future phases (P4+): **[ROADMAP.md](ROADMAP.md)**.
+| **4 — Fill the gap-map** | Write first-party skills for the gaps the survey found — SwiftData, App Intents, WidgetKit/Live Activities, performance engineering. Liquid Glass deferred to recommended externals. | ✅ done |
+
+Detailed status, spec→impl alignment, and future phases (P5+): **[ROADMAP.md](ROADMAP.md)**.
 
 ---
 
@@ -140,6 +142,15 @@ want the whole library as a versioned, namespaced plugin.
 | `swiftui-state-and-composition` | SwiftUI best practices — `@Observable` vs `ObservableObject` migration, single-source-of-truth ownership, view identity, composition, and render minimisation (the positive companion to `swiftui-interaction-footguns`) |
 | `ios-accessibility-engineering` | Concrete VoiceOver / Dynamic Type / touch-target / Reduce Motion implementation + audit for SwiftUI & UIKit, with WCAG 2.2 mapping for App Review |
 | `swift-dependency-injection` | Testable seams via protocol injection + a single composition root, SwiftUI environment vs constructor injection, `@TaskLocal` overrides, Swift 6 `Sendable` dependency rules |
+
+### Apple frameworks & performance (4)
+
+| Skill | One-liner |
+|---|---|
+| `swiftdata-persistence` | SwiftData local persistence — `@Model` / `@Query` / relationships / `VersionedSchema` migration / CloudKit-sync constraints / `@ModelActor`; when SwiftData vs Core Data vs flat file |
+| `ios-performance-engineering` | Measure & fix performance — Instruments (Time Profiler / Hangs / SwiftUI), `xctrace` in CI, hang/hitch budgets, launch time, memory & leaks, binary size, MetricKit field telemetry |
+| `app-intents-and-shortcuts` | App Intents — `AppIntent` / `@Parameter` / `AppShortcutsProvider` / `AppEntity`, Siri & Spotlight, interactive widgets & iOS 18 `ControlWidget`, focus filters, `@Dependency` injection |
+| `widgetkit-and-live-activities` | WidgetKit + ActivityKit — timeline providers & reload policies, widget families, interactive `Button(intent:)`, Live Activities + Dynamic Island + APNs push updates, memory constraints |
 
 ---
 

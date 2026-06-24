@@ -10,6 +10,7 @@ original spec/plan (`wei18/Sudoku` `docs/superpowers/specs|plans/2026-06-24-appl
 | **1 — Extract** | Move portable skills out of a real project, genericize, consume back | ✅ v0.1.0 | 26 skills genericized + 3-way CR; submodule + committed project-scope marketplace |
 | **2 — Standalone library** | SSOT README · npm install · aggregate other repos | ✅ v0.2.0–0.3.0 | README SSOT (+zh-Hant); `npx skills add` path; aggregation mechanism skill |
 | **3 — Curate ecosystem** | Survey high-star Swift repos → adopt/replace/skip | ✅ v0.3.0 | [CURATION.md](CURATION.md); adopted 3 gap skills; recommended externals |
+| **4 — Fill gap-map** | First-party skills for surveyed gaps | ✅ v0.4.0 | swiftdata-persistence · app-intents-and-shortcuts · widgetkit-and-live-activities · ios-performance-engineering |
 
 ## Alignment: spec/plan → implementation
 
@@ -25,14 +26,18 @@ High alignment. Three **intentional, user-approved deviations** (no unintentiona
 
 Feasibility items flagged in spec §3 — both **resolved**: npm mechanism (`skills` CLI); nested aggregation (marketplace multi-source `plugins[]`, documented in `claude-skill-plugin-packaging`).
 
-## Next (P4+ — candidates, not committed)
+## Phase 4 — fill the gap-map (✅ v0.4.0)
 
-From the [CURATION.md](CURATION.md) gap-map — future **first-party** skills (write, don't bundle):
+First-party skills written for the gaps the survey found (not bundled):
+`swiftdata-persistence` · `app-intents-and-shortcuts` · `widgetkit-and-live-activities` ·
+`ios-performance-engineering`. **iOS 26 / Liquid Glass** intentionally deferred to the
+recommended external SwiftUI skills (redundant with our SwiftUI coverage).
 
-- **SwiftData / Core Data** persistence patterns.
-- **App Intents / Siri** + **WidgetKit / Live Activities**.
-- **Performance engineering** — Instruments workflow, MetricKit-as-telemetry, hang/launch/binary-size.
-- **iOS 26 / Liquid Glass** migration patterns (or keep deferring to the recommended external SwiftUI skills).
+## Next (P5+ — candidates, not committed)
+
+- Networking / `URLSession` + structured concurrency patterns; Swift on the server boundary.
+- watchOS / visionOS / App Clips targets (per the broader-platform survey findings).
+- A periodic ecosystem re-survey (P3 is ongoing).
 
 Operational:
 - Periodic ecosystem re-survey (P3 is ongoing, not one-shot).

@@ -23,12 +23,14 @@ content is adapted.
 | adapty / vendor-SDK skills | <10 | — | **Skip** | Vendor-specific, overlaps `monetization-sdk-integration`. |
 | anthropics/claude-plugins-official + community | 31k / 208 | Apache | **Skip** | No Swift-first plugins as of this survey; monitor. |
 
-## Known gaps to fill next (first-party, from the gap-map)
+## Gap-map status (first-party skills)
 
-SwiftData / Core Data persistence · App Intents / Siri · WidgetKit / Live Activities ·
-performance engineering (Instruments / MetricKit-as-telemetry / hang & launch) ·
-iOS 26 Liquid Glass migration. These are candidates for future first-party skills
-rather than external bundling.
+Filled (v0.4.0): **`swiftdata-persistence`** · **`app-intents-and-shortcuts`** ·
+**`widgetkit-and-live-activities`** · **`ios-performance-engineering`**.
+
+Deliberately not first-party: **iOS 26 / Liquid Glass migration** — deferred to the
+recommended external SwiftUI skills (twostraws / AvdLee) to avoid redundancy with
+`swiftui-state-and-composition` + `swiftui-interaction-footguns`.
 
 _Survey method: two parallel research agents (CC-native plugins + adjacent knowledge
 repos), star/license/recency verified via `gh api`, Leader-reconciled._
