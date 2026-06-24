@@ -22,6 +22,8 @@ Apple-platform apps and then genericized for reuse.
 | **2 — Standalone library** | (a) README as SSOT/agenda ✓ · (b) an **npm / `npx` install path** ✓ via the [`skills`](https://github.com/vercel-labs/skills) CLI (`npx skills add wei18/apple-dev-skills`), which installs the `SKILL.md` files as flat skills — complementary to the namespaced plugin · (c) aggregating other skill repos via a marketplace catalog — mechanism in [`claude-skill-plugin-packaging`](skills/claude-skill-plugin-packaging/SKILL.md) | ✅ done |
 | **3 — Curate the ecosystem** | Surveyed high-star Swift/Apple skill repos; **adopted the genuine gaps** (accessibility, dependency injection) as first-party skills, and **recommend** best-of-breed externals rather than bundling skills that overlap ours. Decisions: [CURATION.md](CURATION.md) | ✅ done |
 
+Detailed status, spec→impl alignment, and future phases (P4+): **[ROADMAP.md](ROADMAP.md)**.
+
 ---
 
 ## Install
