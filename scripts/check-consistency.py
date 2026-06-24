@@ -16,7 +16,7 @@ import json, re, subprocess, sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-PLUGINS = {"apple-dev-skills": 20, "collaboration-skills": 10}
+PLUGINS = {"apple-dev-skills": 20, "collaboration-skills": 11}
 EXTERNALS = {"apple-skills", "swiftui-expert", "swiftui-pro", "caveman", "ponytail"}
 errors: list[str] = []
 def fail(m): errors.append(m)
@@ -62,9 +62,9 @@ else:
     missing = (all_skills | EXTERNALS) - tokens
     if missing: fail(f"[readme] Catalog missing: {sorted(missing)}")
     g = [int(x) for x in re.findall(r"\((\d+)\)", sec)]
-    for required in (20, 10, len(EXTERNALS)):
+    for required in (*PLUGINS.values(), len(EXTERNALS)):
         if required not in g:
-            fail(f"[readme] Catalog counts {sorted(g)} must include 20, 10, {len(EXTERNALS)}")
+            fail(f"[readme] Catalog counts {sorted(g)} must include {sorted((*PLUGINS.values(), len(EXTERNALS)))}")
             break
 
 # plugin.json counts

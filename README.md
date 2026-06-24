@@ -31,7 +31,7 @@ plugins load from the pinned submodule (collaborators are prompted to trust the 
 
 ```bash
 git submodule add https://github.com/wei18/apple-dev-skills.git .claude/skills/apple-dev-skills
-cd .claude/skills/apple-dev-skills && git checkout v1.0.0 && cd -
+cd .claude/skills/apple-dev-skills && git checkout v1.2.0 && cd -
 ```
 
 `.claude/settings.json` (committed):
@@ -84,7 +84,7 @@ npx skills add wei18/apple-dev-skills --skill swift6-concurrency
 | `app-icon-rasterize` | Rasterize a 1024 SVG icon to asset-catalog PNG via `qlmanage` — no Homebrew |
 | `ios-design-mockup` | Single-file HTML iOS design mockup from a spec — iPhone frames + tokens |
 
-### collaboration-skills (10) — AI-agent process
+### collaboration-skills (11) — AI-agent process
 
 | Skill | One-liner |
 |---|---|
@@ -98,6 +98,7 @@ npx skills add wei18/apple-dev-skills --skill swift6-concurrency
 | `pr-diff-verification` | Before push/PR, verify `git show --stat HEAD` matches the commit's claims |
 | `backlog-routing-by-topic` | Route stray ideas by topic to the matching spec file's §Backlog |
 | `claude-skill-plugin-packaging` | Distribute/install Claude Code skills — depth-1 rule, plugin + marketplace, aggregation |
+| `skill-authoring-patterns` | Apple/Swift catalog layer over `superpowers:writing-skills` — router descriptions, bookend sections, two-tier references, evidence-based CR |
 
 ### Aggregated external (5) — by reference, credited
 
