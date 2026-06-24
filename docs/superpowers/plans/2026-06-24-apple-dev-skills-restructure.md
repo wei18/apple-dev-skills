@@ -242,8 +242,8 @@ git commit -m "refactor: split into apple-dev-skills (20) + collaboration-skills
 Checks
   1. Each <plugin>/skills/<dir>/ has a SKILL.md whose frontmatter name == <dir>.
   2. README.md Catalog lists exactly the union of both plugins' skills (30) AND the
-     three aggregated external plugin names (set-equality, both directions).
-  3. Counts match: README group headers (20)/(10)/(3) and each plugin.json's "N first-party".
+     five aggregated external plugin names (set-equality, both directions).
+  3. Counts match: README group headers (20)/(10)/(5) and each plugin.json's "N first-party".
   4. README.zh-Hant.md exists and its embedded src-sha == git hash-object README.md.
   5. All plugin/marketplace JSON parse; the two subdir plugin sources resolve to dirs.
 Stdlib only.
@@ -369,7 +369,7 @@ git commit -m "test: consistency gate for two-plugin layout (catalog + counts + 
 - Delete: `ROADMAP.md`, `CURATION.md`
 
 **Interfaces:**
-- Produces: a `## Catalog` section listing all 30 skills (grouped `(20)`/`(10)`) + 3 externals `(3)`, satisfying the gate's check 2/3.
+- Produces: a `## Catalog` section listing all 30 skills (grouped `(20)`/`(10)`) + 5 externals `(5)`, satisfying the gate's check 2/3.
 
 - [ ] **Step 1: Write `README.md`**
 

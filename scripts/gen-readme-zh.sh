@@ -13,7 +13,7 @@ Output ONLY the translated markdown, nothing else." < README.md > README.zh-Hant
   git add README.zh-Hant.md
   echo "regenerated README.zh-Hant.md (src-sha $SHA)"
 else
-  EMB="$(grep -oE 'src-sha: [0-9a-f]+' README.zh-Hant.md 2>/dev/null | awk '{print $2}' || true)"
+  EMB="$(grep -oE '<!-- src-sha: [0-9a-f]+ -->' README.zh-Hant.md 2>/dev/null | grep -oE '[0-9a-f]{7,}' || true)"
   if [ "$EMB" != "$SHA" ]; then
     echo "README.zh-Hant.md is stale; run 'mise run readme-zh' where 'claude' is on PATH" >&2
     exit 1
