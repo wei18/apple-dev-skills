@@ -27,7 +27,7 @@ description: Default testing stack for new Apple-platform Swift projects — swi
 - **Snapshot images go into git** (default `__Snapshots__/` next to the test file) so visual diffs show up in PR review.
 - Start by covering **the main screens** and expand from there. Each snapshot should cover multiple locales, iPhone / Mac, light / dark, and typical states.
 
-#### Snapshot gate strategy — strict content / tolerant board
+#### Snapshot gate strategy — strict content / tolerant board (a settled design decision, not a global knob)
 
 Tolerance is **per-suite by view type**, not a global knob:
 

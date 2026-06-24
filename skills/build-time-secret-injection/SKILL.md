@@ -185,7 +185,7 @@ A future PR should add a build-phase script that asserts no `$()` literals survi
 
 - **REQUIRED background**: [[apple-public-repo-security]] — broader secret-leak prevention (gitleaks, lefthook, GitHub Secret Scanning)
 - **SIBLING**: [[monetization-sdk-integration]] — invoke together when wiring AdMob; this skill is the secret-handling layer
-- **SIBLING**: [[asc-ops-handoff]] — ASC API key handling more broadly
+- **SIBLING**: your ASC submission-ops workflow (who may push what) — ASC API key handling more broadly
 - Project memory file documenting the secret-scrubbing incident — the incident that triggered this skill pattern
 - Project memory files for each credential set — real values held outside repo (cite by memory-file name, never paste inline)
 

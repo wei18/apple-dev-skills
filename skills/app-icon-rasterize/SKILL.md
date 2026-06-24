@@ -7,7 +7,7 @@ description: Rasterize a designer-authored 1024×1024 SVG into the PNG that Appl
 
 Use when a designer hands off the icon as SVG and you need the PNG that `AppIcon.appiconset/Contents.json` references.
 
-This is the gap discovered during first-pass icon production on a real project — the SVG → 1024 PNG step was undocumented (only the downstream Pillow Lanczos *downscale* to the macOS ladder was written up). Each appearance — Light, Dark, Tinted — is a single 1024 universal PNG produced by exactly one rasterize step, documented here. (Tinted is now a standard third appearance alongside Light and Dark; all three apps in the reference project ship `AppIcon-Tinted.png`.)
+This is the gap discovered during first-pass icon production on a real project — the SVG → 1024 PNG step was undocumented (only the downstream Pillow Lanczos *downscale* to the macOS ladder was written up). Each appearance — Light, Dark, Tinted — is a single 1024 universal PNG produced by exactly one rasterize step, documented here. (Tinted is now a standard third appearance alongside Light and Dark; all apps in the reference project ship `AppIcon-Tinted.png`.)
 
 ## When to use
 
@@ -131,7 +131,7 @@ Open the produced PNGs in Preview.app and confirm:
 
 - Background fill reaches all 4 edges (no transparency at canvas border — Apple's compositor adds the squircle mask)
 - Light variant uses paper `#FAF8F3` background
-- Dark variant uses the project's dark/ink background color (a near-black defined in your design spec)
+- Dark variant uses a near-black ink background (e.g. `#15171A` — replace with your project's dark background hex); pixel-meter the corners against it
 - Colors match the spec hex values byte-for-byte
 - No anti-alias bleed from `<filter>` effects (rare with QuickLook, but inspect the highlight + spark ring areas)
 - Both PNGs are 1024×1024 exactly (no off-by-one from QuickLook scaling)
@@ -182,4 +182,4 @@ Tinted entry present — `AppIcon-Tinted.png`, `appearance: luminosity / value: 
 
 ## Companion skill
 
-For the macOS size-ladder downscale workflow (now retired in favor of the universal single-PNG decision described above, but useful as a reference for older Xcode targets), adapt the `sips -Z` ladder shown in the "macOS ladder reality check" section above.
+The macOS size-ladder downscale workflow is documented in the "macOS ladder reality check" section above; it is superseded by the universal single-PNG approach for new projects, but remains useful as a reference for older Xcode targets that still require the explicit size ladder.

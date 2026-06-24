@@ -95,4 +95,3 @@ App target
 - `apple-platform-targets`: Package `platforms:` aligned with App target.
 - `swift-testing-baseline`: test target framework and location.
 - `telemetry-facade-pattern`: why `Telemetry` is a standalone target.
-- `game-factory-composition`: how multiple games share one composition over this target layout (`GameConfig` + `makeGameApp`).

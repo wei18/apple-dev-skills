@@ -46,7 +46,8 @@ Example for AdMob (currently shipped):
 
 Canonical regex (matches Swift 6 access-level imports too):
 ```bash
-rg '^(internal |private |public |@_implementationOnly |@preconcurrency )*import <SDKModule>' Sources/
+# replace <SDKModule> / <your-sources-root> with your actual values
+rg '^(internal |private |public |@_implementationOnly |@preconcurrency )*import <SDKModule>' <your-sources-root>
 ```
 
 Expected count: **1** (live bridge file).

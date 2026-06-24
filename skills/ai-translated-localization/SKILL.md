@@ -159,12 +159,17 @@ Two things it does **NOT** catch — both have shipped English-fallback bugs in 
    already has the feature** (real-world: a new game adopted shared audio-settings
    UI without copying the required catalog keys; another adopted an ATT primer
    and the raw dotted keys appeared at runtime — both passed the gate).
-2. **Keys referenced from shared UI targets** may not be checked against every
-   app catalog without an explicit shared-code gate. A best-practice gate:
-   any dotted-namespace key (e.g. `leave.game.close`, `att.primer.title`)
-   referenced from shared UI modules (e.g. `GameShellUI`, `SettingsUI`,
-   `MonetizationUI`) must exist in **all** app catalogs or CI fails. Scoped to
-   *dotted* keys to avoid app-conditional English-phrase false positives.
+2. **A key referenced from shared UI code but absent from an app's catalog.**
+   Per-key completeness alone will NOT catch this — the gate only validates keys
+   that already exist in a catalog, so a key referenced from a shared UI module
+   that the app's own catalog never declares renders raw at runtime while the gate
+   stays green. **Build a shared-code dotted-key gate:** every dotted-namespace key
+   (e.g. `leave.game.close`, `att.primer.title`) referenced from a shared UI module
+   (SharedUI / SettingsUI / any shared UI module) must exist in **every** app
+   catalog or CI fails. Scope it to *dotted* keys to avoid app-conditional
+   English-phrase false positives — English-phrase shared keys are a separate,
+   harder case (no dotted namespace to anchor on; track them with a dedicated
+   audit rather than this gate).
 
 ### xcstrings editing footgun
 
