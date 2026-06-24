@@ -16,7 +16,7 @@ Apple-platform apps and then genericized for reuse.
 
 | Phase | What | Status |
 |---|---|---|
-| **1 — Extract** | Pull the 26 portable skills out of a real project, genericize, ship as a submodule-consumable plugin | 🚧 in progress |
+| **1 — Extract** | Pull the portable skills out of a real project, genericize, ship as a submodule-consumable plugin | ✅ done |
 | **2 — Standalone library** | (a) this README as SSOT/agenda · (b) an **npm install path** alongside the submodule · (c) ability to **submodule *other* specialist skill repos** so the library aggregates best-of-breed instead of reinventing | ⏳ planned |
 | **3 — Curate the ecosystem** | Survey high-star GitHub Swift / Apple-platform skill repos; per candidate decide **adopt** / **replace ours** / **skip**, documented | ⏳ planned |
 
@@ -47,7 +47,7 @@ Vendor the library into one repo and pin its version, then register it as a
 
 ```bash
 git submodule add https://github.com/wei18/apple-dev-skills.git .claude/skills/apple-dev-skills
-cd .claude/skills/apple-dev-skills && git checkout v0.1.0 && cd -
+cd .claude/skills/apple-dev-skills && git checkout v0.2.0 && cd -
 ```
 
 Then commit this to the repo's `.claude/settings.json` (collaborators are prompted
@@ -56,7 +56,9 @@ to trust the workspace, after which it auto-registers):
 ```json
 {
   "extraKnownMarketplaces": {
-    "apple-dev-skills": { "source": "./.claude/skills/apple-dev-skills" }
+    "apple-dev-skills": {
+      "source": { "source": "directory", "path": "./.claude/skills/apple-dev-skills" }
+    }
   },
   "enabledPlugins": { "apple-dev-skills@apple-dev-skills": true }
 }
@@ -100,7 +102,7 @@ registration above is what makes Claude Code load them.
 | `methodology-pattern-extractor` | Extract patterns recurring ≥ 3 times from meeting logs; append to `methodology.md` |
 | `session-to-meeting-log` | Consolidate a Claude Code session into `meetings/{date}_{topic}.md`; summary, not verbatim |
 
-### Ops & review (9)
+### Ops & review (10)
 
 | Skill | One-liner |
 |---|---|
@@ -113,6 +115,7 @@ registration above is what makes Claude Code load them.
 | `swiftui-interaction-footguns` | Checklist of known SwiftUI interaction bugs that slip past pure-code review (tap-target, safe-area, sizeClass, `.task` re-fire) |
 | `app-icon-rasterize` | Rasterize a 1024 SVG app icon to the asset-catalog PNG via `qlmanage` — no Homebrew / cloud dependency |
 | `ios-design-mockup` | Single-file HTML iOS design mockup from a spec — iPhone frames + SVG nav arrows + design-token panel |
+| `claude-skill-plugin-packaging` | How to distribute/install these skills — the depth-1 discovery rule, plugin + marketplace packaging, vendored-submodule + committed project-scope settings recipe, aggregating other skill repos, and the gotchas |
 
 ---
 
