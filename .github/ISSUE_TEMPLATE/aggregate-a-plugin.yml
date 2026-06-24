@@ -1,0 +1,35 @@
+name: Aggregate an external skill plugin
+description: Propose a skill plugin to list by reference in this marketplace.
+title: "[aggregate] <plugin> by <author>"
+labels: ["aggregation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This marketplace aggregates external plugins **by reference** — they install from
+        your repo, credited to you; nothing is copied here. MIT-compatible licenses only.
+  - type: input
+    id: repo
+    attributes: { label: Plugin repo URL, placeholder: https://github.com/owner/repo }
+    validations: { required: true }
+  - type: input
+    id: author
+    attributes: { label: Author / maintainer }
+    validations: { required: true }
+  - type: dropdown
+    id: license
+    attributes:
+      label: License (MIT-compatible required)
+      options: [MIT, Apache-2.0, BSD, Other (specify below)]
+    validations: { required: true }
+  - type: checkboxes
+    id: manifest
+    attributes:
+      label: Claude Code plugin manifest
+      options:
+        - label: The repo (or a subdirectory) has a `.claude-plugin/plugin.json`
+          required: true
+  - type: textarea
+    id: covers
+    attributes: { label: What it covers (note any overlap with existing skills) }
+    validations: { required: true }

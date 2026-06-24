@@ -1,1 +1,4 @@
 .DS_Store
+
+# Personal, per-machine Claude Code settings (carries local absolute paths)
+.claude/settings.local.json

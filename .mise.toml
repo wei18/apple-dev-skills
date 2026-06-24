@@ -1,0 +1,10 @@
+[tools]
+"aqua:evilmartians/lefthook" = "1"
+
+[tasks.check]
+description = "SSOT consistency gate (two plugins, catalog, counts, zh-Hant freshness)"
+run = "python3 scripts/check-consistency.py"
+
+[tasks.readme-zh]
+description = "Regenerate README.zh-Hant.md from README.md (needs claude on PATH)"
+run = "scripts/gen-readme-zh.sh"
