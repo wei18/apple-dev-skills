@@ -1,0 +1,32 @@
+{
+  "name": "apple-dev-skills",
+  "id": "apple-dev-skills",
+  "owner": {
+    "name": "Wei18"
+  },
+  "metadata": {
+    "description": "Reusable Claude Code skills for AI-agent-driven Swift / Apple-platform development",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "apple-dev-skills",
+      "source": "./",
+      "description": "26 reusable skills: Swift 6 / SwiftPM / testing / CI / L10n / telemetry defaults plus Leader-Developer collaboration patterns. Namespaced apple-dev-skills:<skill>.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Wei18"
+      },
+      "keywords": [
+        "swift",
+        "ios",
+        "macos",
+        "apple-platform",
+        "claude-code",
+        "agent-skills",
+        "ai-agents"
+      ],
+      "category": "workflow"
+    }
+  ]
+}
