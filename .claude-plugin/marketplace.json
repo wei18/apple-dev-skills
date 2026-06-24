@@ -4,15 +4,15 @@
     "name": "Wei18"
   },
   "metadata": {
-    "description": "Reusable Claude Code skills for AI-agent-driven Swift / Apple-platform development",
-    "version": "0.4.0"
+    "description": "A curated catalog of Swift / Apple-platform skills for AI coding agents — original first-party skills plus aggregated best-of-breed external plugins (credited to their authors)",
+    "version": "0.5.0"
   },
   "plugins": [
     {
       "name": "apple-dev-skills",
       "source": "./",
-      "description": "34 reusable skills: Swift 6 / SwiftPM / testing / CI / L10n / telemetry defaults plus Leader-Developer collaboration patterns. Namespaced apple-dev-skills:<skill>.",
-      "version": "0.4.0",
+      "description": "30 first-party skills distilled from a real shipping project and public Apple/standards docs: Swift 6 / SwiftPM / testing / CI / L10n / telemetry defaults, Leader-Developer collaboration patterns, plus accessibility, dependency injection, and performance engineering. Namespaced apple-dev-skills:<skill>.",
+      "version": "0.5.0",
       "author": {
         "name": "Wei18"
       },
@@ -25,6 +25,43 @@
         "agent-skills",
         "ai-agents"
       ],
+      "category": "workflow"
+    },
+    {
+      "name": "apple-skills",
+      "source": {
+        "source": "github",
+        "repo": "vabole/apple-skills"
+      },
+      "description": "Aggregated (not authored here). Broad Apple-framework skills — SwiftUI, UIKit, Swift Testing, Concurrency, SwiftData, App Intents, WidgetKit, StoreKit, HealthKit, MapKit, TipKit, and more. By vabole, MIT.",
+      "author": {
+        "name": "vabole"
+      },
+      "category": "workflow"
+    },
+    {
+      "name": "swiftui-expert",
+      "source": {
+        "source": "github",
+        "repo": "AvdLee/SwiftUI-Agent-Skill"
+      },
+      "description": "Aggregated (not authored here). SwiftUI patterns — state, performance, Swift Charts, macOS multi-window, Liquid Glass, plus an Instruments-trace toolchain. By Antoine van der Lee (AvdLee), MIT.",
+      "author": {
+        "name": "Antoine van der Lee (AvdLee)"
+      },
+      "category": "workflow"
+    },
+    {
+      "name": "swiftui-pro",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/twostraws/SwiftUI-Agent-Skill",
+        "path": "swiftui-pro"
+      },
+      "description": "Aggregated (not authored here). SwiftUI pitfalls LLMs make, deprecated-API watchlist, accessibility, and iOS 26 / Liquid Glass guidance. By Paul Hudson (twostraws), MIT.",
+      "author": {
+        "name": "Paul Hudson (twostraws)"
+      },
       "category": "workflow"
     }
   ]

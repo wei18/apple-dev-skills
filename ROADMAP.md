@@ -8,38 +8,38 @@ original spec/plan (`wei18/Sudoku` `docs/superpowers/specs|plans/2026-06-24-appl
 | Phase | Goal | Status | Shipped |
 |---|---|---|---|
 | **1 — Extract** | Move portable skills out of a real project, genericize, consume back | ✅ v0.1.0 | 26 skills genericized + 3-way CR; submodule + committed project-scope marketplace |
-| **2 — Standalone library** | SSOT README · npm install · aggregate other repos | ✅ v0.2.0–0.3.0 | README SSOT (+zh-Hant); `npx skills add` path; aggregation mechanism skill |
-| **3 — Curate ecosystem** | Survey high-star Swift repos → adopt/replace/skip | ✅ v0.3.0 | [CURATION.md](CURATION.md); adopted 3 gap skills; recommended externals |
-| **4 — Fill gap-map** | First-party skills for surveyed gaps | ✅ v0.4.0 | swiftdata-persistence · app-intents-and-shortcuts · widgetkit-and-live-activities · ios-performance-engineering |
+| **2 — Standalone library** | SSOT README · `npx` install · a marketplace that can aggregate other repos | ✅ v0.2.0–0.3.0 | README SSOT (+zh-Hant); `npx skills add` path; `claude-skill-plugin-packaging` |
+| **3 — Curate & aggregate** | Survey high-star Swift repos → aggregate by reference / first-party only for gaps | ✅ v0.5.0 | [CURATION.md](CURATION.md); aggregated 3 external plugins (credited); 3 first-party gap skills; **removed earlier reimplementations** |
+
+## Course correction (v0.4.0 → v0.5.0)
+
+v0.4.0 wrote first-party skills (`swiftui-state-and-composition`, `swiftdata-persistence`,
+`app-intents-and-shortcuts`, `widgetkit-and-live-activities`) that **duplicated**
+aggregatable community plugins — re-implementing others' work without credit.
+**v0.5.0 corrected this**: those four were removed and replaced by *aggregating* the
+originals by reference (`apple-skills` / `swiftui-expert` / `swiftui-pro`, credited to
+vabole / AvdLee / twostraws). Only the three genuine-gap skills with no aggregatable
+plugin (accessibility, dependency injection, performance) remain first-party.
 
 ## Alignment: spec/plan → implementation
 
-High alignment. Three **intentional, user-approved deviations** (no unintentional drift):
-
 | Spec/plan item | Planned | Shipped | Note |
 |---|---|---|---|
-| P1 extract mechanism | `git filter-repo` (history-preserving) | **fresh-copy** | User chose clean history for a new public repo; source history stays in Sudoku. |
-| P1 consumption | submodule | submodule **+ plugin marketplace** (committed `.claude/settings.json`) | Verified: bare submodule isn't discovered (depth-1); marketplace is the real mechanism. Spec §3 updated to match. |
-| P2(b) npm | a custom npm package | **existing `vercel-labs/skills` CLI** | No custom build needed; our `SKILL.md` layout is already compatible. |
-| P2(c) aggregate others | submodule/aggregate external repos | **mechanism documented, not exercised** | No non-redundant, license-clean external CC-plugin qualified → recommend (README) instead of bundle. |
-| P3 "adopt" | submodule/import their plugin | **adopt by writing first-party skills** (a11y, DI, SwiftUI) | External SwiftUI plugins overlapped ours; gap content (a11y/DI) wasn't a CC plugin → adapted original skills. |
+| P1 extract mechanism | `git filter-repo` | **fresh-copy** | User chose clean history for a new public repo; source history stays in Sudoku. |
+| P1 consumption | submodule | submodule **+ plugin marketplace** | Bare submodule isn't discovered (depth-1); marketplace is the real mechanism. Spec §3 updated. |
+| P2(b) npm | a custom npm package | **existing `vercel-labs/skills` CLI** | No custom build; our `SKILL.md` layout is already compatible. |
+| P2(c)/P3 aggregate others | submodule/import external repos | **aggregate by reference in `marketplace.json`** | The correct, attribution-preserving mechanism — externals install from their authors' repos. (Initial pass wrongly reimplemented; corrected in v0.5.0.) |
 
-Feasibility items flagged in spec §3 — both **resolved**: npm mechanism (`skills` CLI); nested aggregation (marketplace multi-source `plugins[]`, documented in `claude-skill-plugin-packaging`).
+Feasibility items from spec §3 — both **resolved**: npm mechanism (`skills` CLI);
+nested aggregation (marketplace multi-source `plugins[]`).
 
-## Phase 4 — fill the gap-map (✅ v0.4.0)
+## Next (candidates, not committed)
 
-First-party skills written for the gaps the survey found (not bundled):
-`swiftdata-persistence` · `app-intents-and-shortcuts` · `widgetkit-and-live-activities` ·
-`ios-performance-engineering`. **iOS 26 / Liquid Glass** intentionally deferred to the
-recommended external SwiftUI skills (redundant with our SwiftUI coverage).
-
-## Next (P5+ — candidates, not committed)
-
-- Networking / `URLSession` + structured concurrency patterns; Swift on the server boundary.
-- watchOS / visionOS / App Clips targets (per the broader-platform survey findings).
-- A periodic ecosystem re-survey (P3 is ongoing).
+- First-party only where no compatibly-licensed external plugin exists: networking /
+  `URLSession` + structured concurrency; watchOS / visionOS / App Clips.
+- Aggregate more high-quality MIT Swift skill plugins as the ecosystem grows (issue-driven).
+- Periodic ecosystem re-survey (curation is ongoing, not one-shot).
 
 Operational:
-- Periodic ecosystem re-survey (P3 is ongoing, not one-shot).
-- Keep consuming repos' submodule pins current as the library tags new releases.
-- Consider listing in a public marketplace (e.g. `claude-plugins-community`) for discoverability once stable.
+- Keep consuming repos' submodule pins current as the library tags releases.
+- Consider listing in a public marketplace (e.g. `claude-plugins-community`) once stable.

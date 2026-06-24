@@ -1,15 +1,16 @@
 # apple-dev-skills
 
-> 給 **AI agent 驅動的 Swift／Apple 平台開發**用的可重用 [Claude Code](https://code.claude.com) skills。
-> 一個 Swift engineer-agent 的專業 skill 函式庫——可組合、自我說明、可經 git submodule 跨專案共享。
+> 給 AI 編碼 agent 用的 **Swift／Apple 平台 skill 策展目錄**（[Claude Code](https://code.claude.com)）。
+> 內含**原創第一方 skill**（某專案淬煉的 pattern ＋ 公開標準主題），**外加以 by-reference 方式聚合、指向原 repo 並署名作者的最佳外部 skill plugin**——非複製。
 >
 > English version: [`README.md`](README.md)
 
-本 repo 是一個 **Claude Code skills-directory plugin**：`skills/` 下一組策展過的
-`SKILL.md`，在 Claude Code 中以 `apple-dev-skills:` 命名空間出現。這些 skills 是在
-打造實際上架的 Apple 平台 App 過程中淬煉、再通用化以供重用。
+這個 repo 同時是兩件事：
 
-**本 README 即函式庫的單一真相來源（SSOT）／agenda。**
+- 一個 **Claude Code plugin**（`apple-dev-skills`）——`skills/` 下 30 個第一方 `SKILL.md`，命名空間 `apple-dev-skills:<skill>`。內容來自某真實上架專案自身經驗，以及公開的 Apple／WCAG／Swift 文件。
+- 一個 **marketplace 目錄**，同時收錄最佳的**外部** skill plugin。那些從**作者自己的 repo** 安裝（完整署名）；此處沒有任何一項是抄襲或重做別人的 skill。
+
+**本 README 即函式庫的單一真相來源（SSOT）。**
 
 ---
 
@@ -17,38 +18,34 @@
 
 | Phase | 內容 | 狀態 |
 |---|---|---|
-| **1 — 抽離** | 把可移植 skills 從真實專案抽出、通用化、做成可 submodule 消費的 plugin | ✅ 完成 |
-| **2 — 獨立函式庫** | (a) README 當 SSOT/agenda ✓ · (b) **npm／`npx` 安裝路徑** ✓，經 [`skills`](https://github.com/vercel-labs/skills) CLI（`npx skills add wei18/apple-dev-skills`）把 `SKILL.md` 裝成扁平 skills——與命名空間 plugin 互補 · (c) 經 marketplace 目錄聚合其他 skill repo——機制見 [`claude-skill-plugin-packaging`](skills/claude-skill-plugin-packaging/SKILL.md) | ✅ 完成 |
-| **3 — 策展生態** | 巡了高星 Swift/Apple skill repo；**補上真正的缺口**（無障礙、依賴注入）為第一方 skill，並對與我們重疊者**推薦**而非收錄。決策：[CURATION.md](CURATION.md) | ✅ 完成 |
-| **4 — 填補 gap-map** | 為調查發現的缺口寫第一方 skill——SwiftData、App Intents、WidgetKit/Live Activities、效能工程。Liquid Glass 交給推薦外部。 | ✅ 完成 |
+| **1 — 抽離** | 把某專案可移植 skill 抽出、通用化、做成可 submodule 消費的 plugin | ✅ 完成 |
+| **2 — 獨立函式庫** | README 當 SSOT · `npx skills add` 安裝路徑 · 可聚合其他 repo 的 marketplace 目錄（機制見 [`claude-skill-plugin-packaging`](skills/claude-skill-plugin-packaging/SKILL.md)） | ✅ 完成 |
+| **3 — 策展與聚合** | 巡了高星 Swift/Apple skill repo，將最佳的 MIT plugin **以 by-reference 聚合**（指向作者原 repo、署名——見下方），而非重做它們。第一方 skill **只**為「無可聚合 plugin 的真實缺口」而寫（無障礙、依賴注入、效能）。決策：[CURATION.md](CURATION.md) | ✅ 完成 |
 
-詳細狀態、spec→impl 對齊、以及未來階段（P5+）：**[ROADMAP.md](ROADMAP.md)**。
+詳細狀態、spec→impl 對齊、未來階段：**[ROADMAP.md](ROADMAP.md)**。
 
 ---
 
 ## 安裝
 
-> Claude Code 透過 **plugin 系統**發現共享 skills，而非 `.claude/skills/` 下的裸資料夾。
-> 本 repo 同時是 plugin 與 marketplace（`.claude-plugin/marketplace.json` + `.claude-plugin/plugin.json`），下列任一路徑皆可。
+> Claude Code 透過 **plugin 系統**發現共享 skill，而非 `.claude/skills/` 下的裸資料夾。本 repo 同時是 plugin 與 marketplace。
 
-### 選項 A — 全域 marketplace（最簡單）
-
-在 Claude Code 中：
+### 選項 A — marketplace（最簡單）
 
 ```
 /plugin marketplace add wei18/apple-dev-skills
 /plugin install apple-dev-skills@apple-dev-skills
 ```
 
-skills 全域載入（每個專案）為 `apple-dev-skills:<skill-name>`。
+我們的 skill 以 `apple-dev-skills:<skill-name>` 載入。同一 marketplace 也提供[聚合的外部 plugin](#聚合的外部-skill)——可從作者 repo 安裝任一個，例如 `/plugin install swiftui-expert@apple-dev-skills`。
 
 ### 選項 B — vendored submodule，逐 repo 釘版
 
-把函式庫 vendored 進某 repo 並釘版，再以 **project-scope local-path marketplace** 註冊，使其從被釘版的 submodule 載入：
+把第一方 plugin vendored 進某 repo 並釘版，再以 **project-scope local-path marketplace** 註冊，使其從被釘版的 submodule 載入：
 
 ```bash
 git submodule add https://github.com/wei18/apple-dev-skills.git .claude/skills/apple-dev-skills
-cd .claude/skills/apple-dev-skills && git checkout v0.4.0 && cd -
+cd .claude/skills/apple-dev-skills && git checkout v0.5.0 && cd -
 ```
 
 然後把以下 commit 進該 repo 的 `.claude/settings.json`（協作者會被提示 trust workspace，之後自動註冊）：
@@ -64,11 +61,11 @@ cd .claude/skills/apple-dev-skills && git checkout v0.4.0 && cd -
 }
 ```
 
-光是 `git submodule add` **不會讓 skills 出現**——上面的 marketplace 註冊才是讓 Claude Code 載入它們的關鍵。
+光是 `git submodule add` **不會讓 skill 出現**——上面的 marketplace 註冊才是讓 Claude Code 載入它們的關鍵。
 
-### 選項 C — `npx skills`（扁平 skills、非 plugin）
+### 選項 C — `npx skills`（扁平 skill、非 plugin）
 
-用開源 [`skills`](https://github.com/vercel-labs/skills) CLI 把選定的 `SKILL.md` 直接複製進 agent 的 skills 目錄（`.claude/skills/`），**扁平、無命名空間**（顯示為 `swift6-concurrency` 而非 `apple-dev-skills:swift6-concurrency`）：
+用開源 [`skills`](https://github.com/vercel-labs/skills) CLI 把選定的第一方 `SKILL.md` 複製進 agent 的 skills 目錄，**扁平、無命名空間**：
 
 ```bash
 npx skills add wei18/apple-dev-skills --list                       # 瀏覽完整索引
@@ -76,11 +73,9 @@ npx skills add wei18/apple-dev-skills --skill swift6-concurrency   # 單一 skil
 npx skills add wei18/apple-dev-skills --all -a claude-code         # 全部
 ```
 
-想把少數 skill 當純檔案 vendored 時用這個；想要整個函式庫當版本化、命名空間 plugin 時用選項 A/B。
-
 ---
 
-## Skill 索引
+## 第一方 skill 索引（30）
 
 ### Platform defaults（10）
 
@@ -122,40 +117,38 @@ npx skills add wei18/apple-dev-skills --all -a claude-code         # 全部
 | `swiftui-interaction-footguns` | 純 code review 漏掉的 SwiftUI 互動 bug 清單（tap-target、safe-area、sizeClass、`.task` re-fire） |
 | `app-icon-rasterize` | 用 `qlmanage` 把 1024 SVG app icon 點陣成 asset-catalog PNG——免 Homebrew／cloud |
 | `ios-design-mockup` | 從 spec 產單檔 HTML iOS 設計 mockup——iPhone frame + SVG 導覽箭頭 + design-token 面板 |
-| `claude-skill-plugin-packaging` | 如何散布／安裝這些 skills——depth-1 發現規則、plugin + marketplace 打包、vendored-submodule + committed project-scope settings 配方、聚合其他 skill repo、各種坑 |
+| `claude-skill-plugin-packaging` | 如何散布／安裝 skill——depth-1 發現規則、plugin + marketplace 打包、vendored-submodule + committed project-scope settings 配方、by-reference 聚合其他 repo、各種坑 |
 
 ### App engineering（3）
 
+這幾項涵蓋目前無「授權相容的外部 CC plugin」的主題；內容為原創，蒸餾自公開的 Apple HIG／WCAG／Swift 文件。
+
 | Skill | 一句話 |
 |---|---|
-| `swiftui-state-and-composition` | SwiftUI 最佳實務——`@Observable` vs `ObservableObject` 遷移、single-source-of-truth 擁有權、view identity、組合、render 最小化（`swiftui-interaction-footguns` 的 positive 搭檔） |
 | `ios-accessibility-engineering` | SwiftUI & UIKit 具體的 VoiceOver／Dynamic Type／觸控目標／Reduce Motion 實作 + 稽核，含對 App Review 的 WCAG 2.2 對應 |
 | `swift-dependency-injection` | 經 protocol 注入 + 單一 composition root 的可測試接縫、SwiftUI environment vs 建構子注入、`@TaskLocal` 覆寫、Swift 6 `Sendable` 依賴規則 |
-
-### Apple frameworks & performance（4）
-
-| Skill | 一句話 |
-|---|---|
-| `swiftdata-persistence` | SwiftData 本地持久化——`@Model`／`@Query`／關聯／`VersionedSchema` 遷移／CloudKit-sync 限制／`@ModelActor`；SwiftData vs Core Data vs 純檔 |
 | `ios-performance-engineering` | 量測與修復效能——Instruments（Time Profiler／Hangs／SwiftUI）、CI 的 `xctrace`、hang/hitch 預算、啟動時間、記憶體與洩漏、二進位大小、MetricKit 現場遙測 |
-| `app-intents-and-shortcuts` | App Intents——`AppIntent`／`@Parameter`／`AppShortcutsProvider`／`AppEntity`、Siri 與 Spotlight、互動 widget 與 iOS 18 `ControlWidget`、focus filter、`@Dependency` 注入 |
-| `widgetkit-and-live-activities` | WidgetKit + ActivityKit——timeline provider 與 reload 策略、widget family、互動 `Button(intent:)`、Live Activities + Dynamic Island + APNs 推播更新、記憶體限制 |
 
 ---
 
-## 推薦的外部搭檔 skill
+## 聚合的外部 skill
 
-來自生態調查（見 [CURATION.md](CURATION.md)）。這些是高品質的外部 Claude Code skill plugin，與本庫的 SwiftUI 覆蓋**重疊**，故**不收錄**於此——想要更深的 SwiftUI 專項指引可自行加入：
+這些**非本處撰寫**。它們是優秀的社群 skill plugin，本 marketplace 以 **by-reference** 收錄——從作者自己的 repo 安裝，完整保留作者署名，且你永遠拿到他們的最新版。加上本 marketplace（選項 A），即可以 `<plugin>@apple-dev-skills` 安裝任一個。
 
-- **[twostraws/SwiftUI-Agent-Skill](https://github.com/twostraws/SwiftUI-Agent-Skill)**（MIT）—— SwiftUI 陷阱／iOS 26 Liquid Glass，作者 Paul Hudson。`/plugin marketplace add twostraws/SwiftUI-Agent-Skill`
-- **[AvdLee/SwiftUI-Agent-Skill](https://github.com/AvdLee/SwiftUI-Agent-Skill)**（MIT）—— SwiftUI patterns + Swift Charts／Instruments-trace 工具鏈，作者 Antoine van der Lee。`/plugin marketplace add AvdLee/SwiftUI-Agent-Skill`
+| Plugin | 作者 | License | 涵蓋 |
+|---|---|---|---|
+| [`apple-skills`](https://github.com/vabole/apple-skills) | vabole | MIT | 廣泛 Apple 框架——SwiftUI、Swift Testing、Concurrency、SwiftData、App Intents、WidgetKit、StoreKit、HealthKit、MapKit、TipKit… |
+| [`swiftui-expert`](https://github.com/AvdLee/SwiftUI-Agent-Skill) | Antoine van der Lee (AvdLee) | MIT | SwiftUI patterns、Swift Charts、macOS 多視窗、Liquid Glass、Instruments-trace 工具鏈 |
+| [`swiftui-pro`](https://github.com/twostraws/SwiftUI-Agent-Skill) | Paul Hudson (twostraws) | MIT | LLM 常犯的 SwiftUI 陷阱、deprecated-API 清單、無障礙、iOS 26／Liquid Glass |
+
+若你維護一個高品質、授權相容的 Swift／Apple skill plugin 並希望被收錄於此，歡迎開 issue。
 
 ---
 
-## 來源
+## 來源與署名
 
-從 [`wei18/Sudoku`](https://github.com/wei18/Sudoku) 的 `.claude/skills/` 抽離並通用化——一個 spec-first、由 AI Leader/Developer 打造的上架 Apple 平台遊戲組合。點名該 repo 特定任務／App 的 skill 留在原地；此處皆為專案無關。
+第一方 skill 從 [`wei18/Sudoku`](https://github.com/wei18/Sudoku) 的 `.claude/skills/`（一個 spec-first、由 AI Leader/Developer 打造的上架 Apple 平台遊戲組合）抽離並通用化，加上對公開 Apple／WCAG／Swift 標準的原創撰寫。上方聚合的外部 plugin 仍屬各自作者的著作與財產，僅以 by-reference 方式呈現。
 
 ## License
 
-MIT —— 見 [LICENSE](LICENSE)。
+MIT（第一方內容）—— 見 [LICENSE](LICENSE)。聚合的外部 plugin 由各自作者授權（收錄時皆為 MIT）。

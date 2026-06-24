@@ -1,36 +1,36 @@
 # Curation log (Phase 3)
 
-How candidates from the ecosystem are evaluated for inclusion, and the decisions
-to date. Principle: **fill genuine gaps, do not bundle redundancy.** A high-star
-external skill that overlaps what this library already covers is *recommended*, not
-copied or aggregated. License must be compatible with an MIT library before any
-content is adapted.
+**Principle: aggregate, don't appropriate.** When a good external skill exists, list
+it **by reference** in our marketplace (it installs from the author's repo, fully
+credited) — never copy or re-implement it as a first-party skill. Write first-party
+skills **only** for topics that no compatibly-licensed external Claude Code *plugin*
+covers. License must be MIT-compatible to aggregate.
 
 ## Decisions
 
-| Repo | ★ | License | Decision | Reason |
-|---|--:|---|---|---|
-| twostraws/SwiftUI-Agent-Skill | 4.2k | MIT | **Recommend (not bundled)** | Excellent SwiftUI pitfalls / iOS 26, but overlaps `swiftui-interaction-footguns`. Listed in README. |
-| AvdLee/SwiftUI-Agent-Skill | 3.1k | MIT | **Recommend (not bundled)** | SwiftUI patterns + Instruments toolchain; overlaps our SwiftUI coverage. Listed in README. |
-| (accessibility) dadederk/iOS-Accessibility-Agent-Skill + cvs-health/ios-swiftui-accessibility-techniques | 159 / 363 | MIT / Apache-2 | **Adopted (adapted)** → `ios-accessibility-engineering` | A real gap (zero a11y coverage). Wrote an original first-party skill distilling the practice; both sources license-compatible. |
-| (DI) pointfreeco/swift-dependencies, Factory | 2.2k | MIT | **Adopted (adapted)** → `swift-dependency-injection` | Gap (no DI skill). Original skill referencing the libraries as options. |
-| twostraws/Swift-Agent-Skills | 2.1k | MIT | **Gap-map (defer)** | Not a CC plugin (no manifest). Use as a roadmap for future first-party skills (SwiftData / App Intents / WidgetKit / performance). |
-| kodecocodes/swift-style-guide | 13.2k | **NOASSERTION** | **Skip** | License unclear → don't adapt. If a naming skill is wanted, distil Apple's API Design Guidelines (the authoritative public source) instead. |
-| dpearson2699/swift-ios-skills | 790 | **PolyForm Perimeter** (non-compete) | **Skip** | Non-compete license is incompatible with endorsing/aggregating in a public MIT library. |
-| ochococo/Design-Patterns-In-Swift | 15.3k | **GPL-3.0** | **Skip** | Copyleft — incompatible. |
-| futurice/ios-good-practices | 11k | **CC-BY-4.0** | **Skip** | Attribution-share license + stale; adapt-risk. |
-| awesome-* lists (matteocrippa, onmyway133) | 26k / 5.3k | — | **Skip** | Link directories, not extractable skill content. |
-| adapty / vendor-SDK skills | <10 | — | **Skip** | Vendor-specific, overlaps `monetization-sdk-integration`. |
-| anthropics/claude-plugins-official + community | 31k / 208 | Apache | **Skip** | No Swift-first plugins as of this survey; monitor. |
+| Repo | ★ | License | CC plugin? | Decision | Reason |
+|---|--:|---|---|---|---|
+| [vabole/apple-skills](https://github.com/vabole/apple-skills) | ~270 | MIT | ✅ | **Aggregate** (`apple-skills@apple-dev-skills`) | Broad Apple-framework coverage (SwiftData, App Intents, WidgetKit, StoreKit, HealthKit, …). Reference, don't reimplement. |
+| [AvdLee/SwiftUI-Agent-Skill](https://github.com/AvdLee/SwiftUI-Agent-Skill) | ~3.1k | MIT | ✅ | **Aggregate** (`swiftui-expert@apple-dev-skills`) | SwiftUI patterns + Instruments toolchain, high authority. |
+| [twostraws/SwiftUI-Agent-Skill](https://github.com/twostraws/SwiftUI-Agent-Skill) | ~4.2k | MIT | ✅ | **Aggregate** (`swiftui-pro@apple-dev-skills`) | SwiftUI pitfalls / iOS 26, by Paul Hudson. |
+| dadederk/iOS-Accessibility-Agent-Skill | ~160 | MIT | ❌ (no manifest) | **Gap → first-party** `ios-accessibility-engineering` | Not a CC plugin, so not aggregatable by marketplace. Wrote an original skill from public Apple HIG / WCAG (no repo copied); links the source as a reference. |
+| pointfreeco/swift-dependencies, Factory | ~2.2k | MIT | ❌ (a library) | **Gap → first-party** `swift-dependency-injection` | A Swift library, not a skill plugin. Original write-up; mentions the libraries as options. |
+| (performance / Instruments / MetricKit) | — | — | ❌ | **Gap → first-party** `ios-performance-engineering` | No aggregatable plugin; original from public Apple docs. |
+| dpearson2699/swift-ios-skills | ~790 | PolyForm Perimeter | ✅ | **Skip** | Non-compete license — incompatible with aggregation in a public MIT catalog. |
+| ochococo/Design-Patterns-In-Swift | ~15k | GPL-3.0 | ❌ | **Skip** | Copyleft. |
+| futurice/ios-good-practices | ~11k | CC-BY-4.0 | ❌ | **Skip** | Attribution-share + stale. |
+| awesome-* lists, vendor-SDK skills, official marketplaces | — | — | — | **Skip** | Link directories / vendor-specific / no Swift-first content. |
 
-## Gap-map status (first-party skills)
+## Course correction (2026-06-24)
 
-Filled (v0.4.0): **`swiftdata-persistence`** · **`app-intents-and-shortcuts`** ·
-**`widgetkit-and-live-activities`** · **`ios-performance-engineering`**.
+An earlier pass wrote first-party skills that **duplicated** aggregatable external
+plugins — that re-implements others' work without credit. Corrected: those four were
+removed and replaced by the aggregated plugins above:
 
-Deliberately not first-party: **iOS 26 / Liquid Glass migration** — deferred to the
-recommended external SwiftUI skills (twostraws / AvdLee) to avoid redundancy with
-`swiftui-state-and-composition` + `swiftui-interaction-footguns`.
+- ~~`swiftui-state-and-composition`~~ → covered by `swiftui-expert` / `swiftui-pro`
+- ~~`swiftdata-persistence`~~ · ~~`app-intents-and-shortcuts`~~ · ~~`widgetkit-and-live-activities`~~ → covered by `apple-skills`
 
-_Survey method: two parallel research agents (CC-native plugins + adjacent knowledge
-repos), star/license/recency verified via `gh api`, Leader-reconciled._
+Only the three genuine-gap skills (accessibility, dependency injection, performance)
+remain first-party, because no compatibly-licensed external plugin packages them.
+
+_Survey method: two parallel research agents; star / license / manifest verified via `gh api`; Leader-reconciled._
