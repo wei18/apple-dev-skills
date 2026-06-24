@@ -4,10 +4,11 @@
 Checks
   1. Each <plugin>/skills/<dir>/ has a SKILL.md whose frontmatter name == <dir>.
   2. README.md Catalog lists exactly the union of both plugins' skills (30) AND the
-     three aggregated external plugin names (set-equality, both directions).
-  3. Counts match: README group headers (20)/(10)/(3) and each plugin.json's "N first-party".
+     five aggregated external plugin names (set-equality, both directions).
+  3. Counts match: README group headers (20)/(10)/(5) and each plugin.json's "N first-party".
   4. README.zh-Hant.md exists and its embedded src-sha == git hash-object README.md.
-  5. All plugin/marketplace JSON parse; the two subdir plugin sources resolve to dirs.
+  5. All plugin/marketplace JSON parse; the two subdir plugin sources resolve to dirs;
+     marketplace.json lists exactly the 7 plugins (2 local + 5 externals).
 Stdlib only.
 """
 from __future__ import annotations
@@ -58,15 +59,8 @@ if not sec:
     fail("[readme] no '## Catalog' section")
 else:
     tokens = set(re.findall(r"`([a-z0-9][a-z0-9-]+)`", sec))
-    listed_skills = {t for t in tokens if t in all_skills or t in EXTERNALS}
     missing = (all_skills | EXTERNALS) - tokens
     if missing: fail(f"[readme] Catalog missing: {sorted(missing)}")
-    phantom = {t for t in tokens if "-" in t and t not in all_skills and t not in EXTERNALS
-               and t not in {"apple-dev-skills", "collaboration-skills"}}
-    # phantom heuristic: kebab token that is neither a known skill, external, nor plugin name
-    for t in sorted(phantom):
-        # only flag tokens that look like skill ids (heuristic: contain a known skill stem) — informational
-        pass
     g = [int(x) for x in re.findall(r"\((\d+)\)", sec)]
     for required in (20, 10, len(EXTERNALS)):
         if required not in g:
@@ -100,6 +94,10 @@ try:
         src = p.get("source")
         if isinstance(src, str) and src.startswith("./"):
             if not (ROOT / src).is_dir(): fail(f"[marketplace] source {src} not a dir")
+    names = {p.get("name") for p in d.get("plugins", [])}
+    expected_names = set(PLUGINS) | EXTERNALS
+    if names != expected_names:
+        fail(f"[marketplace] plugin set mismatch — missing: {sorted(expected_names - names)}, extra: {sorted(names - expected_names)}")
 except Exception as e:
     fail(f"[marketplace] invalid: {e}")
 
