@@ -1,6 +1,6 @@
 ---
 name: subagent-conflict-detection
-description: Use before dispatching a new subagent (especially with isolation:"worktree") to avoid worktree-dispatch hazards — file-scope overlap with an in-flight subagent, a stale dispatch base (the worktree branches from current HEAD, so a dispatch right after a merge can hand the agent a pre-merge base), and collisions with ANOTHER live agent/session editing the same checkout or git-submodule path. Invoke when about to call Agent tool with isolation:"worktree", when another subagent is running, right after merging/switching branches, or when a shared repo/submodule path is also being edited by another Claude session.
+description: Use before dispatching a subagent (especially `isolation:"worktree"`) to avoid three dispatch hazards — file-scope overlap with an in-flight subagent, a stale dispatch base, and collisions with another live agent/session editing the same checkout or git-submodule path. Invoke when about to call the Agent tool with `isolation:"worktree"`; when another subagent is running; right after a merge or branch switch (verify the dispatch base first); or when another Claude session is editing a shared repo/submodule path.
 ---
 
 # Subagent Conflict Detection
@@ -57,7 +57,7 @@ git log --oneline -3                     # does it include the commit/PR this wo
 git merge-base --is-ancestor <dep-sha> HEAD && echo "base OK" || echo "STALE BASE"
 ```
 
-If the work depends on a just-merged PR, sync first (`git checkout main && git fetch && git reset --hard origin/main`) THEN dispatch. State the expected base SHA in the dispatch prompt and tell the agent to verify it (`git log --oneline -5`; confirm a key file/symbol exists) before coding.
+If the work depends on a just-merged PR, sync first (`git checkout main && git fetch && git reset --hard origin/main` — `reset --hard` discards uncommitted local changes, so stash them first) THEN dispatch. `<dep-sha>` above is the commit your work depends on (e.g. the merged PR's commit on `main`). State the expected base SHA in the dispatch prompt and tell the agent to verify it (`git log --oneline -5`; confirm a key file/symbol exists) before coding.
 
 > Real incident: a DEBUG test-hook subagent was dispatched right after a fix merged to `main`, but the dispatching HEAD was a pre-merge commit. The worktree branched from the stale base, so the new code referenced an `init` parameter and a file that only existed post-merge → 2 compile errors that the agent's own package build hadn't surfaced. Cost a full cherry-pick-onto-correct-base + rebuild cycle.
 
