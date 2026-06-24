@@ -130,3 +130,13 @@ App Review does not formally audit against WCAG, but the Human Interface Guideli
 
 - `swiftui-interaction-footguns`: Dynamic Type / modal env footguns and the `minimumScaleFactor` pitfall in detail.
 - `swift-testing-baseline`: headless AX-tree limitation and why sim verification is the reliable gate.
+
+## External references
+
+- [`dadederk/iOS-Accessibility-Agent-Skill`](https://github.com/dadederk/iOS-Accessibility-Agent-Skill)
+  (Daniel Devesa Derksen-Staats, MIT) — a complementary, high-authority a11y skill. It goes
+  deeper on **Large Content Viewer** (`UILargeContentViewerItem`), **`accessibilityRotor` /
+  `accessibilityRepresentation` / `AccessibilityFocusState`**, **Full Keyboard Access**, and
+  VoiceOver **custom actions** — areas this skill keeps brief. This skill's strength is the
+  runtime-verification pitfalls (the `minimumScaleFactor` vertical-clip trap, headless-AX-tree
+  false passes, idb/simctl sim-verify, WCAG 2.2 mapping). Use both.
