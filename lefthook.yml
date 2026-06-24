@@ -1,0 +1,8 @@
+pre-commit:
+  parallel: false
+  commands:
+    readme-zh:
+      glob: "README.md"
+      run: mise run readme-zh
+    check:
+      run: mise run check
