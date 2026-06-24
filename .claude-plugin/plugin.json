@@ -1,0 +1,8 @@
+{
+  "name": "apple-dev-skills",
+  "version": "0.1.0",
+  "description": "Reusable Claude Code skills for AI-agent-driven Swift / Apple-platform development — Swift 6 / SwiftPM / testing / CI / L10n / telemetry defaults plus Leader-Developer collaboration patterns. Composable via git submodule.",
+  "author": { "name": "Wei18" },
+  "homepage": "https://github.com/wei18/apple-dev-skills",
+  "license": "MIT"
+}
