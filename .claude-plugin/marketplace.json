@@ -3,7 +3,7 @@
   "owner": { "name": "Wei18" },
   "metadata": {
     "description": "A curated catalog of skills for AI coding agents — first-party Apple/Swift and agent-collaboration skills, plus aggregated best-of-breed external plugins (credited to their authors)",
-    "version": "1.1.0"
+    "version": "1.2.0"
   },
   "plugins": [
     {
@@ -18,8 +18,8 @@
     {
       "name": "collaboration-skills",
       "source": "./collaboration-skills",
-      "description": "10 first-party AI-agent collaboration & process skills. Namespaced collaboration-skills:<skill>.",
-      "version": "1.1.0",
+      "description": "11 first-party AI-agent collaboration & process skills. Namespaced collaboration-skills:<skill>.",
+      "version": "1.2.0",
       "author": { "name": "Wei18" },
       "keywords": ["claude-code", "agent-skills", "ai-agents", "workflow", "collaboration"],
       "category": "workflow"
