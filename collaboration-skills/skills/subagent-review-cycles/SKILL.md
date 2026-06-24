@@ -92,8 +92,10 @@ A separate close-the-loop activity that fires **once per phase** (not once per r
 **Command** (Leader-run; against the phase's diff scope, not the full repo):
 
 ```
-rg -n --no-heading -e 'TODO|FIXME|XXX|HACK|stub|placeholder|Phase [0-9]+ Part' Packages/<target>/Sources/
+rg -n --no-heading -e 'TODO|FIXME|XXX|HACK|stub|placeholder|Phase [0-9]+ Part' <source-root>/
 ```
+
+Replace `<source-root>/` with the actual source directory for this project (e.g. `Packages/<target>/Sources/`, `Sources/`, `src/`). The path must match the repo's layout — if it doesn't, the sweep silently finds nothing and the phase incorrectly appears clean.
 
 **Disposition rule** — every match must fall into exactly one bucket; otherwise the phase is not complete:
 

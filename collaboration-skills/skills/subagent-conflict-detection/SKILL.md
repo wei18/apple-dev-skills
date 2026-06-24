@@ -66,7 +66,7 @@ Options:
 
 ## Anti-patterns this prevents
 
-- **Parallel-dispatch race** (methodology.md §Anti-patterns): Two subagents on isolated worktrees edit the same file; whichever pushes second force-overwrites the first via `--force-with-lease` (which doesn't see the unmerged other-worktree commit as "ahead").
+- **Parallel-dispatch race** (methodology.md §Anti-patterns): Two subagents on isolated worktrees edit the same file. `--force-with-lease` does NOT silently overwrite — it rejects the push when the remote ref has moved since the client last fetched. The real footgun is a different one: worktree B rebases onto a stale base (e.g. the main SHA from before worktree A pushed), producing a divergent history; resolving it then requires a force-push that can drop worktree A's commits. Prevent this by serializing or carving scopes before dispatch.
 - **Lost-work on worktree wipe**: Subagent A's worktree wipes without commit; subagent B's dispatch reuses the path or branch name; A's work is unrecoverable.
 - **Code Reviewer confusion**: CR sees a PR whose diff includes changes from a parallel subagent that's not yet merged; verdict is on wrong baseline.
 

@@ -95,7 +95,7 @@ pre-commit:
 
 ```bash
 mise install
-mise exec gitleaks -- git --pre-commit --staged
+mise exec gitleaks -- git --pre-commit --staged --redact
 if [ $? -ne 0 ]; then
   echo "gitleaks detected potential secrets — failing build"
   exit 1

@@ -38,7 +38,9 @@ Tolerance is **per-suite by view type**, not a global knob:
   the only reliable "a new label appeared" gate (see dead end below).
 - **AA-heavy board/grid suites** (`*Board*`, terminal overlays) keep a
   **`.tolerantImage`** (≈0.95 precision, defined once in each app's
-  `SnapshotConfig.swift`) — strict false-fails on dozens of antialiased cells.
+  `SnapshotConfig.swift` as a project-local extension — `.tolerantImage` is NOT a
+  built-in pointfreeco/swift-snapshot-testing strategy; the library ships
+  `.image(precision:)` / `.image(perceptualPrecision:)`) — strict false-fails on dozens of antialiased cells.
   Choose strategy at the call site via `as: .image` vs `as: .tolerantImage`;
   **never sprinkle ad-hoc `precision:` overrides** at call sites.
 - **Baselines are the source of truth.** A suite failing on PNGs means *behavior
@@ -97,7 +99,7 @@ pixels (above) is the only viable content gate.
 
 - Each production target has a matching `<Module>Tests`.
 - `__Snapshots__/` is committed to git and not accidentally excluded by `.gitignore`.
-- Content suites use strict `.image`; only AA-heavy board suites use `.tolerantImage` — no ad-hoc per-call `precision:` overrides.
+- Content suites use strict `.image`; only AA-heavy board suites use `.tolerantImage` (project-local extension) — no ad-hoc per-call `precision:` overrides.
 - A red snapshot suite is investigated as a behavior change, not silenced by re-recording.
 - CI runner's macOS / Xcode version matches the local lock.
 - No test connects directly to real CloudKit / Game Center.

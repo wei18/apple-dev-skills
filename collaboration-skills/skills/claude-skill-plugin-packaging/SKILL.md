@@ -45,10 +45,12 @@ your-skills-repo/
     └── <skill>/SKILL.md   # one dir per skill
 ```
 
-`plugin.json` (the `name` is the namespace prefix → skills surface as `name:<skill>`):
+`plugin.json` (the `name` is the **plugin** namespace prefix — skills surface as `plugin-name:<skill>`; this is independent of the marketplace name):
 ```json
 { "name": "your-skills", "version": "0.1.0", "description": "…", "license": "MIT" }
 ```
+
+The **marketplace** `name` is the catalog identifier used in `/plugin install plugin-name@marketplace-name`. These are two distinct names that happen to be the same string in the single-repo model — that identity is a coincidence, not a requirement. A real-world example where they differ: `"code-formatter@company-tools"` (plugin name = `code-formatter`, marketplace name = `company-tools`).
 
 `marketplace.json` — lists this plugin (and can list MANY plugins from other sources):
 ```json
@@ -90,9 +92,10 @@ reproducibly, with **no manual install** for collaborators.
          "source": { "source": "directory", "path": "./.claude/skills/your-skills" }
        }
      },
-     "enabledPlugins": { "your-skills@your-skills": true }
+     "enabledPlugins": { "<plugin-name>@<marketplace-name>": true }
    }
    ```
+   Replace `<plugin-name>` with the `name` from the plugin's `plugin.json` and `<marketplace-name>` with the `name` from the marketplace's `marketplace.json`. In the single-repo model these happen to be the same string (e.g. `"your-skills@your-skills": true`), but they are conceptually distinct — the plugin namespace and the catalog identifier.
    - The marketplace `source` for a local dir is an **object** `{"source":"directory","path":"./relative"}` — a **relative** path (resolves against the repo's main checkout). A relative path only resolves because the submodule is itself a git repo.
 3. On `git clone --recurse-submodules` + workspace-trust, Claude Code
    auto-registers the marketplace and enables the plugin. Skills load as

@@ -24,9 +24,9 @@ Never guess at a performance problem; profile first. Instruments ships with Xcod
 
 **SwiftUI instrument** — records View body invocation counts, `@State` change propagation, and diffing cost. Available from Xcode 15+. A body that fires more than expected usually means a dependency is too coarse (e.g. observing the whole model when only one field is needed). The instrument shows which property change triggered each body re-render.
 
-**Hangs instrument** (Xcode 15+) — captures main-thread spins longer than a configurable threshold (default 500 ms). Pairs with the **App Launch** template for pre-first-frame blocking. The system also generates `MXHangDiagnostic` on-device (see MetricKit below).
+**Hangs instrument** (Xcode 14+) — captures main-thread spins longer than a configurable threshold (default 250 ms). Apple classifies blocks 250–500 ms as micro-hangs and ≥500 ms as full hangs. Pairs with the **App Launch** template for pre-first-frame blocking. The system also generates `MXHangDiagnostic` on-device (see MetricKit below).
 
-**Hitches** — a hitch occurs when a frame takes longer than one vsync interval to deliver, causing a visual stutter. On 60 Hz displays the budget is ~16.67 ms; on ProMotion (120 Hz) it halves to ~8.33 ms. Use the **Core Animation** instrument to see committed frames and dropped frames. The `hitch rate` (ms of hitch per second of scrolling) is the standard metric: <5 ms/s is good, >10 ms/s is user-noticeable.
+**Hitches** — a hitch occurs when a frame takes longer than one vsync interval to deliver, causing a visual stutter. On 60 Hz displays the budget is ~16.67 ms; on ProMotion (120 Hz) it halves to ~8.33 ms. Use the **Core Animation** instrument to see committed frames and dropped frames. The `hitch rate` (ms of hitch per second of scrolling) is the standard metric: <5 ms/s is good; 5–10 ms/s is concerning (user notices interruptions); >10 ms/s is critical (greatly impacts UX) — per WWDC 2020 session 10077.
 
 ### `os_signpost` — annotate your own intervals
 
@@ -41,7 +41,7 @@ let image = decodeImage(data)
 os_signpost(.end, log: log, name: "ImageDecode", signpostID: id)
 ```
 
-Signpost intervals appear in the Instruments timeline as coloured spans. Use `.event` for instantaneous markers (user taps, cache misses). In Swift 5.9+, prefer `OSSignposter` from the `OSLog` framework — it is a Swift-friendly wrapper with structured metadata support:
+Signpost intervals appear in the Instruments timeline as coloured spans. Use `.event` for instantaneous markers (user taps, cache misses). Prefer `OSSignposter` (iOS 15+/macOS 12+, introduced WWDC 2021; Swift-only wrapper over C `os_signpost`) from the `os` framework — it supports structured metadata:
 
 ```swift
 let signposter = OSSignposter(subsystem: "com.example.MyApp", category: "Render")
@@ -85,7 +85,7 @@ func loadData() async throws {
 
 For CPU-heavy processing (image decoding, compression, sorting large arrays), use `Task.detached(priority: .userInitiated)` or dispatch to a background `Actor`. Never use `DispatchQueue.global().async` in new Swift 6 code — prefer structured concurrency.
 
-One-shot bootstrapping on first appearance belongs in `.onAppear { Task { … } }`, **not `.task`** — Xcode 26's `.task` modifier has an arm64 device Release-build link regression that causes crashes (#361). Use `.onAppear` for now.
+One-shot bootstrapping on first appearance belongs in `.task` — the correct Apple-recommended modifier for async work tied to view lifetime. Verify async-lifecycle behavior on your toolchain if you encounter unexpected issues.
 
 ## Launch time
 
@@ -131,7 +131,7 @@ Large binaries increase download time and App Store review scrutiny. Primary lev
 - **Dead code stripping** (`DEAD_CODE_STRIPPING = YES` in Xcode build settings, default on for Release). Removes unreachable functions and data sections.
 - **`-Osize`** (`SWIFT_OPTIMIZATION_LEVEL = -Osize`): optimises for binary size rather than speed. Typically 5–15% smaller than `-O` with negligible runtime impact for most app code.
 - **Asset catalog / app thinning**: use asset catalog image sets with `@1x`/`@2x`/`@3x` variants and device-specific slices. The App Store strips variants irrelevant to the downloading device. Avoid embedding full-resolution assets in the bundle for cases where a downsampled or streamed version suffices.
-- **Linking instrument**: the Instruments **Linker** template (Xcode 15+) shows which symbols contribute most to the binary. Use it to locate unexpectedly large third-party frameworks or generated code.
+- **Link Map + Organizer**: use the **Link Map** (Build Settings: Write Link Map File = YES) and the Xcode Organizer's App Size report to identify which symbols contribute most to the binary. Tools such as Bloaty or the `nm` / `size` commands can post-process the link map to locate unexpectedly large third-party frameworks or generated code.
 - Avoid shipping unused localisation bundles from third-party SDKs: set `SWIFT_PACKAGE_RESOURCE_BUNDLE_DEDUPLICATE = YES` and review resource bundle sizes after each SDK update.
 
 ## MetricKit — field performance telemetry
@@ -170,7 +170,7 @@ MetricKit data reflects **real user conditions** (actual device, network, batter
 |---|---|
 | `MXCPUMetrics` | Cumulative CPU time (user + system) |
 | `MXMemoryMetrics` | Peak and average memory, average suspended memory |
-| `MXDisplayMetrics` | Average pixel luminance (not hitch rate — use `MXAnimationMetric` for frame pacing) |
+| `MXDisplayMetric` | Average pixel luminance (not hitch rate — use `MXAnimationMetric` — `scrollHitchTimeRatio`: ratio of hitch time while scrolling (field-measured)) |
 | `MXDiskIOMetrics` | Cumulative logical write bytes |
 | `MXHangDiagnostic` | Call tree for a main-thread hang > 250 ms |
 | `MXCrashDiagnostic` | Crash reason + call tree |
