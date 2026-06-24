@@ -21,7 +21,6 @@ Apple-platform apps and then genericized for reuse.
 | **1 — Extract** | Pull the portable skills out of a real project, genericize, ship as a submodule-consumable plugin | ✅ done |
 | **2 — Standalone library** | (a) README as SSOT/agenda ✓ · (b) an **npm / `npx` install path** ✓ via the [`skills`](https://github.com/vercel-labs/skills) CLI (`npx skills add wei18/apple-dev-skills`), which installs the `SKILL.md` files as flat skills — complementary to the namespaced plugin · (c) aggregating other skill repos via a marketplace catalog — mechanism in [`claude-skill-plugin-packaging`](skills/claude-skill-plugin-packaging/SKILL.md) | ✅ done |
 | **3 — Curate the ecosystem** | Surveyed high-star Swift/Apple skill repos; **adopted the genuine gaps** (accessibility, dependency injection) as first-party skills, and **recommend** best-of-breed externals rather than bundling skills that overlap ours. Decisions: [CURATION.md](CURATION.md) | ✅ done |
-
 | **4 — Fill the gap-map** | Write first-party skills for the gaps the survey found — SwiftData, App Intents, WidgetKit/Live Activities, performance engineering. Liquid Glass deferred to recommended externals. | ✅ done |
 
 Detailed status, spec→impl alignment, and future phases (P5+): **[ROADMAP.md](ROADMAP.md)**.
@@ -53,7 +52,7 @@ Vendor the library into one repo and pin its version, then register it as a
 
 ```bash
 git submodule add https://github.com/wei18/apple-dev-skills.git .claude/skills/apple-dev-skills
-cd .claude/skills/apple-dev-skills && git checkout v0.3.0 && cd -
+cd .claude/skills/apple-dev-skills && git checkout v0.4.0 && cd -
 ```
 
 Then commit this to the repo's `.claude/settings.json` (collaborators are prompted
@@ -81,7 +80,7 @@ Use the open [`skills`](https://github.com/vercel-labs/skills) CLI to copy chose
 `apple-dev-skills:swift6-concurrency`):
 
 ```bash
-npx skills add wei18/apple-dev-skills --list                       # browse all 30
+npx skills add wei18/apple-dev-skills --list                       # browse the full index
 npx skills add wei18/apple-dev-skills --skill swift6-concurrency   # one skill
 npx skills add wei18/apple-dev-skills --all -a claude-code         # everything
 ```

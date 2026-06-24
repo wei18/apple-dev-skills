@@ -20,7 +20,9 @@
 | **1 — 抽離** | 把可移植 skills 從真實專案抽出、通用化、做成可 submodule 消費的 plugin | ✅ 完成 |
 | **2 — 獨立函式庫** | (a) README 當 SSOT/agenda ✓ · (b) **npm／`npx` 安裝路徑** ✓，經 [`skills`](https://github.com/vercel-labs/skills) CLI（`npx skills add wei18/apple-dev-skills`）把 `SKILL.md` 裝成扁平 skills——與命名空間 plugin 互補 · (c) 經 marketplace 目錄聚合其他 skill repo——機制見 [`claude-skill-plugin-packaging`](skills/claude-skill-plugin-packaging/SKILL.md) | ✅ 完成 |
 | **3 — 策展生態** | 巡了高星 Swift/Apple skill repo；**補上真正的缺口**（無障礙、依賴注入）為第一方 skill，並對與我們重疊者**推薦**而非收錄。決策：[CURATION.md](CURATION.md) | ✅ 完成 |
-| **4 — 填補 gap-map** | 為調查發現的缺口寫第一方 skill——SwiftData、App Intents、WidgetKit/Live Activities、效能工程。Liquid Glass 交給推薦外部。詳見 [ROADMAP.md](ROADMAP.md) | ✅ 完成 |
+| **4 — 填補 gap-map** | 為調查發現的缺口寫第一方 skill——SwiftData、App Intents、WidgetKit/Live Activities、效能工程。Liquid Glass 交給推薦外部。 | ✅ 完成 |
+
+詳細狀態、spec→impl 對齊、以及未來階段（P5+）：**[ROADMAP.md](ROADMAP.md)**。
 
 ---
 
@@ -46,7 +48,7 @@ skills 全域載入（每個專案）為 `apple-dev-skills:<skill-name>`。
 
 ```bash
 git submodule add https://github.com/wei18/apple-dev-skills.git .claude/skills/apple-dev-skills
-cd .claude/skills/apple-dev-skills && git checkout v0.3.0 && cd -
+cd .claude/skills/apple-dev-skills && git checkout v0.4.0 && cd -
 ```
 
 然後把以下 commit 進該 repo 的 `.claude/settings.json`（協作者會被提示 trust workspace，之後自動註冊）：
@@ -69,7 +71,7 @@ cd .claude/skills/apple-dev-skills && git checkout v0.3.0 && cd -
 用開源 [`skills`](https://github.com/vercel-labs/skills) CLI 把選定的 `SKILL.md` 直接複製進 agent 的 skills 目錄（`.claude/skills/`），**扁平、無命名空間**（顯示為 `swift6-concurrency` 而非 `apple-dev-skills:swift6-concurrency`）：
 
 ```bash
-npx skills add wei18/apple-dev-skills --list                       # 瀏覽全部 30 個
+npx skills add wei18/apple-dev-skills --list                       # 瀏覽完整索引
 npx skills add wei18/apple-dev-skills --skill swift6-concurrency   # 單一 skill
 npx skills add wei18/apple-dev-skills --all -a claude-code         # 全部
 ```
