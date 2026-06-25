@@ -92,7 +92,6 @@ A class of bugs that look fine in code but break at runtime. These have shipped 
 - **Tap-target shrink** — A home screen mode card used `Button { } label: { card-with-Spacer }` with `.buttonStyle(.plain)`, shrinking the tap target to drawn content only. Caught by macOS smoke test, **not** by Code Reviewer. Fix: `.contentShape(Rectangle())`.
 - **Inert sidebar Labels** — Mac `NavigationSplitView` sidebar items were bare `Label`s with no `NavigationLink` / `Button`, so clicking did nothing. Same review-blind-spot path.
 - **Blank `fullScreenCover`** — A near-win hook presented a **blank** `fullScreenCover`: `fullScreenCover(isPresented: $bool)` + a separate optional `@State` for content, set back-to-back, raced → content closure's `if let` rendered the empty branch (a11y tree = 1 element vs 99 for a real board). Dual-model CR + unit tests passed; only the idb interactive audit caught it. Fix: `fullScreenCover(item:)` with an `Identifiable` payload.
-- (Future: append as more are caught.)
 
 ## Related skills
 

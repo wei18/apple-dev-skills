@@ -66,8 +66,7 @@ In UIKit: `UIAccessibility.post(notification: .announcement, argument: "Level co
 - Use `Font.body`, `.headline`, `.caption` etc. (text styles), or `UIFont.preferredFont(forTextStyle:)` in UIKit. Never hard-code `Font.system(size: 17)` without a text style.
 - SwiftUI text styles scale automatically. If a control must cap scaling (compact digit grids, icon labels), apply `.dynamicTypeSize(...DynamicTypeSize.xLarge)` — this clamps only sizes above `.xLarge`; default `.large` stays byte-identical and snapshot baselines are unaffected.
 - Test at AX5 (`accessibility-extra-extra-extra-large`) in Simulator: `xcrun simctl ui <udid> content_size accessibility-extra-extra-extra-large`.
-- **`minimumScaleFactor` is width-only.** It shrinks glyphs that overflow horizontally; it does nothing for a glyph that overflows vertically. A digit at AX5 can be 50–60pt tall inside a 44pt cell — `minimumScaleFactor` never engages and the cell just clips blank. The fix is a size cap, not a scale factor.
-- In `fullScreenCover` / `sheet` modals, `@Environment(\.dynamicTypeSize)` can return a stale value from the presenting context. Use geometry-driven layout (`ViewThatFits`) rather than an `if dynamicTypeSize.isAccessibilitySize` branch inside a modal.
+- **`minimumScaleFactor` is width-only** — it won't rescue a glyph that overflows *vertically* (a tall digit clips blank in a short cell); cap the size instead. In `fullScreenCover` / `sheet` modals `@Environment(\.dynamicTypeSize)` can read stale — use geometry-driven layout (`ViewThatFits`). See `swiftui-interaction-footguns` for both traps in full.
 - Avoid fixed `frame(height:)` on text containers; prefer `frame(minHeight:)` with unlimited vertical growth.
 
 ## Touch targets
