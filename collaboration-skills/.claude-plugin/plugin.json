@@ -1,7 +1,7 @@
 {
   "name": "collaboration-skills",
-  "version": "1.2.0",
-  "description": "11 first-party AI-agent collaboration & process skills — spec-phase orchestration, Leader/Developer handoff contract, subagent review cycles & conflict detection, impl-notes & meeting logs, methodology extraction, backlog routing, PR-diff verification, Claude Code skill-plugin packaging, and skill-authoring patterns. Tool-agnostic agent process, not Apple-specific.",
+  "version": "1.3.0",
+  "description": "12 first-party AI-agent collaboration & process skills — spec-phase orchestration, Leader/Developer handoff contract, subagent review cycles & conflict detection, impl-notes & meeting logs, methodology extraction, backlog routing, PR-diff verification, Claude Code skill-plugin packaging, skill-authoring patterns, and GitHub contribution workflow. Tool-agnostic agent process, not Apple-specific.",
   "author": { "name": "Wei18" },
   "homepage": "https://github.com/wei18/apple-dev-skills",
   "license": "MIT"

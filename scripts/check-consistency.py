@@ -16,7 +16,7 @@ import json, re, subprocess, sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-PLUGINS = {"apple-dev-skills": 20, "collaboration-skills": 11}
+PLUGINS = {"apple-dev-skills": 20, "collaboration-skills": 12}
 EXTERNALS = {"apple-skills", "swiftui-expert", "swiftui-pro", "caveman", "ponytail"}
 errors: list[str] = []
 def fail(m): errors.append(m)
