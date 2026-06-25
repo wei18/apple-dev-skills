@@ -106,6 +106,10 @@ npx skills add wei18/apple-dev-skills --skill swift6-concurrency
 Listed here but **not authored here**; they install from their authors' own repos (you get
 their latest), credited in full. **Aggregate, don't appropriate**: only MIT-compatible,
 non-duplicate plugins are listed — first-party skills are written only for genuine gaps.
+The externals are broad **reference** ("here's the API / here's how to build X"); the
+first-party skills sit a layer below as **opinionated defaults and shipped-it war stories**
+(use iOS 18, one Package, swift-testing + snapshot, OSLog no-third-party, runtime bugs that
+slipped past review). Where a topic overlaps, they differ by altitude, not duplication.
 
 | Plugin | Author | Covers |
 |---|---|---|

@@ -97,3 +97,4 @@ A class of bugs that look fine in code but break at runtime. These have shipped 
 
 - `subagent-review-cycles` — Code Reviewer dispatch brief should explicitly name this skill when reviewing SwiftUI Views.
 - `swiftui-expert-skill` — broader domain skill (Instruments traces, hang/hitch profiling); different scope.
+- `swiftui-pro` (aggregated external) — a broad "SwiftUI mistakes LLMs make" catalog (navigation/layout/animation/state/deprecated-API). This skill is the narrower complement: runtime-only bugs that shipped **past code review** in one project, each with a reproduction note (vmid logging, blank-`fullScreenCover` race, stale-modal Dynamic Type, idb-verify-not-snapshot). Use both.

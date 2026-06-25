@@ -215,3 +215,4 @@ For server-side CI (where a physical display is unavailable), use `XCTCPUMetric`
 - `telemetry-facade-pattern`: wire `MetricKitSink` as one sink in the fan-out facade; keep `MXMetricManagerSubscriber` registration out of `AppDelegate`.
 - `apple-three-piece-analytics`: MetricKit covers system-level performance telemetry; the three-piece stack covers user behaviour and business events — they are complementary, not overlapping.
 - `swift6-concurrency`: moving work off `@MainActor` correctly requires understanding actor isolation, `Task.detached`, and `Sendable` constraints — the primary tool for eliminating main-thread hangs.
+- `swiftui-expert` (aggregated external): for the **SwiftUI body-re-render** slice specifically, it ships an Instruments `.trace` analysis toolchain — prefer it for that profiling. This skill owns the broader surface (Time Profiler / Allocations / hangs / launch / memory / binary size / MetricKit / XCTMetric).
