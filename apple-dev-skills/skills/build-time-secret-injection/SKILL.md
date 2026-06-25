@@ -1,6 +1,6 @@
 ---
 name: build-time-secret-injection
-description: Use when introducing an AdMob production ID (`GADApplicationIdentifier` / `GADBannerUnitID`), ASC API `.p8` key, or any "ships in binary but must stay out of public-repo PR diffs" identifier into an Apple-platform build. Codifies the xcconfig + Info.plist `$()` substitution + Bundle.main read pattern for build-time values, paired with `secrets/.env` for CLI tooling. Mirrors `Tuist/Signing.xcconfig` precedent. Includes multi-app `CI_PRODUCT` dispatch + built-bundle smoke-test guidance. This is the build-time injection mechanism, not the repo-hygiene baseline; for public-repo secret-leak prevention (gitleaks, lefthook, GitHub Secret Scanning, leak SOP) see apple-public-repo-security.
+description: Use when introducing an AdMob production ID (`GADApplicationIdentifier` / `GADBannerUnitID`), ASC API `.p8` key, or any "ships in binary but must stay out of public-repo PR diffs" identifier into an Apple build. Codifies the xcconfig + Info.plist `$()` substitution + `Bundle.main` read pattern, paired with `secrets/.env` for CLI tooling; multi-app `CI_PRODUCT` dispatch + built-bundle smoke-test. Build-time injection mechanism, not the repo-hygiene baseline; for secret-leak prevention (gitleaks, lefthook, GitHub Secret Scanning) see apple-public-repo-security.
 ---
 
 # Build-time Secret Injection (Apple-platform)

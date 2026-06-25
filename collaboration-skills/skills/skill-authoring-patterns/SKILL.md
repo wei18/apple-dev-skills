@@ -1,6 +1,6 @@
 ---
 name: skill-authoring-patterns
-description: The Apple/Swift-and-this-catalog layer for authoring or reviewing a SKILL.md, on top of superpowers:writing-skills. Use when writing a new skill for this repo, CR-ing one, wording a skill's description so it routes precisely, splitting a skill that grew unwieldy into references/, or choosing skill granularity and naming. Adds: precision-router descriptions with framework API names, the Common-Mistakes + Review-Checklist bookends, two-tier references/, the Rationale/Deviation convention, and the evidence-based multi-reviewer CR doctrine. Does NOT cover general skill discipline (TDD-for-skills, when-not-to-create, token budgets) — that lives in superpowers:writing-skills.
+description: The Apple/Swift-and-this-catalog layer for authoring or reviewing a SKILL.md, on top of superpowers:writing-skills. Use when writing or CR-ing a skill for this repo, wording a description so it routes precisely, splitting a skill into references/, or choosing granularity and naming. Adds: precision-router descriptions with framework API names, the Common-Mistakes + Review-Checklist bookends, two-tier references/, the Rationale/Deviation convention, evidence-based multi-reviewer CR. Does NOT cover general skill discipline (TDD-for-skills, when-not-to-create, token budgets) → superpowers:writing-skills.
 ---
 
 # Skill Authoring Patterns (Apple/Swift catalog layer)
