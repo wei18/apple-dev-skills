@@ -5,10 +5,6 @@ description: Use when introducing an AdMob production ID (`GADApplicationIdentif
 
 # Build-time Secret Injection (Apple-platform)
 
-## Known testing gap
-
-**This skill shipped without a TDD baseline test** (see `superpowers:writing-skills` Iron Law). The loophole list below is best-effort, captured retroactively from one incident (a production AdMob App ID leaked into an Info.plist comment in a PR) and one Architect review. Treat the rationalizations table as incomplete; revise on next leak incident.
-
 ## When to invoke
 
 Any task that introduces or wires values which are:
@@ -144,17 +140,6 @@ A future PR should add a build-phase script that asserts no `$()` literals survi
 
 8. **Tuist `tuist generate` silently clobbering unmanaged xcconfigs.** If `Tuist/<Domain>.xcconfig` exists but is NOT referenced in `Project.swift`'s `.settings(configurations:)`, Tuist regen drops it from the project. Verify Project.swift wiring before assuming xcconfig is active.
 
-## Rationalizations table
-
-| Rationalization | Counter |
-|---|---|
-| "But this is just a TODO comment, not the actual value" | Including the literal ID anywhere in tracked text IS the leak. Reference memory/secrets files by name, never paste the value. |
-| "But the prod ID ships in the binary anyway" | Two adversary models: (a) pre-launch reconnaissance / ad-fraud preparation against the still-empty unit, (b) leak-through-co-authors. Both warrant pre-launch holdback. |
-| "But our project doesn't use Tuist" | Pattern still applies; replace `Tuist/<Domain>.xcconfig` with `Config/<Domain>.xcconfig` referenced via target Base Configuration. |
-| "But our app is private repo, who cares" | Applies when (a) repo may go public later (see [[apple-public-repo-security]]) or (b) collaborator set is broader than production-credential trust set. |
-| "It's a 1-time integration; the skill is overkill" | No threshold. The FIRST secret is the one that establishes the leak channel. |
-| "`fatalError("REPLACE_IN_...")` is fine for now; I'll migrate later" | fatalError-only is forbidden going forward. xcconfig + transitional fatalError IS the allowed combined state during one release cycle. |
-
 ## Checklist when adding a new secret value
 
 1. Decide layer:
@@ -188,18 +173,6 @@ A future PR should add a build-phase script that asserts no `$()` literals survi
 - **SIBLING**: your ASC submission-ops workflow (who may push what) — ASC API key handling more broadly
 - Project memory file documenting the secret-scrubbing incident — the incident that triggered this skill pattern
 - Project memory files for each credential set — real values held outside repo (cite by memory-file name, never paste inline)
-
-## Migration playbook
-
-**Disclosure**: In a real project, the initial AdMob secret-injection migration compressed the Architect's recommended 7-stage plan into a single PR. The sequence below reflects that compressed landing pattern, NOT the gold-standard staging. An Architect review session produced a 7-PR staged plan; save that detail in your own meeting log.
-
-| PR | Scope | Notes |
-|---|---|---|
-| 1 | Scaffolding + Info.plist substitution + Live.swift Bundle.main + smoke tests + ci_post_clone.sh extension + secrets/.env.example (all in one) | Compressed shape. Architect would split into 3 PRs. |
-| 2 | Build-phase substitution-resolution check (asserts no `$()` literals in built bundle) | Strictly stronger safety net than runtime guard alone. |
-| 3 | gitleaks rule for `ca-app-pub-[0-9]{16}~[0-9]+` excluding Google universal test prefix | Closes the comment-leak class. |
-| 4 | After two successful production releases via XCC env vars, remove transitional `fatalError` gates (if any remain) | Belt-and-suspenders graduation. |
-| 5 | ADR + `docs/foundations.md` update | Locks the decision history. |
 
 ## AdMob env keys pattern
 
