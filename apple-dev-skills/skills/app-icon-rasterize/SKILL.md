@@ -13,16 +13,16 @@ This is the gap discovered during first-pass icon production on a real project �
 
 - Designer subagent (or human designer) produced a clean `light.svg` + `dark.svg` + `tinted.svg` matching the icon spec
 - You need the matching `AppIcon-Light.png` + `AppIcon-Dark.png` in `<app>/Assets.xcassets/AppIcon.appiconset/`
-- This Mac does NOT have `rsvg-convert`, `inkscape`, or `imagemagick` (verified absent on the project Mac as of 2026-06-01; Homebrew is not installed)
+- No `rsvg-convert` / `inkscape` / `imagemagick` and no Homebrew — `qlmanage` (QuickLook) ships with macOS and is the rasteriser of record here (this skill exists precisely for the no-Homebrew case)
 
 ## When NOT to use
 
 - The SVG uses `<filter>` blurs, `<text>`, embedded fonts, or other features QuickLook's SVG generator may render unreliably. Re-author the SVG with flat shapes first.
 - The SVG already ships as PNG from the designer (e.g. Affinity / Figma export). Just commit the PNG.
 
-## macOS ladder reality check (2026-06-02)
+## macOS ladder reality check
 
-**Xcode 26 / macOS Sequoia still requires the explicit 16/32/128/256/512 ladder for macOS app icons.** "Single Size" is iOS-only. The Appearances Inspector for macOS targets does not expose a single-asset option. Without the ladder, Xcode emits "AppIcon has N unassigned children" on the macOS target because the universal idiom does not satisfy AppKit's expected slots.
+**As of Xcode 26 / macOS Sequoia, macOS app icons still require the explicit 16/32/128/256/512 ladder** — "Single Size" is iOS-only. (Re-verify against your current Xcode; Apple could add single-size macOS support in a later release.) The Appearances Inspector for macOS targets does not expose a single-asset option. Without the ladder, Xcode emits "AppIcon has N unassigned children" on the macOS target because the universal idiom does not satisfy AppKit's expected slots.
 
 After producing the 1024 master:
 
