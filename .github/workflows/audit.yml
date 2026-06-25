@@ -1,0 +1,17 @@
+name: Repo audit (upkeep)
+
+on:
+  schedule:
+    - cron: '0 20 * * *'   # 04:00 Asia/Taipei (UTC+8) daily
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  id-token: write
+
+jobs:
+  audit:
+    uses: wei18/upkeep/.github/workflows/audit.yml@v1
+    secrets:
+      claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
