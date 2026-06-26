@@ -19,7 +19,7 @@
 ```
 /plugin marketplace add wei18/apple-dev-skills
 /plugin install apple-dev-skills@apple-dev-skills          # 20 Apple/Swift skills
-/plugin install collaboration-skills@apple-dev-skills      # 10 agent-collaboration skills
+/plugin install collaboration-skills@apple-dev-skills      # 12 agent-collaboration skills
 ```
 
 兩者擇一或全裝皆可。外部來源以相同方式安裝，例如 `/plugin install swiftui-expert@apple-dev-skills`。
@@ -31,7 +31,7 @@
 
 ```bash
 git submodule add https://github.com/wei18/apple-dev-skills.git .claude/skills/apple-dev-skills
-cd .claude/skills/apple-dev-skills && git checkout v1.2.0 && cd -
+cd .claude/skills/apple-dev-skills && git checkout v1.3.1 && cd -
 ```
 
 `.claude/settings.json`（已提交）：
@@ -126,4 +126,4 @@ npx skills add wei18/apple-dev-skills --skill swift6-concurrency
 出貨 Apple 平台遊戲作品集——再加上對公開的 Apple / WCAG / Swift 標準的原創撰述。
 彙整的外部來源仍屬其作者所有，僅以引用方式呈現。MIT——見 [LICENSE](LICENSE)。
 
-<!-- src-sha: b0cc7f450d7bf5691a5d64997e9579f9aca8c30a -->
+<!-- src-sha: 4e4537e5aac82af649dccfa8eddf7141fb205def -->

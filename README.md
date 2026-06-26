@@ -19,7 +19,7 @@ This repo is one **marketplace** hosting two first-party plugins and several agg
 ```
 /plugin marketplace add wei18/apple-dev-skills
 /plugin install apple-dev-skills@apple-dev-skills          # 20 Apple/Swift skills
-/plugin install collaboration-skills@apple-dev-skills      # 10 agent-collaboration skills
+/plugin install collaboration-skills@apple-dev-skills      # 12 agent-collaboration skills
 ```
 
 Install either or both. Externals install the same way, e.g. `/plugin install swiftui-expert@apple-dev-skills`.
@@ -31,7 +31,7 @@ plugins load from the pinned submodule (collaborators are prompted to trust the 
 
 ```bash
 git submodule add https://github.com/wei18/apple-dev-skills.git .claude/skills/apple-dev-skills
-cd .claude/skills/apple-dev-skills && git checkout v1.2.0 && cd -
+cd .claude/skills/apple-dev-skills && git checkout v1.3.1 && cd -
 ```
 
 `.claude/settings.json` (committed):

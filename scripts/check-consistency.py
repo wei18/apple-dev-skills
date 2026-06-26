@@ -3,9 +3,10 @@
 
 Checks
   1. Each <plugin>/skills/<dir>/ has a SKILL.md whose frontmatter name == <dir>.
-  2. README.md Catalog lists exactly the union of both plugins' skills (30) AND the
+  2. README.md Catalog lists exactly the union of both plugins' skills (32) AND the
      five aggregated external plugin names (set-equality, both directions).
-  3. Counts match: README group headers (20)/(10)/(5) and each plugin.json's "N first-party".
+  3. Counts match: README group headers (20)/(12)/(5), the Install one-liner comments,
+     and each plugin.json's "N first-party".
   4. README.zh-Hant.md exists and its embedded src-sha == git hash-object README.md.
   5. All plugin/marketplace JSON parse; the two subdir plugin sources resolve to dirs;
      marketplace.json lists exactly the 7 plugins (2 local + 5 externals).
@@ -74,6 +75,11 @@ for plugin, expected in PLUGINS.items():
     except Exception as e: fail(f"[manifest] {plugin}/plugin.json invalid: {e}"); continue
     for c in re.findall(r"(\d+)\s+first-party", d.get("description", "")):
         if int(c) != expected: fail(f"[manifest] {plugin} says '{c} first-party', expected {expected}")
+
+# 3b. Install one-liner comments (outside the Catalog section, so scoped() misses them)
+for plugin, n in re.findall(r"/plugin install (\S+?)@apple-dev-skills\s+#\s*(\d+)\b", readme):
+    if plugin in PLUGINS and int(n) != PLUGINS[plugin]:
+        fail(f"[readme] Install comment says '{n}' for {plugin}, expected {PLUGINS[plugin]}")
 
 # 4. zh-Hant freshness
 zh = ROOT / "README.zh-Hant.md"
