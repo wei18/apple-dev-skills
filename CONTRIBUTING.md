@@ -16,6 +16,22 @@ mise install && lefthook install
 - `mise run readme-zh` — regenerate `README.zh-Hant.md` from `README.md` (needs `claude`
   on PATH; auto-fires in pre-commit when `README.md` changes).
 
+### zh-Hant mirror: hand-mirror small diffs, regenerate large ones
+
+Full regeneration is non-deterministic — even for a 2-line content fix it rewrites
+~40 lines of synonym churn, burying the real change in review. So:
+
+- **≤ 5 changed content lines in `README.md`**: hand-mirror the same lines into
+  `README.zh-Hant.md`, re-stamp its freshness marker, and commit with the regen
+  hook excluded (it would otherwise clobber the hand-mirror with a full regen):
+
+  ```bash
+  sed -i '' "s/src-sha: [0-9a-f]*/src-sha: $(git hash-object README.md)/" README.zh-Hant.md
+  git add README.md README.zh-Hant.md
+  LEFTHOOK_EXCLUDE=readme-zh git commit -m "..."   # `check` still runs and verifies freshness
+  ```
+- **Larger / structural changes**: run `mise run readme-zh` for a full regeneration.
+
 ## Two ways to contribute
 
 ### 1. Aggregate an external plugin (preferred when a good one exists)
