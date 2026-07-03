@@ -5,7 +5,7 @@
 > 與 **AI 代理協作**技能，外加**以引用方式**彙整的同類最佳**外部**技能外掛
 > （歸功於原作者，絕不複製）。
 >
-> 繁體中文：[`README.zh-Hant.md`](README.zh-Hant.md)
+> 語言：[English](README.md) · [繁體中文](README.zh-Hant.md)
 
 本倉庫是一個**市集（marketplace）**，內含兩個第一方外掛，並彙整數個外部來源。
 
@@ -126,4 +126,4 @@ npx skills add wei18/apple-dev-skills --skill swift6-concurrency
 出貨 Apple 平台遊戲作品集——再加上對公開的 Apple / WCAG / Swift 標準的原創撰述。
 彙整的外部來源仍屬其作者所有，僅以引用方式呈現。MIT——見 [LICENSE](LICENSE)。
 
-<!-- src-sha: 02506caa506203bf93586deef094661ef9a5f9a4 -->
+<!-- src-sha: 158e9f0e69deee37fcd0f56deb30ebb02745bfcf -->

@@ -5,7 +5,7 @@
 > and **AI-agent-collaboration** skills, plus best-of-breed **external** skill plugins aggregated
 > **by reference** (credited to their authors, never copied).
 >
-> 繁體中文：[`README.zh-Hant.md`](README.zh-Hant.md)
+> Languages: [English](README.md) · [繁體中文](README.zh-Hant.md)
 
 This repo is one **marketplace** hosting two first-party plugins and several aggregated externals.
 

@@ -3,10 +3,12 @@
 
 Checks
   1. Each <plugin>/skills/<dir>/ has a SKILL.md whose frontmatter name == <dir>.
-  2. README.md Catalog lists exactly the union of both plugins' skills (32) AND the
-     five aggregated external plugin names (set-equality, both directions).
-  3. Counts match: README group headers (20)/(12)/(5), the Install one-liner comments,
-     and each plugin.json's "N first-party".
+  2. README.md Catalog contains every first-party skill (both plugins, 32) AND the
+     five aggregated external plugin names (missing-direction only; extra kebab
+     tokens are tolerated by design — Catalog prose legitimately names other things).
+  3. Counts present: the values 20/12/5 each appear among the Catalog's "(N)" group
+     headers (set membership, not per-header association); the Install one-liner
+     comments and each plugin.json's "N first-party" are checked exactly.
   4. README.zh-Hant.md exists and its embedded src-sha == git hash-object README.md.
   5. All plugin/marketplace JSON parse; the two subdir plugin sources resolve to dirs;
      marketplace.json lists exactly the 7 plugins (2 local + 5 externals).

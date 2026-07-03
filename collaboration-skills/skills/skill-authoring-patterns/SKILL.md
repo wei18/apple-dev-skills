@@ -43,9 +43,9 @@ GOOD: description: VoiceOver / Dynamic Type / touch-target implementation for Sw
 Order the middle by the topic's pedagogy, but keep these conventions:
 
 - **`## Rationale`** — *why* this default was chosen. Unique to this catalog; keep it.
-- **`## Deviation`** — *when to override* the default, and the cost. Also ours; keep it. (Example: "Drop to iOS 17 when targeting education devices — you lose full Observation behaviour.")
-- **`## Common Mistakes`** — concrete, anti-pattern-named items ("Using `DateFormatter()` in `body`"), as many as are real — do not pad to a number.
-- **`## Review Checklist`** — a `- [ ]` list at the **end**, runnable top-to-bottom.
+- **`## Deviation considerations`** — *when to override* the default, and the cost. Also ours; keep it. (Example: "Drop to iOS 17 when targeting education devices — you lose full Observation behaviour." This heading is the catalog-wide form — most first-party skills use it.)
+- **`## Common Mistakes`** — concrete, anti-pattern-named items ("Using `DateFormatter()` in `body`"), as many as are real — do not pad to a number. *For new skills*; most pre-existing skills express this as inline anti-pattern sections instead and are not retrofitted.
+- **`## Review Checklist`** — a `- [ ]` list at the **end**, runnable top-to-bottom. *For new skills*; older skills use a prose `## Verification checklist` and are not retrofitted.
 - **`## Related skills`** — siblings by name.
 
 Use a **scope-boundary** line in the body wherever a sibling is close ("owns X; does NOT own Y → route to `<sibling>`") — this is what stops two framework skills both claiming the same request.
@@ -63,7 +63,7 @@ description: <precision router — see above>
 ## Scope            ← what it does NOT own → sibling
 ## <body: triage/workflow → decision table → rules → code>
 ## Rationale
-## Deviation
+## Deviation considerations
 ## Common Mistakes
 ## Review Checklist
 ## References        ← only if it has references/

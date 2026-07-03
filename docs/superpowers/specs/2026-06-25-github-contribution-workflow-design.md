@@ -1,7 +1,8 @@
 # github-contribution-workflow — first-party skill (design spec)
 
 Date: 2026-06-25
-Status: APPROVED (design approved by user; spec for review)
+Status: Implemented — historical archive, superseded by the shipped repo (SSOT:
+[`README.md`](../../../README.md))
 
 ## Context
 
