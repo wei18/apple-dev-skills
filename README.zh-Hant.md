@@ -31,7 +31,7 @@
 
 ```bash
 git submodule add https://github.com/wei18/apple-dev-skills.git .claude/skills/apple-dev-skills
-cd .claude/skills/apple-dev-skills && git checkout v1.3.1 && cd -
+cd .claude/skills/apple-dev-skills && git checkout v1.4.0 && cd -
 ```
 
 `.claude/settings.json`（已提交）：
@@ -126,4 +126,4 @@ npx skills add wei18/apple-dev-skills --skill swift6-concurrency
 出貨 Apple 平台遊戲作品集——再加上對公開的 Apple / WCAG / Swift 標準的原創撰述。
 彙整的外部來源仍屬其作者所有，僅以引用方式呈現。MIT——見 [LICENSE](LICENSE)。
 
-<!-- src-sha: 4e4537e5aac82af649dccfa8eddf7141fb205def -->
+<!-- src-sha: 02506caa506203bf93586deef094661ef9a5f9a4 -->
