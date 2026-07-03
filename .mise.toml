@@ -8,3 +8,7 @@ run = "python3 scripts/check-consistency.py"
 [tasks.readme-zh]
 description = "Regenerate README.zh-Hant.md from README.md (needs claude on PATH)"
 run = "scripts/gen-readme-zh.sh"
+
+[tasks.bump]
+description = "Bump release versions on all gate-checked surfaces (e.g. mise run bump -- --marketplace 1.4.0 --collab 1.4.0)"
+run = "python3 scripts/bump-version.py"

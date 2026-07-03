@@ -10,6 +10,10 @@ Checks
   4. README.zh-Hant.md exists and its embedded src-sha == git hash-object README.md.
   5. All plugin/marketplace JSON parse; the two subdir plugin sources resolve to dirs;
      marketplace.json lists exactly the 7 plugins (2 local + 5 externals).
+  6. The `git checkout v<semver>` pin in both READMEs' Install section ==
+     marketplace.json metadata.version (drifted silently before: v1.2.0 → #17).
+  7. Each SKILL.md frontmatter description <= DESC_MAX chars (descriptions are
+     always-on context for every consumer session; keeps Lens-3 compression durable).
 Stdlib only.
 """
 from __future__ import annotations
@@ -19,15 +23,16 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 PLUGINS = {"apple-dev-skills": 20, "collaboration-skills": 12}
 EXTERNALS = {"apple-skills", "swiftui-expert", "swiftui-pro", "caveman", "ponytail"}
+DESC_MAX = 800  # current max is 795 (github-contribution-workflow); cap future growth
 errors: list[str] = []
 def fail(m): errors.append(m)
 
-def fm_name(p: Path):
+def fm_field(p: Path, field: str):
     t = p.read_text(encoding="utf-8")
     if not t.startswith("---"): return None
     end = t.find("\n---", 3)
     if end == -1: return None
-    m = re.search(r"^name:\s*(.+?)\s*$", t[3:end], re.MULTILINE)
+    m = re.search(rf"^{field}:\s*(.+?)\s*$", t[3:end], re.MULTILINE)
     return m.group(1).strip() if m else None
 
 # 1. skill dirs + frontmatter
@@ -41,8 +46,13 @@ for plugin, expected in PLUGINS.items():
         all_skills.add(name)
         md = sdir / name / "SKILL.md"
         if not md.is_file(): fail(f"[skill] {plugin}/{name}: no SKILL.md"); continue
-        fn = fm_name(md)
+        fn = fm_field(md, "name")
         if fn != name: fail(f"[skill] {plugin}/{name}: frontmatter name={fn!r} != dir")
+        # 7. description length budget
+        desc = fm_field(md, "description")
+        if desc is None: fail(f"[skill] {plugin}/{name}: no frontmatter description")
+        elif len(desc) > DESC_MAX:
+            fail(f"[skill] {plugin}/{name}: description {len(desc)} chars > {DESC_MAX}")
 
 # helper: scope README Catalog section
 def scoped(text: str, *markers: str) -> str:
@@ -104,6 +114,16 @@ try:
     expected_names = set(PLUGINS) | EXTERNALS
     if names != expected_names:
         fail(f"[marketplace] plugin set mismatch — missing: {sorted(expected_names - names)}, extra: {sorted(names - expected_names)}")
+    # 6. README Install pin == marketplace metadata.version
+    mp_version = d.get("metadata", {}).get("version", "")
+    for readme_name in ("README.md", "README.zh-Hant.md"):
+        text = (ROOT / readme_name).read_text(encoding="utf-8") if (ROOT / readme_name).is_file() else ""
+        pins = re.findall(r"git checkout v(\d+\.\d+\.\d+)", text)
+        if not pins:
+            fail(f"[readme] {readme_name}: no 'git checkout v<semver>' pin found")
+        for pin in pins:
+            if pin != mp_version:
+                fail(f"[readme] {readme_name}: Install pin v{pin} != marketplace metadata.version {mp_version} — run `mise run bump`")
 except Exception as e:
     fail(f"[marketplace] invalid: {e}")
 
