@@ -1,7 +1,9 @@
 # apple-dev-skills — from-scratch redesign (design spec)
 
 Date: 2026-06-24
-Status: DRAFT (awaiting user review)
+Status: Implemented — historical archive, superseded by the shipped repo (see
+[`README.md`](../../../README.md) Catalog for current counts/versions; this doc
+intentionally keeps its as-written numbers, e.g. 10 collaboration skills / 30 total)
 Supersedes the doc/structure decisions in `2026-06-24-apple-dev-skills-shared-plugin-design.md`
 for the repo layout, doc set, and zh-Hant handling. Skill *content* is unchanged.
 

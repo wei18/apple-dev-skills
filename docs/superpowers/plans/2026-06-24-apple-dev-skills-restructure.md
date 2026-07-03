@@ -1,5 +1,9 @@
 # apple-dev-skills Two-Plugin Restructure — Implementation Plan
 
+> Status: Implemented — historical archive, superseded by the shipped repo.
+> Counts/versions below are as-written (10 collaboration skills / 30 total);
+> current numbers live in the SSOT [`README.md`](../../../README.md).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Re-lay out `wei18/apple-dev-skills` from one 30-skill plugin into one marketplace hosting two first-party plugins (`apple-dev-skills` 20 / `collaboration-skills` 10) plus five by-reference externals, with a lean SSOT README, a pre-commit-generated zh-Hant mirror, and a consistency gate — all driven through mise tasks.

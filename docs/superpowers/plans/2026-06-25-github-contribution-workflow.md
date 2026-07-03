@@ -1,5 +1,9 @@
 # github-contribution-workflow Skill — Implementation Plan
 
+> Status: Implemented — historical archive, superseded by the shipped repo.
+> Version targets below are as-written (1.2.0 → 1.3.0); current versions live
+> in the SSOT [`README.md`](../../../README.md) and the manifests.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Add the first-party `github-contribution-workflow` skill (12th collaboration skill) and wire it through the SSOT/consistency gate.
