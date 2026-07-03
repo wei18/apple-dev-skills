@@ -1,0 +1,47 @@
+name: Field note (skill vs reality)
+description: Report a real-world incident where a skill's guidance was wrong, incomplete, or missing — incidents are how this catalog grows its moat.
+title: "[field-note] <skill>: <one-line summary>"
+labels: ["field-note"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The catalog's most valuable content (Sightings, wiring traps, dead ends) comes
+        from real incidents. If a skill steered you wrong — or no skill covered the
+        situation — this is where that lesson flows back.
+  - type: input
+    id: skill
+    attributes:
+      label: Skill involved
+      placeholder: e.g. swiftui-interaction-footguns — or "none covered this"
+    validations: { required: true }
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      placeholder: Project type, what you were doing, toolchain versions if relevant.
+    validations: { required: true }
+  - type: textarea
+    id: divergence
+    attributes:
+      label: What the skill said vs what actually happened
+      placeholder: |
+        Skill said: ...
+        Actually happened: ...
+    validations: { required: true }
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      placeholder: Error output, file:line, minimal repro, links. Falsifiable beats "it felt wrong".
+    validations: { required: true }
+  - type: dropdown
+    id: disposition
+    attributes:
+      label: Suggested disposition
+      options:
+        - Fix the skill's guidance
+        - Add a Sightings / known-trap entry
+        - Genuine gap — candidate for a new skill
+        - Not sure
+    validations: { required: true }
