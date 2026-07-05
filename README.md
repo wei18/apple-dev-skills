@@ -18,7 +18,7 @@ This repo is one **marketplace** hosting two first-party plugins and several agg
 
 ```
 /plugin marketplace add wei18/apple-dev-skills
-/plugin install apple-dev-skills@apple-dev-skills          # 20 Apple/Swift skills
+/plugin install apple-dev-skills@apple-dev-skills          # 22 Apple/Swift skills
 /plugin install collaboration-skills@apple-dev-skills      # 12 agent-collaboration skills
 ```
 
@@ -59,7 +59,7 @@ npx skills add wei18/apple-dev-skills --skill swift6-concurrency
 
 ## Catalog
 
-### apple-dev-skills (20) — Apple/Swift
+### apple-dev-skills (22) — Apple/Swift
 
 | Skill | One-liner |
 |---|---|
@@ -80,7 +80,9 @@ npx skills add wei18/apple-dev-skills --skill swift6-concurrency
 | `build-time-secret-injection` | xcconfig + Info.plist `$()` + `Bundle.main` for ship-in-binary-but-out-of-diff IDs |
 | `monetization-sdk-integration` | Add/upgrade/audit a monetization SDK; isolate `import` to one bridge file |
 | `app-store-review-rejections` | Diagnose & pre-empt App Review rejection classes for free + ads + IAP + CloudKit + GC |
+| `asc-api-automation` | ES256 JWT from the `.p8` + curl against the ASC REST API — TestFlight, metadata, submission, reports; no fastlane |
 | `swiftui-interaction-footguns` | Known SwiftUI interaction bugs that slip past pure-code review |
+| `swiftui-navigation-architecture` | Typed `Route` enum + `@Observable` router; value-based `NavigationStack`; deep links; SplitView / per-tab paths |
 | `app-icon-rasterize` | Rasterize a 1024 SVG icon to asset-catalog PNG via `qlmanage` — no Homebrew |
 | `ios-design-mockup` | Single-file HTML iOS design mockup from a spec — iPhone frames + tokens |
 

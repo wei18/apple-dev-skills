@@ -18,7 +18,7 @@
 
 ```
 /plugin marketplace add wei18/apple-dev-skills
-/plugin install apple-dev-skills@apple-dev-skills          # 20 Apple/Swift skills
+/plugin install apple-dev-skills@apple-dev-skills          # 22 Apple/Swift skills
 /plugin install collaboration-skills@apple-dev-skills      # 12 agent-collaboration skills
 ```
 
@@ -59,7 +59,7 @@ npx skills add wei18/apple-dev-skills --skill swift6-concurrency
 
 ## 目錄
 
-### apple-dev-skills (20) — Apple/Swift
+### apple-dev-skills (22) — Apple/Swift
 
 | Skill | 一句話說明 |
 |---|---|
@@ -80,7 +80,9 @@ npx skills add wei18/apple-dev-skills --skill swift6-concurrency
 | `build-time-secret-injection` | xcconfig + Info.plist `$()` + `Bundle.main`，用於隨二進位出貨但不進 diff 的 ID |
 | `monetization-sdk-integration` | 新增／升級／稽核變現 SDK；將 `import` 隔離到單一橋接檔 |
 | `app-store-review-rejections` | 診斷並預先化解免費 + 廣告 + IAP + CloudKit + GC 的 App Review 退件類型 |
+| `asc-api-automation` | 以 `.p8` 簽 ES256 JWT + curl 直呼 ASC REST API — TestFlight、metadata、送審、報表；不用 fastlane |
 | `swiftui-interaction-footguns` | 會躲過純程式碼審查的已知 SwiftUI 互動 bug |
+| `swiftui-navigation-architecture` | 型別化 `Route` enum + `@Observable` router；value-based `NavigationStack`；deep link；SplitView / 分頁各自 path |
 | `app-icon-rasterize` | 透過 `qlmanage` 將 1024 SVG 圖示點陣化為 asset-catalog PNG——無需 Homebrew |
 | `ios-design-mockup` | 從規格產生單檔 HTML iOS 設計稿——iPhone 外框 + token |
 
@@ -126,4 +128,4 @@ npx skills add wei18/apple-dev-skills --skill swift6-concurrency
 出貨 Apple 平台遊戲作品集——再加上對公開的 Apple / WCAG / Swift 標準的原創撰述。
 彙整的外部來源仍屬其作者所有，僅以引用方式呈現。MIT——見 [LICENSE](LICENSE)。
 
-<!-- src-sha: 158e9f0e69deee37fcd0f56deb30ebb02745bfcf -->
+<!-- src-sha: 7a753dfd60186a5361b732f169217e955df6ae08 -->

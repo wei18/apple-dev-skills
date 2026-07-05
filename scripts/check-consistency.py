@@ -3,10 +3,10 @@
 
 Checks
   1. Each <plugin>/skills/<dir>/ has a SKILL.md whose frontmatter name == <dir>.
-  2. README.md Catalog contains every first-party skill (both plugins, 32) AND the
+  2. README.md Catalog contains every first-party skill (both plugins, 34) AND the
      five aggregated external plugin names (missing-direction only; extra kebab
      tokens are tolerated by design — Catalog prose legitimately names other things).
-  3. Counts present: the values 20/12/5 each appear among the Catalog's "(N)" group
+  3. Counts present: the values 22/12/5 each appear among the Catalog's "(N)" group
      headers (set membership, not per-header association); the Install one-liner
      comments and each plugin.json's "N first-party" are checked exactly.
   4. README.zh-Hant.md exists and its embedded src-sha == git hash-object README.md.
@@ -23,7 +23,7 @@ import json, re, subprocess, sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-PLUGINS = {"apple-dev-skills": 20, "collaboration-skills": 12}
+PLUGINS = {"apple-dev-skills": 22, "collaboration-skills": 12}
 EXTERNALS = {"apple-skills", "swiftui-expert", "swiftui-pro", "caveman", "ponytail"}
 DESC_MAX = 800  # current max is 795 (github-contribution-workflow); cap future growth
 errors: list[str] = []
