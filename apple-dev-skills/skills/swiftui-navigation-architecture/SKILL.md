@@ -1,6 +1,6 @@
 ---
 name: swiftui-navigation-architecture
-description: Default navigation shape for SwiftUI Apps (iOS 18 / macOS 15, Swift 6) — value-based `NavigationStack(path:)` over a typed `Route` enum, one `@Observable @MainActor` Router injected via `.environment`, `navigationDestination(for:)` at the stack root (never inside a lazy container), sheets as a separate `Modal` enum, one `.onOpenURL` mapping deep links to `[Route]`, `NavigationSplitView` for iPad/Mac, per-tab paths owned by the router, `Codable` route restoration. Invoke when wiring a new App's navigation, adding deep links or state restoration, migrating off `NavigationView` / `NavigationLink(destination:)`, or asked "router / coordinator pattern in SwiftUI". Owns the architecture; individual interaction bugs → swiftui-interaction-footguns.
+description: Default navigation shape for SwiftUI Apps (iOS 18 / macOS 15, Swift 6) — value-based `NavigationStack(path:)` over a typed `Route` enum, one `@Observable @MainActor` Router in `.environment`, `navigationDestination(for:)` at the stack root (never in a lazy container), per-transition presentation semantics (push / sheet / `fullScreenCover` / popover / alert / root-swap) incl. macOS behavior (no native `fullScreenCover` → push fallback, pop-to-landing), `item:`-driven modal optionals, `.onOpenURL` deep-link funnel, `NavigationSplitView`, per-tab paths, `Codable` restoration. Invoke when wiring an App's navigation, choosing sheet vs cover vs push, adding deep links / restoration, migrating off `NavigationView`, or asked "router / coordinator in SwiftUI". Bugs → swiftui-interaction-footguns.
 ---
 
 # SwiftUI Navigation Architecture
@@ -84,8 +84,53 @@ Rules the shape encodes:
 - **Push with values** — `NavigationLink(value:)` or `router.path.append(...)`; never `NavigationLink(destination:)` in a path-managed stack (those pushes bypass `path`, desyncing back-stack, deep links, and restoration).
 - **`navigationDestination(for:)` on the stack's root content, outside lazy containers.** Apple's docs: "Do not put a navigation destination modifier inside a 'lazy' container, like `List` or `LazyVStack`. … Add the navigation destination modifier outside these containers so that the navigation stack can always see the destination."
 - **Typed `[Route]` over `NavigationPath`** — pattern-matchable, exhaustively switched, `Codable` for free.
-- **Modal ≠ push** — sheets / fullScreenCover hang off `router.modal`; a presented flow is never a `Route` case.
+- **Modal ≠ push** — presented flows hang off router optionals (`item:`-driven; one optional per presentation kind — sheet, cover, alert. Parallel `isPresented:` Bools race and can present blank); a presented flow is never a `Route` case. *Which* kind → next section.
 - **Router is `@MainActor`** (it is UI state; Swift 6 enforces it), routes are `Hashable + Codable` value types.
+
+## Presentation semantics (decide per transition — iOS and macOS)
+
+"Where does the user land when this closes?" is decided by the semantic you pick, not by the destination view. Pick the tag first; the API and its back/dismiss behavior follow.
+
+| Semantic | API | Dismissal | iOS / iPadOS | macOS |
+|---|---|---|---|---|
+| **push** | `NavigationStack` + `navigationDestination` | back pops one level; edge-swipe on by default | — | same model, toolbar back |
+| **sheet** | `.sheet(item:)` (+ `.presentationDetents`) | swipe-to-dismiss on by default; `interactiveDismissDisabled(true)` to force completion | detents resize; >1 detent shows the grabber | window-styled sheet — detents don't drive sizing, size the content itself |
+| **full-screen cover** | `.fullScreenCover(item:)` | no interactive dismiss; exit only via explicit close | opaque, covers everything | **unavailable on native macOS** (Mac Catalyst only) — fall back to push/sheet, see below |
+| **popover** | `.popover` | tap outside | collapses to a sheet in compact width unless `.presentationCompactAdaptation(.popover)` | always a true anchored popover |
+| **alert** | `.alert(_:isPresented:presenting:)` | button tap only — no scrim tap, no swipe | data-drive off one optional | same |
+| **dialog** | `.confirmationDialog` | Cancel **or** tap outside | bottom action sheet | rendered alert-style |
+| **root-swap** | conditional root content on `@Observable` state | none — the outgoing tree is destroyed | auth gates, onboarding-done | same |
+
+Two contract rules the table enforces:
+
+- **"Closes on outside tap" is a semantic, not a style** — if that's the requirement, it's a `confirmationDialog` or popover, never an `.alert`, regardless of visual intent.
+- **Login/logout is root-swap, not a modal.** Conditionally render `LoginView` vs `AppView` at the root off auth state: success flips the flag and the login tree is destroyed; logout flips it back and tears down the entire app stack (paths, sheets, all of it). Presenting the app *over* login couples app lifetime to a presentation and turns logout into "dismiss a modal" with login still alive underneath.
+
+### macOS fallback for full-screen flows
+
+A flow covered by `fullScreenCover` on iOS ships as a push (or sheet) on macOS — and Close must land on the same screen on both platforms. The trap: `dismiss()` closes the whole cover, but the pushed variant's naive `path.removeLast()` pops one level and strands the user mid-flow.
+
+```swift
+extension Router {
+    // One flow, two containers: cover on iOS, push on macOS.
+    func startGame(id: UUID) {
+        #if os(macOS)
+        path.append(.board(id: id))
+        #else
+        cover = .board(id: id)     // .fullScreenCover(item: $router.cover)
+        #endif
+    }
+    func closeGame() {             // lands on the hub on BOTH platforms
+        #if os(macOS)
+        path.removeAll()           // pop the whole flow — pop-one strands mid-flow
+        #else
+        cover = nil
+        #endif
+    }
+}
+```
+
+Route both entry and exit through router methods (as above) so no view ever encodes the platform branch.
 
 ## Deep links & restoration
 
@@ -110,6 +155,7 @@ Rules the shape encodes:
 - **A 2-screen utility** → a bare `NavigationStack` without router or path is fine; adopt the shape when the second entry point appears, not speculatively.
 - **UIKit-hosted hybrids** (heavy `UIViewController` interop) → keep coordination at the UIKit layer; don't force a SwiftUI router across the hosting bridge.
 - **iOS 17 floor** → the shape works unchanged (`@Observable`, `NavigationStack` both available); below that, `ObservableObject` replaces `@Observable`.
+- **Mac Catalyst** → `fullScreenCover` *is* available there; the push/sheet fallback is for native (AppKit-based) macOS targets.
 
 ## Common Mistakes
 
@@ -121,6 +167,9 @@ Rules the shape encodes:
 6. **`onOpenURL` sprinkled across views** — multiple competing handlers; one scene-root handler feeding one mapping function.
 7. **Router not `@MainActor`** — Swift 6 isolation errors the first time a `Task` mutates `path`; annotate the class, not call sites.
 8. **Model objects as route payloads** — bloats `Hashable`/`Codable`, goes stale after edits; carry IDs and resolve at display.
+9. **`@Environment(\.dismiss)` read in the presenter** — it only dismisses when read *inside* the presented content; in the presenter it's a no-op. Presenter-side closing = nil out the router optional.
+10. **Shared Close across an iOS cover / macOS push split that pops one level** — on macOS the user lands mid-flow instead of on the hub; branch close to pop-to-landing (see the macOS fallback).
+11. **Relying on automatic dismiss cascades** across stacked presentations — model `dismiss()` vs `dismissAll()` as distinct router methods; chain a follow-up presentation in the prior one's `onDismiss`, never present-while-presenting.
 
 ## Review Checklist
 
@@ -128,7 +177,10 @@ Rules the shape encodes:
 - [ ] One `Route` enum, `Hashable + Codable`; payloads are IDs, not model objects
 - [ ] `navigationDestination(for:)` registered at the stack root, outside lazy containers
 - [ ] Single `@Observable @MainActor` router in `.environment`; all paths (incl. per-tab) live on it
-- [ ] Sheets / covers driven by a `Modal` enum, never a `Route` case
+- [ ] Sheets / covers driven by `item:` off router optionals (one per presentation kind), never a `Route` case or parallel Bools
+- [ ] Every transition names its presentation semantic and where close/back lands
+- [ ] Full-screen flows branch per platform; Close lands identically on iOS and macOS (pop-to-landing, not pop-one)
+- [ ] Auth / onboarding gates are root-swap, not modals over the app
 - [ ] One `.onOpenURL` at the scene root; `URL → [Route]` mapping has unit tests
 - [ ] Restoration decodes saved routes and drops unresolvable IDs gracefully
 - [ ] SplitView: sidebar selection in router, stack only in detail; footguns checklist run

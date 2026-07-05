@@ -82,7 +82,7 @@ npx skills add wei18/apple-dev-skills --skill swift6-concurrency
 | `app-store-review-rejections` | Diagnose & pre-empt App Review rejection classes for free + ads + IAP + CloudKit + GC |
 | `asc-api-automation` | ES256 JWT from the `.p8` + curl against the ASC REST API — TestFlight, metadata, submission, reports; no fastlane |
 | `swiftui-interaction-footguns` | Known SwiftUI interaction bugs that slip past pure-code review |
-| `swiftui-navigation-architecture` | Typed `Route` enum + `@Observable` router; value-based `NavigationStack`; deep links; SplitView / per-tab paths |
+| `swiftui-navigation-architecture` | Typed `Route` enum + `@Observable` router; value-based `NavigationStack`; per-transition presentation semantics with macOS fallbacks; deep links; per-tab paths |
 | `app-icon-rasterize` | Rasterize a 1024 SVG icon to asset-catalog PNG via `qlmanage` — no Homebrew |
 | `ios-design-mockup` | Single-file HTML iOS design mockup from a spec — iPhone frames + tokens |
 
