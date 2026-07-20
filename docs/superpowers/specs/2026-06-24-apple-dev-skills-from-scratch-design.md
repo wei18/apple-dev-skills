@@ -196,7 +196,9 @@ the current source of truth):
    the five aggregated external plugin names — missing-direction only; extra kebab-case
    tokens in Catalog prose are tolerated by design.
 3. Hardcoded counts (README group headers `(22)`/`(12)`/`(5)`, the Install one-liner
-   comments, each `plugin.json` description's "N first-party") == actual.
+   comments, each `plugin.json` description's "N first-party") == actual. The group
+   headers are checked by set-membership only — the values just need to appear
+   somewhere among the Catalog's `(N)` headers, not per-header association.
 4. `README.zh-Hant.md` exists and its embedded `src-sha` matches `git hash-object
    README.md` (freshness).
 5. Both `plugin.json` and `marketplace.json` parse as JSON; the two subdir plugin sources

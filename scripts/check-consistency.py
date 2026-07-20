@@ -125,7 +125,9 @@ try:
     mp_versions = {p.get("name"): p.get("version") for p in d.get("plugins", [])}
     for plugin in PLUGINS:
         pj_v, mp_v = plugin_json_versions.get(plugin), mp_versions.get(plugin)
-        if pj_v != mp_v:
+        if pj_v is None or mp_v is None:
+            fail(f"[manifest] {plugin} version missing — plugin.json={pj_v!r}, marketplace.json={mp_v!r}")
+        elif pj_v != mp_v:
             fail(f"[manifest] {plugin} plugin.json version {pj_v!r} != marketplace.json plugins[].version {mp_v!r} — run `mise run bump`")
     # 6. README Install pin == marketplace metadata.version
     mp_version = d.get("metadata", {}).get("version", "")
