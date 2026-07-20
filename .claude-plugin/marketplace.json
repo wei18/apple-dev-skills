@@ -9,7 +9,7 @@
     {
       "name": "apple-dev-skills",
       "source": "./apple-dev-skills",
-      "description": "22 first-party Apple/Swift skills. Namespaced apple-dev-skills:<skill>.",
+      "description": "25 first-party Apple/Swift skills. Namespaced apple-dev-skills:<skill>.",
       "version": "1.1.1",
       "author": { "name": "Wei18" },
       "keywords": ["swift", "ios", "macos", "apple-platform", "claude-code", "agent-skills"],

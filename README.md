@@ -18,7 +18,7 @@ This repo is one **marketplace** hosting two first-party plugins and several agg
 
 ```
 /plugin marketplace add wei18/apple-dev-skills
-/plugin install apple-dev-skills@apple-dev-skills          # 22 Apple/Swift skills
+/plugin install apple-dev-skills@apple-dev-skills          # 25 Apple/Swift skills
 /plugin install collaboration-skills@apple-dev-skills      # 12 agent-collaboration skills
 ```
 
@@ -59,7 +59,7 @@ npx skills add wei18/apple-dev-skills --skill swift6-concurrency
 
 ## Catalog
 
-### apple-dev-skills (22) — Apple/Swift
+### apple-dev-skills (25) — Apple/Swift
 
 | Skill | One-liner |
 |---|---|
@@ -85,6 +85,9 @@ npx skills add wei18/apple-dev-skills --skill swift6-concurrency
 | `swiftui-navigation-architecture` | Typed `Route` enum + `@Observable` router; value-based `NavigationStack`; per-transition presentation semantics with macOS fallbacks; deep links; per-tab paths |
 | `app-icon-rasterize` | Rasterize a 1024 SVG icon to asset-catalog PNG via `qlmanage` — no Homebrew |
 | `ios-design-mockup` | Single-file HTML iOS design mockup from a spec — iPhone frames + tokens |
+| `interactive-simulator-ux-audit` | Drive a booted Simulator with `idb` (tap/describe/screenshot) to catch nav/modal/safe-area bugs snapshots can't |
+| `host-driven-xcuitest-e2e` | Launch-the-app XCUITest E2E via Tuist — dedicated scheme wiring + macOS window-frame click driving |
+| `cloudkit-schema-source-of-truth` | Committed `.ckdb` + `cktool` export/validate/deploy to Development; Production is a user-owned Console-only gate |
 
 ### collaboration-skills (12) — AI-agent process
 
