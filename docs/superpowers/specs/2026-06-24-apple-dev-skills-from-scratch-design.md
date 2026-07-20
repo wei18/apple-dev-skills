@@ -186,18 +186,29 @@ stays lean):
 
 ## 6. Consistency gate (`scripts/check-consistency.py`, extended)
 
-Checks, failing CI/pre-commit on any mismatch:
+Checks, failing CI/pre-commit on any mismatch (as-built; grown past the checks
+originally scoped here — see `scripts/check-consistency.py`'s own docstring for
+the current source of truth):
 
 1. Both `apple-dev-skills/skills/<dir>/` and `collaboration-skills/skills/<dir>/` have a
    `SKILL.md` whose frontmatter `name:` == `<dir>`.
-2. The README Catalog lists exactly: every first-party skill across both plugins **plus**
-   the five aggregated external plugins (set-equality, both directions).
-3. Hardcoded counts (README group headers `(20)`/`(10)`/`(5)`, each `plugin.json`
-   description count) == actual.
+2. The README Catalog contains every first-party skill across both plugins **plus**
+   the five aggregated external plugin names — missing-direction only; extra kebab-case
+   tokens in Catalog prose are tolerated by design.
+3. Hardcoded counts (README group headers `(22)`/`(12)`/`(5)`, the Install one-liner
+   comments, each `plugin.json` description's "N first-party") == actual. The group
+   headers are checked by set-membership only — the values just need to appear
+   somewhere among the Catalog's `(N)` headers, not per-header association.
 4. `README.zh-Hant.md` exists and its embedded `src-sha` matches `git hash-object
    README.md` (freshness).
 5. Both `plugin.json` and `marketplace.json` parse as JSON; the two subdir plugin sources
-   resolve to existing directories.
+   resolve to existing directories; marketplace.json lists exactly the 7 plugins (2 local
+   + 5 externals).
+6. The `git checkout v<semver>` pin in both READMEs' Install section ==
+   marketplace.json `metadata.version`.
+7. Each `SKILL.md` frontmatter `description` <= `DESC_MAX` chars.
+8. Each plugin's `.claude-plugin/plugin.json` `"version"` == the corresponding
+   `marketplace.json` `plugins[]` entry `"version"` (the pair `bump-version.py` maintains).
 
 `.github/workflows/consistency.yml` runs `mise run check` on push/PR.
 
