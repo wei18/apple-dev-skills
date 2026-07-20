@@ -89,6 +89,18 @@ App target
             └── <Module>Tests/    # one-to-one
 ```
 
+## Common footguns
+
+### Pin parity across sibling apps
+
+- `swift package resolve` **always** re-resolves to the newest version each dependency's range allows — it does not consult a sibling app's committed pins. Running it to "materialize" a fresh `Package.resolved` for a second app silently drifts its pins away from the first app's committed versions.
+- To give app B pin-parity with app A: **copy** A's committed `Package.resolved` to B and swap only the `originHash` (obtained from one throwaway resolve on B), preserving the file's JSON formatting; then verify `swift build` leaves the file byte-identical (no churn). Diff the **full** pin list against the reference, not just the one dependency a task happened to mention.
+
+### Renaming a target or test directory
+
+- `swift build` plus an import-site `grep` are not sufficient verification for a target/test-directory rename. Non-Swift tooling — CI workflow files, task runners, code-gen scripts — often hard-code the **path string**, which compiles fine and passes the import grep but breaks at the tooling layer.
+- Before pushing a rename, also `grep -rn '<OldName>' <tooling dirs> .github ci_scripts` and run any gate that reads those paths (e.g. localization or fixture generation) locally to confirm it still resolves.
+
 ## Related skills
 
 - `swift6-concurrency`: Package applies `swiftLanguageModes: [.v6]` in one place.

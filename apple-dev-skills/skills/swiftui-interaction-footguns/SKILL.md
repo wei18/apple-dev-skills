@@ -59,6 +59,12 @@ A class of bugs that look fine in code but break at runtime. These have shipped 
 
 - `.labelsHidden()` on `Picker` when the label is provided externally (avoids duplicated label rendering on Mac).
 - `.buttonStyle(.borderedProminent)` honours `.tint` from **iOS 15+ / macOS 12+**; both APIs were introduced together in SwiftUI 3.
+- `.foregroundStyle(...)` chained **after** `.buttonStyle(.borderedProminent)` on the `Button` itself is silently ignored — the prominent style keeps its own default label color, even though the code compiles and unit tests pass. **Fix:** apply `.foregroundStyle` to the label content **inside** the `Button { } label: { … }` closure, not chained on the `Button` call. Only a rendered screenshot exposes the ignored-placement variant.
+
+### `.onAppear` does not re-fire on `fullScreenCover` dismiss
+
+- When a `fullScreenCover` dismisses back to its presenting view, that view's `.onAppear` does **not** re-fire — an `.onAppear { refresh() }` wired for "refresh when the user returns from the modal" silently never runs. (Verified on-device across repeated open/dismiss cycles; the only fresh `.onAppear` fire in that round-trip is a transient re-mount at *open*, not at dismiss.)
+- **Fix:** drive post-dismiss refresh off an explicit teardown signal instead — a counter or flag the dismiss path sets, observed via `.onChange`, never `.onAppear`. Unit tests and code review both pass the wrong wiring; only an instrumented on-device or simulator run (a log probe in the refresh call, driving open→dismiss) exposes it.
 
 ### Touch target minimums
 
