@@ -16,6 +16,8 @@ Checks
      marketplace.json metadata.version (drifted silently before: v1.2.0 → #17).
   7. Each SKILL.md frontmatter description <= DESC_MAX chars (descriptions are
      always-on context for every consumer session; keeps Lens-3 compression durable).
+  8. Each plugin's `.claude-plugin/plugin.json` "version" == the corresponding
+     marketplace.json plugins[] entry "version" (the pair bump-version.py maintains).
 Stdlib only.
 """
 from __future__ import annotations
@@ -25,7 +27,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 PLUGINS = {"apple-dev-skills": 22, "collaboration-skills": 12}
 EXTERNALS = {"apple-skills", "swiftui-expert", "swiftui-pro", "caveman", "ponytail"}
-DESC_MAX = 800  # current max is 795 (github-contribution-workflow); cap future growth
+DESC_MAX = 800  # ceiling on frontmatter description length; which skill is currently
+                # longest shifts as skills are added — don't hardcode a name here
 errors: list[str] = []
 def fail(m): errors.append(m)
 
@@ -81,12 +84,14 @@ else:
             break
 
 # plugin.json counts
+plugin_json_versions: dict[str, str] = {}
 for plugin, expected in PLUGINS.items():
     pj = ROOT / plugin / ".claude-plugin" / "plugin.json"
     try: d = json.loads(pj.read_text(encoding="utf-8"))
     except Exception as e: fail(f"[manifest] {plugin}/plugin.json invalid: {e}"); continue
     for c in re.findall(r"(\d+)\s+first-party", d.get("description", "")):
         if int(c) != expected: fail(f"[manifest] {plugin} says '{c} first-party', expected {expected}")
+    plugin_json_versions[plugin] = d.get("version")
 
 # 3b. Install one-liner comments (outside the Catalog section, so scoped() misses them)
 for plugin, n in re.findall(r"/plugin install (\S+?)@apple-dev-skills\s+#\s*(\d+)\b", readme):
@@ -116,6 +121,12 @@ try:
     expected_names = set(PLUGINS) | EXTERNALS
     if names != expected_names:
         fail(f"[marketplace] plugin set mismatch — missing: {sorted(expected_names - names)}, extra: {sorted(names - expected_names)}")
+    # 8. plugin.json version == marketplace.json plugins[].version (pair bump-version.py maintains)
+    mp_versions = {p.get("name"): p.get("version") for p in d.get("plugins", [])}
+    for plugin in PLUGINS:
+        pj_v, mp_v = plugin_json_versions.get(plugin), mp_versions.get(plugin)
+        if pj_v != mp_v:
+            fail(f"[manifest] {plugin} plugin.json version {pj_v!r} != marketplace.json plugins[].version {mp_v!r} — run `mise run bump`")
     # 6. README Install pin == marketplace metadata.version
     mp_version = d.get("metadata", {}).get("version", "")
     for readme_name in ("README.md", "README.zh-Hant.md"):
