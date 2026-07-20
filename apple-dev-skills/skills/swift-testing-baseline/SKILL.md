@@ -63,6 +63,17 @@ pixels (above) is the only viable content gate.
 - Real interactions happen only on the dev machine for manual verification (or a nightly standalone job, explicitly excluded from PR CI).
 - Shared fakes are factored into a `<Project>KitTesting` target consumed by multiple test targets.
 
+### The unentitled runner: live-framework landmines
+
+- Constructing a **live CloudKit or Game Center object** inside a SwiftPM test — eager container initialization, or assigning a real auth/handshake handler — blocks the MainActor **synchronously and indefinitely** in the unentitled SwiftPM test runner (near-0% CPU; looks like a hang, not a crash). Both frameworks share this landmine class. Gate any live-framework touch behind a **test-only suppression seam** (a static flag or stub the driver checks before touching the real framework) so tests exercise your own state machine, never the real handshake.
+- If a run does stall, kill the stuck test-runner helper process before retrying — stacking concurrent retries just queues them behind the same stuck build lock and multiplies the mess.
+- A **parallel** test runner can also hang indefinitely on a package that links a framework like this, independent of any live-object bug. `--no-parallel` on that one package is a legitimate, fast workaround; diagnose with capped per-suite `--filter` runs (background the run, poll, kill-and-record-timeout) rather than stacking retries.
+
+### `swift build` is not `swift test`
+
+- Changing a **shared protocol requirement** only recompiles **sources** under `swift build` — test targets are not rebuilt. A test target's own conformer written against the OLD signature silently breaks and is invisible to `swift build`. **Rule:** after any protocol-requirement change, grep for conformers (`": <Protocol>"`) across every package including `Tests/`, and run `swift test` — not just `swift build` — on each package that has a test-target conformer.
+- IDE/SourceKit diagnostics ("no such member", "cannot infer contextual base") on a freshly-added helper are frequently **stale index**, not a real error — the in-editor index lags a beat behind source just written. Treat such diagnostics as a hint, not truth; confirm with a filtered `swift test`, not a re-read of the diagnostic.
+
 ### Test pyramid
 
 ```
