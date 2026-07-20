@@ -184,5 +184,6 @@ correspondingly irreversible, deliberately manual approval step.
 ## Related skills
 
 - `swift-dependency-injection` — how CloudKit access is injected and faked, keeping schema concerns out of call sites.
+- `swift-testing-baseline` — gate live CloudKit/Game Center access behind a test-only suppression seam; constructing a live container or auth handler inside a test blocks the unentitled SwiftPM runner indefinitely (its "unentitled runner" section covers this landmine — this skill's schema is only ever tested against, never through a live container in CI).
 - `apple-public-repo-security` — why the management token is a stricter secret class than a build-time public identifier.
 - `build-time-secret-injection` — the general env-file-based secret pattern this workflow's token handling follows.
