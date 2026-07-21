@@ -120,3 +120,4 @@ pixels (above) is the only viable content gate.
 - `swiftpm-modularization`: one-to-one test target layout and shared `<Project>KitTesting`.
 - `xcode-cloud-single-track-ci`: CI Xcode lock and when PR CI runs tests.
 - `mise-tool-management`: Xcode version managed by mise.
+- `cloudkit-schema-source-of-truth`: this skill's "unentitled runner" section is the seam that keeps live CloudKit/Game Center access — and the schema SSOT concerns it gates — out of the unentitled SwiftPM test run; use its test-doubles instead of a live container.

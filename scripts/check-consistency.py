@@ -105,7 +105,7 @@ if not zh.is_file():
 else:
     m = re.search(r"src-sha:\s*([0-9a-f]+)", zh.read_text(encoding="utf-8"))
     cur = subprocess.run(["git", "hash-object", "README.md"], cwd=ROOT,
-                         capture_output=True, text=True).stdout.strip()
+                         capture_output=True, text=True, check=True).stdout.strip()
     if not m: fail("[zh] no embedded src-sha")
     elif m.group(1) != cur: fail("[zh] stale — run `mise run readme-zh` (src-sha != README.md)")
 

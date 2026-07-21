@@ -54,7 +54,7 @@ is out of scope and untouched.
 ```
 wei18/apple-dev-skills/                  # marketplace repo (root)
 ├── .claude-plugin/
-│   └── marketplace.json                 # lists both first-party plugins + 3 externals
+│   └── marketplace.json                 # lists both first-party plugins + aggregated externals
 ├── apple-dev-skills/                    # first-party plugin 1 — Apple/Swift (20)
 │   ├── .claude-plugin/plugin.json
 │   └── skills/<skill>/SKILL.md
@@ -195,7 +195,7 @@ the current source of truth):
 2. The README Catalog contains every first-party skill across both plugins **plus**
    the five aggregated external plugin names — missing-direction only; extra kebab-case
    tokens in Catalog prose are tolerated by design.
-3. Hardcoded counts (README group headers `(22)`/`(12)`/`(5)`, the Install one-liner
+3. Hardcoded counts (README group headers, the Install one-liner
    comments, each `plugin.json` description's "N first-party") == actual. The group
    headers are checked by set-membership only — the values just need to appear
    somewhere among the Catalog's `(N)` headers, not per-header association.
@@ -220,7 +220,7 @@ the current source of truth):
 3. Move the root `.claude-plugin/plugin.json` into `apple-dev-skills/.claude-plugin/`;
    author a new `collaboration-skills/.claude-plugin/plugin.json`.
 4. Rewrite root `.claude-plugin/marketplace.json`: change the first-party plugin source
-   from `./` to `./apple-dev-skills`, add the `collaboration-skills` entry, keep the three
+   from `./` to `./apple-dev-skills`, add the `collaboration-skills` entry, keep the five
    externals as-is.
 5. Delete `ROADMAP.md` and `CURATION.md`; rewrite `README.md` to the §3 structure; update
    `CONTRIBUTING.md` to drop `CURATION.md` links (criteria already live there) **and document
