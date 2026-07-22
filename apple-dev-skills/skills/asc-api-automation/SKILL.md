@@ -98,14 +98,21 @@ Mint fresh per run; a job that outlives the token re-mints instead of extending 
 | Latest processed builds | `GET /v1/builds?filter[app]=<appId>&sort=-uploadedDate&limit=5` |
 | TestFlight what's-new | `GET /v1/builds/<id>/betaBuildLocalizations` → `PATCH /v1/betaBuildLocalizations/<locId>` with `attributes.whatsNew` |
 | Add build to a beta group | `POST /v1/betaGroups/<groupId>/relationships/builds` with `{"data":[{"type":"builds","id":"<buildId>"}]}` |
-| Create next App Store version | `POST /v1/appStoreVersions` — relationship `app`, attributes `platform: "IOS"`, `versionString` |
+| Create next App Store version | `POST /v1/appStoreVersions` — relationship `app`, attributes `platform: "IOS"`, `versionString`, `releaseType` (see Release automation below — don't omit) |
 | Set description / what's-new | `GET /v1/appStoreVersions/<id>/appStoreVersionLocalizations` → `PATCH /v1/appStoreVersionLocalizations/<locId>` |
 | Attach build to version | `PATCH /v1/appStoreVersions/<id>/relationships/build` |
+| Set release behavior | `PATCH /v1/appStoreVersions/<id>` with `attributes.releaseType` — `MANUAL` (release yourself), `AFTER_APPROVAL` (auto-release the instant Apple approves), or `SCHEDULED` (auto-release at `attributes.earliestReleaseDate`, ISO 8601) |
 | Submit for review | `POST /v1/reviewSubmissions` (app + platform) → `POST /v1/reviewSubmissionItems` (reviewSubmission + appStoreVersion) → `PATCH /v1/reviewSubmissions/<id>` with `attributes.submitted: true` |
 | Daily sales report | `GET /v1/salesReports?filter[frequency]=DAILY&filter[reportType]=SALES&filter[reportSubType]=SUMMARY&filter[vendorNumber]=<n>` (+ `filter[reportDate]=YYYY-MM-DD` for a specific day) — response is a **gzipped TSV**, not JSON: `curl -o report.gz` then `gunzip` |
 | App Store analytics | `POST /v1/analyticsReportRequests` (`accessType: "ONGOING"`) once per app, then poll its `reports` → instances → segments for download URLs |
 
 The review-submission flow is the 2022+ `reviewSubmissions` model, which replaced the deprecated one-shot `appStoreVersionSubmissions`.
+
+## Release automation: SemVer, changelog, and explicit releaseType
+
+- **`versionString` = SemVer, sourced from the build, not reinvented in CI.** Set it to the same value as the archived build's `MARKETING_VERSION` (`CFBundleShortVersionString`) — bump that once at the Xcode-project level (→ [[xcode-cloud-single-track-ci]] build-number & version automation), then read it back for the `appStoreVersions` call instead of maintaining a second version counter in release tooling.
+- **Changelog → `whatsNew`, generated once, written twice.** Build the "What's New" text from `git log <last-tag>..HEAD --oneline` (or your conventional-commit tooling) in the release job, then `PATCH` it into both `betaBuildLocalizations` (TestFlight) and `appStoreVersionLocalizations` (App Store) per locale — one generated string, two writes, so testers and reviewers see the same notes.
+- **`releaseType` — set it explicitly, every time.** The attribute is optional and Apple's schema documents no default value. The ASC web UI backs the same behavior with an explicit 3-way choice (*Manually release this version* / *Automatically release this version* / *Automatically release this version after App Review, no earlier than*); skipping `releaseType` in a scripted create/update leaves the version's release behavior to an undocumented default — in practice new versions show up as auto-release — instead of a decision your pipeline made on purpose. Default to `MANUAL` in automation unless auto-release is the deliberate intent.
 
 ## Rationale
 
@@ -130,6 +137,7 @@ The review-submission flow is the 2022+ `reviewSubmissions` model, which replace
 7. **Tight-polling build processing or analytics** without reading `X-Rate-Limit` — 429 locks out every consumer of the key.
 8. **Admin-role key in CI** when App Manager or a `scope`d token suffices.
 9. **`.p8` committed to the repo** — stop and run the rotate-first SOP in [[apple-public-repo-security]]; storage layout per [[build-time-secret-injection]].
+10. **Omitting `releaseType` on an `appStoreVersions` create/update** — the attribute has no documented default, so an unset value can leave a version on automatic release; it goes live the instant Apple approves it instead of waiting for a deliberate manual release. Set `releaseType: "MANUAL"` explicitly unless auto-release is intended.
 
 ## Review Checklist
 
@@ -139,6 +147,7 @@ The review-submission flow is the 2022+ `reviewSubmissions` model, which replace
 - [ ] 429 handled with backoff; no tight polling loops
 - [ ] Write calls use the JSON:API `{"data": {...}}` wrapper
 - [ ] No REST binary-upload attempt; build side delegated to xcode-cloud-single-track-ci
+- [ ] `releaseType` explicitly set on every `appStoreVersions` create/update (`MANUAL` unless auto-release is intended) — never left to ASC's undocumented default
 - [ ] `grep` for key IDs / issuer ID / `.p8` contents across tracked files returns zero hits
 
 ## Related skills
