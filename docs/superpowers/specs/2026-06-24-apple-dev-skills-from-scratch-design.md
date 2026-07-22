@@ -94,6 +94,10 @@ so existing consumers keep resolving (see Migration for the skill-count caveat).
 
 ## 2. Skill classification (30 → 20 / 10)
 
+The per-skill lists below are the same as-written historical snapshot as the header
+counts above — they name the 30 skills that existed at redesign time, not the current
+roster. For the current skill list, see [`README.md`](../../../README.md) Catalog.
+
 **`apple-dev-skills` (20 — Apple/Swift specific):**
 swift6-concurrency, apple-platform-targets, swiftpm-modularization, swift-testing-baseline,
 xcode-cloud-single-track-ci, mise-tool-management, oslog-logger-defaults,

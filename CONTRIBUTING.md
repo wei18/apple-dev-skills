@@ -32,7 +32,7 @@ Full regeneration is non-deterministic — even for a 2-line content fix it rewr
   ```
 - **Larger / structural changes**: run `mise run readme-zh` for a full regeneration.
 
-## Two ways to contribute
+## Ways to contribute
 
 ### 1. Aggregate an external plugin (preferred when a good one exists)
 
@@ -48,3 +48,9 @@ Pick the plugin: Apple/Swift → `apple-dev-skills/skills/`, generic agent proce
 `collaboration-skills/skills/`. One dir per skill with a `SKILL.md` whose frontmatter
 `name:` equals the dir. Then update `README.md`'s Catalog table + the group `(N)` count and
 the plugin's `plugin.json` description count, and run `mise run check`.
+
+### 3. Report a field note (skill vs reality)
+
+Hit a real-world incident where a skill's guidance was wrong, incomplete, or missing —
+or a situation no skill covered? Open a [field note](.github/ISSUE_TEMPLATE/field-note.yml).
+Incidents are how this catalog's Sightings and known-trap entries grow.
