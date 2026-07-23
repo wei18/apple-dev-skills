@@ -31,7 +31,7 @@ plugins load from the pinned submodule (collaborators are prompted to trust the 
 
 ```bash
 git submodule add https://github.com/wei18/apple-dev-skills.git .claude/skills/apple-dev-skills
-cd .claude/skills/apple-dev-skills && git checkout v1.5.0 && cd -
+cd .claude/skills/apple-dev-skills && git checkout v1.6.0 && cd -
 ```
 
 `.claude/settings.json` (committed):
