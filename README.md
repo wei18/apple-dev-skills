@@ -106,7 +106,7 @@ npx skills add wei18/apple-dev-skills --skill swift6-concurrency
 | `skill-authoring-patterns` | Apple/Swift catalog layer over `superpowers:writing-skills` — router descriptions, bookend sections, two-tier references, evidence-based CR |
 | `github-contribution-workflow` | gh-CLI contribution loop — PRs, issues, GitHub file ops, secrets, contribution-flow repo settings; conventions + CLEAN-before-merge |
 
-### Aggregated external (5) — by reference, credited
+### Aggregated external (6) — by reference, credited
 
 Listed here but **not authored here**; they install from their authors' own repos (you get
 their latest), credited in full. **Aggregate, don't appropriate**: only MIT-compatible,
@@ -123,6 +123,7 @@ slipped past review). Where a topic overlaps, they differ by altitude, not dupli
 | [`swiftui-pro`](https://github.com/twostraws/SwiftUI-Agent-Skill) | Paul Hudson (MIT) | SwiftUI pitfalls, deprecated-API watchlist, iOS 26 / Liquid Glass |
 | [`caveman`](https://github.com/JuliusBrussee/caveman) | JuliusBrussee (MIT) | Ultra-compressed communication mode — cuts ~75% of tokens (general agent behavior) |
 | [`ponytail`](https://github.com/DietrichGebert/ponytail) | DietrichGebert (MIT) | "Lazy senior dev" mode — forces the simplest, shortest solution (general agent behavior) |
+| [`i-have-adhd`](https://github.com/ayghri/i-have-adhd) | Ayoub G. (MIT) | Always-on ADHD-friendly output mode — action-first, numbered steps, state restated each turn; vs `caveman` (token compression) and `ponytail` (solution simplicity), this shapes structure (general agent behavior) |
 
 ## Provenance
 
