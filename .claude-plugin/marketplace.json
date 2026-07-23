@@ -58,6 +58,13 @@
       "description": "Aggregated (not authored here). 'Lazy senior dev' mode — forces the simplest, shortest solution. General agent-behavior skill. By DietrichGebert, MIT.",
       "author": { "name": "DietrichGebert" },
       "category": "workflow"
+    },
+    {
+      "name": "i-have-adhd",
+      "source": { "source": "github", "repo": "ayghri/i-have-adhd" },
+      "description": "Aggregated (not authored here). ADHD-friendly output mode — leads with the next action, numbers steps, restates state each turn, makes wins visible. General agent-behavior skill. By Ayoub G. (ayghri), MIT.",
+      "author": { "name": "Ayoub G. (ayghri)" },
+      "category": "workflow"
     }
   ]
 }

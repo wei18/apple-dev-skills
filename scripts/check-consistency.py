@@ -4,14 +4,14 @@
 Checks
   1. Each <plugin>/skills/<dir>/ has a SKILL.md whose frontmatter name == <dir>.
   2. README.md Catalog contains every first-party skill (both plugins, 37) AND the
-     five aggregated external plugin names (missing-direction only; extra kebab
+     six aggregated external plugin names (missing-direction only; extra kebab
      tokens are tolerated by design — Catalog prose legitimately names other things).
-  3. Counts present: the values 25/12/5 each appear among the Catalog's "(N)" group
+  3. Counts present: the values 25/12/6 each appear among the Catalog's "(N)" group
      headers (set membership, not per-header association); the Install one-liner
      comments and each plugin.json's "N first-party" are checked exactly.
   4. README.zh-Hant.md exists and its embedded src-sha == git hash-object README.md.
   5. All plugin/marketplace JSON parse; the two subdir plugin sources resolve to dirs;
-     marketplace.json lists exactly the 7 plugins (2 local + 5 externals).
+     marketplace.json lists exactly the 8 plugins (2 local + 6 externals).
   6. The `git checkout v<semver>` pin in both READMEs' Install section ==
      marketplace.json metadata.version (drifted silently before: v1.2.0 → #17).
   7. Each SKILL.md frontmatter description <= DESC_MAX chars (descriptions are
@@ -26,7 +26,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 PLUGINS = {"apple-dev-skills": 25, "collaboration-skills": 12}
-EXTERNALS = {"apple-skills", "swiftui-expert", "swiftui-pro", "caveman", "ponytail"}
+EXTERNALS = {"apple-skills", "swiftui-expert", "swiftui-pro", "caveman", "ponytail", "i-have-adhd"}
 DESC_MAX = 800  # ceiling on frontmatter description length; which skill is currently
                 # longest shifts as skills are added — don't hardcode a name here
 errors: list[str] = []
