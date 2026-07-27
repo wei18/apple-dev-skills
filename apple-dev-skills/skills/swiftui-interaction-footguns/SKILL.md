@@ -23,6 +23,12 @@ A class of bugs that look fine in code but break at runtime. These have shipped 
 - Same trap for `NavigationLink`, `Menu`, and any custom interactive view with `.onTapGesture` + Spacer / `frame(maxWidth: .infinity)` / padding.
 - Padding and `frame(maxWidth: .infinity)` enlarge the visual frame but do **not** automatically enlarge the hit region under `.plain`. When in doubt, add `.contentShape`.
 
+### Accessibility identifiers (XCUITest anchors)
+
+- An `.accessibilityIdentifier` on a **container** can cascade down and clobber its accessibility-element descendants' own identifiers — in XCUITest the children then report the container's id, and a query for the child's id finds nothing ("No matches found"). **Fix:** put the container-level id on a leaf (a title `Text`), or attach it to a zero-size `Color.clear` marker in a `.background(...)` — a *sibling* layer rather than an ancestor.
+- The cascade is **conditional on the accessibility-element shape, not universal**: an id on a `ScrollView` above tappable cards can work fine. So don't reason from the view hierarchy — drive the actual XCUITest query and see which element answers.
+- Conditional ids (`.accessibilityIdentifier(flag ? "x" : "")`) are fine, but if several siblings can carry the same id simultaneously, queries must use `.matching(identifier:).firstMatch` or the tap is ambiguous.
+
 ### NavigationSplitView (Mac / iPad)
 
 - Sidebar items must be `NavigationLink(value:)` or `Button` — a bare `Label` is non-interactive even if it visually looks like a row.
@@ -97,6 +103,7 @@ A class of bugs that look fine in code but break at runtime. These have shipped 
 
 - **Tap-target shrink** — A home screen mode card used `Button { } label: { card-with-Spacer }` with `.buttonStyle(.plain)`, shrinking the tap target to drawn content only. Caught by macOS smoke test, **not** by Code Reviewer. Fix: `.contentShape(Rectangle())`.
 - **Inert sidebar Labels** — Mac `NavigationSplitView` sidebar items were bare `Label`s with no `NavigationLink` / `Button`, so clicking did nothing. Same review-blind-spot path.
+- **Accessibility-id cascade** — An empty-state block carried its id on the enclosing `VStack`; the two buttons inside it, each with their own ids, both reported the *container's* id and could not be tapped. Passed code review and unit tests; only a failing XCUITest surfaced it. Fix: id moved to the leaf `Text`; a later container-level anchor used a zero-size `.background` marker (sibling, not ancestor) instead.
 - **Blank `fullScreenCover`** — A near-win hook presented a **blank** `fullScreenCover`: `fullScreenCover(isPresented: $bool)` + a separate optional `@State` for content, set back-to-back, raced → content closure's `if let` rendered the empty branch (a11y tree = 1 element vs 99 for a real board). Dual-model CR + unit tests passed; only the idb interactive audit caught it. Fix: `fullScreenCover(item:)` with an `Identifiable` payload.
 
 ## Related skills
