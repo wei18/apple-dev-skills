@@ -57,6 +57,17 @@ npx skills add wei18/apple-dev-skills --list
 npx skills add wei18/apple-dev-skills --skill swift6-concurrency
 ```
 
+> **Path C does not include the aggregated externals.** `npx skills` scans this
+> repo for `SKILL.md` folders and never reads `marketplace.json`, so the commands
+> above reach only the 37 first-party skills — the 6 externals are silently
+> skipped. To flat-install the whole catalog (externals included, pulled from
+> their authors' repos):
+
+```bash
+scripts/install-flat.sh -g          # user-level; drop -g for project-level
+scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
+```
+
 ## Catalog
 
 ### apple-dev-skills (25) — Apple/Swift
