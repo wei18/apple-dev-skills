@@ -1,6 +1,6 @@
 ---
 name: interactive-simulator-ux-audit
-description: Use when auditing an iOS/iPadOS app's live behavior in the Simulator — navigation, modals, back-stack, completion flows, safe-area/Dynamic-Island clipping, offline or signed-out states — bugs a fixed-size snapshot render structurally cannot show. Covers installing `idb` without Homebrew (direct GitHub release + an exec wrapper that preserves rpath), the describe-all → tap → screenshot drive loop, device-point vs screenshot-pixel coordinate spaces, and the "stale build" / "worktree launch crash" false-negative traps. Use when asked to "test the UI", "find UX problems", "drive the simulator", or verify an interactive flow end-to-end.
+description: Use when auditing an iOS/iPadOS app's live behavior in the Simulator — navigation, modals, back-stack, completion flows, safe-area/Dynamic-Island clipping, offline or signed-out states — bugs a fixed-size snapshot render structurally cannot show. Covers installing `idb` without Homebrew (direct GitHub release + an exec wrapper that preserves rpath), the describe-all → tap → screenshot drive loop, device-point vs screenshot-pixel coordinate spaces, and the "stale build" / "worktree launch crash" false-negative traps. Use when asked to "test the UI", "find UX problems", "drive the simulator", or verify an interactive flow end-to-end. Also covers sizing a parallel-simulator fleet — how many booted simulators fit in RAM when each agent drives its own.
 ---
 
 # Interactive Simulator UX Audit (idb-driven)
@@ -46,6 +46,47 @@ usually-allowed path — confirm against your own policy, then:
    `idb ui describe-all --udid <udid>` returns the accessibility tree (element frames +
    labels) in **device-point** space (e.g. an iPhone 17 Pro reports 402×874 pt).
 
+## Preflight: how many simulators fit on this Mac
+
+Before running multiple agents or audit sessions in parallel, size the fleet with
+arithmetic, not a tool — steps 1-2 need nothing beyond Activity Monitor or `xcrun simctl`
+and already give a usable answer for most cases.
+
+1. **Measure your own per-simulator footprint.** Boot one simulator running your actual
+   app, let it settle, then read its `phys_footprint` — Activity Monitor's Memory column
+   for the simulator's processes (or sum it yourself via `xcrun simctl spawn <udid> ...`
+   if scripting). Runnable parallel count ≈ available RAM ÷ that measured number. Don't
+   adopt a fixed GB figure from a blog post or any tool's README as your budget — real
+   footprint shifts with iOS version, installed apps, and what the app under test does.
+2. **Default answer: lower the parallel count, not the tooling.** If stock simulators
+   already saturate the machine, that's the normal case — reduce how many agents/sessions
+   run at once until it fits. As a dated, third-party reference point only (not a catalog
+   default): on a 16 GB M1 Pro, stock simulators reportedly start thrashing around 5
+   concurrent instances (`simslim/README.md:9`, verified 2026-09-03). If step 1's math
+   already gets you a workable number, stop here — step 3 is optional and unrelated to the
+   rest of this skill.
+3. **Only if still constrained and willing to trade away some background services**, a
+   persistent per-simulator daemon-disable is available via third-party tooling. Gate on
+   `command -v simslim` first — if it's absent, that's fine, stop at step 2, nothing else in
+   this skill depends on it. To install without Homebrew: `go install
+   github.com/mobai-app/simslim/cmd/simslim@latest` (a Go toolchain can be provisioned
+   through `mise`, see `mise-tool-management`); or download the plain release tarball
+   directly, `simslim-v0.8.0-macos-arm64.tar.gz` from
+   `https://github.com/MobAI-App/simslim/releases/download/v0.8.0/` (asset name/version
+   verified via `gh release view MobAI-App/simslim`, 2026-09-03 — simslim's own README
+   documents only Homebrew and `go install`, `simslim/README.md:29-41`, so this direct-tarball
+   path isn't in its docs either). Once present, it's one command per simulator: `simslim on
+   <udid>` to disable, `simslim off <udid>` to revert.
+   - Persistence only survives reboot on iOS 18.5+ runtimes; older runtimes are rejected
+     before anything is touched (`simslim/README.md:303-307`).
+   - Slimming drops Spotlight/in-Settings search, push notifications (`apsd`) and StoreKit
+     testing (`storekitd`), and universal links (`swcd`) unless kept via `--except`/`--keep`
+     (`simslim/README.md:342-347`).
+   - `erase`, delete+recreate, and "Erase All Content and Settings" all revert to stock; the
+     profile must be reapplied (`simslim/README.md:331-336`).
+   - This skill doesn't track simslim's CLI beyond the two commands above — its own README
+     is the source of truth for anything else.
+
 ## Build + install the app under test
 
 - **Check the installed build version first**, in the app's own Settings/About screen if it
@@ -85,7 +126,9 @@ xcrun simctl io <udid> screenshot <path.png>  # capture, then read the PNG and l
   taps fail with `spawn idb ENOENT` even though a plain screenshot still works (screenshot can
   go through `simctl` alone; tapping cannot).
 - **One booted simulator serializes all driving.** Don't run two agents or two audit
-  sessions against the same simulator concurrently — their taps collide.
+  sessions against the same simulator concurrently — their taps collide. Running several
+  agents each against their *own* booted simulator is fine and is a fleet-sizing question,
+  not a driving one — see the Preflight section above.
 - **Stress layout deliberately**: `xcrun simctl ui <udid> content_size
   accessibility-extra-extra-extra-large` then relaunch to test Dynamic Type; reset with
   `content_size large`. `appearance dark|light` for color scheme. System alerts (permission
@@ -163,3 +206,4 @@ doesn't model. Driving the actual Simulator is the only check that covers the se
 - `host-driven-xcuitest-e2e` — turn a finding from this audit into an automated, CI-runnable regression test.
 - `swift-testing-baseline` — the static snapshot-testing layer this skill complements, not replaces.
 - `ios-accessibility-engineering` — Dynamic Type / VoiceOver checks that pair naturally with this audit loop.
+- `mise-tool-management` — the general non-Homebrew tool-install pattern behind the `idb` and `simslim` install steps above.
