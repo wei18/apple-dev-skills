@@ -42,7 +42,11 @@ xcbeautify = "1"
 ## Deviation considerations
 
 - **Team already uses asdf heavily**: keep it for now, but new repos go to mise; mise can read `.tool-versions` as a transition.
-- **Tool not in mise registry / aqua / ubi**: install via Homebrew / SwiftPM build manually and note the exception in the README.
+- **Tool not in mise registry / aqua / ubi**: prefer a non-Homebrew path first. For a Go
+  CLI, `go install <module>@latest` (a Go toolchain can itself come from mise). Otherwise,
+  download the tool's plain GitHub Releases tarball directly for your platform — same
+  install pattern as `idb` in `interactive-simulator-ux-audit`. Homebrew is a last resort,
+  and still needs the exception noted in the README either way.
 - **CI runner already has the target version preinstalled**: still run `mise install` to enforce parity; the extra overhead is small.
 - **macOS-only tools on a mixed-OS CI fleet** (Xcode-project generators, macOS
   artifact bundlers — e.g. `tuist`, `LicensePlist`): guard them with an `os`
