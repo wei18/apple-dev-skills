@@ -75,6 +75,12 @@ Cheap signals:
 
 Don't deep-read diffs as part of this skill — that's Code Reviewer's job. Just confirm the SHAPE matches the claims.
 
+**A verification/acceptance report's own summary numbers need the same check.** This failure
+mode has recurred (fifth occurrence): a report's headline count ("N items verified", "M files
+changed") doesn't match its own itemized table below it. Before trusting or forwarding such a
+report, re-count its table rows yourself and compare against the summary line it prints —
+don't take the summary number on faith just because it's inside a "verification" document.
+
 ## Example application
 
 ```

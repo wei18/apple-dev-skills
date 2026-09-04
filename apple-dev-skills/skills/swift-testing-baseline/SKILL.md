@@ -108,6 +108,10 @@ pixels (above) is the only viable content gate.
 
 ## Verification checklist
 
+- `xcodebuild`/`swift test` exit 0 is **not** proof tests ran — a scheme/target wiring mistake
+  can produce "Executed 0 tests" alongside a green exit code. Read the test-count line, not
+  just the exit status, and confirm it's > 0. Before trusting any new gate, deliberately break
+  it once (e.g. force an assertion to fail) to prove it actually goes red.
 - Each production target has a matching `<Module>Tests`.
 - `__Snapshots__/` is committed to git and not accidentally excluded by `.gitignore`.
 - Content suites use strict `.image`; only AA-heavy board suites use `.tolerantImage` (project-local extension) — no ad-hoc per-call `precision:` overrides.

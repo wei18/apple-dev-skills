@@ -58,7 +58,7 @@ Every Code Reviewer dispatch prompt must include:
    - Logical consistency (internal contradictions, cross-section conflicts)
    - Completeness (missing edge case, error handling, prerequisite)
    - Efficiency (algorithm, CI / build / runtime cost)
-5. **Return format**: BLOCKER / MAJOR / MINOR three-level classification; each item with location (file + section) + suggestion
+5. **Return format**: BLOCKER / MAJOR / MINOR three-level classification; each item with location (file + section) + suggestion. An **absence claim** ("the spec doesn't define this", "nothing covers this case") must include the grep/search command run and its zero-hit output — an absence claim with no evidence attached doesn't count as a finding.
 
 ## Accept / Reject reply style
 
@@ -79,6 +79,7 @@ REJECT must cite specific evidence (API doc, prior decision, design constraint);
 
 ## Verification checklist
 
+- Every absence claim ("not defined", "no coverage") in a review finding cites the grep/search command and its zero-hit output — otherwise it doesn't count as a finding.
 - Each round has an explicit dispatch prompt (all 5 elements present).
 - Each review finding has an explicit accept / reject label + reason.
 - When limit(N) is reached without convergence, pause; don't keep iterating indefinitely.

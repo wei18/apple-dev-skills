@@ -130,7 +130,7 @@ Avoid `@TaskLocal` for dependencies that should be visible in the public interfa
 
 ## Swift 6 concurrency rules for dependencies
 
-- Any type passed across actor boundaries — including a dependency — must conform to `Sendable`.
+- Any type passed across actor boundaries — including a dependency — must conform to `Sendable`, **except** when the only implementation is actor-isolated and wraps a non-`Sendable` framework type it doesn't own (`AVAssetTrack`, `VNRequest`) — see `swift6-concurrency`'s Sendable exception: forcing conformance there is an illegal retroactive conformance, and the actor's own isolation already supplies the guarantee.
 - Protocol requirements that are called from concurrent contexts must be `async` (or the protocol itself must be `@MainActor`-isolated).
 - Closures stored in a struct client must be `@Sendable`:
 
@@ -153,7 +153,7 @@ Both are valid; they solve the same problem with different ergonomics. Evaluate 
 ## Verification checklist
 
 - No layer below the composition root imports a concrete implementation type (`Live*`, `URLSession.shared`, `Date()`, `UUID()`).
-- All protocol types (or struct clients) used across actor boundaries declare `Sendable`.
+- All protocol types (or struct clients) used across actor boundaries declare `Sendable`, except an actor-isolated implementation wrapping a non-`Sendable` framework type it doesn't own (see `swift6-concurrency`).
 - Async protocol requirements are `async throws`; synchronous fakes return immediately (no `Task.sleep` in a fake).
 - Each test constructs its own fake/stub — no shared mutable test state at module level.
 - The composition root (`makeApp(...)`) is the only call site that knows about live implementations.

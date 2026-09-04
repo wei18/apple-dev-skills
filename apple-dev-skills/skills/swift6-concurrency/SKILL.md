@@ -16,7 +16,7 @@ description: Default to Swift 6 language mode with complete concurrency checking
 
 - **Swift 6 language mode + complete concurrency checking**, applied from the first line of code.
 - All in-house types are treated as **needing `Sendable`** by default; any type shared across actors must declare it explicitly (`struct Foo: Sendable` or `final class Foo: Sendable` — the latter only valid when all stored properties are Sendable and the class is non-inheritable; for classes with mutable state, prefer `actor Foo` or `@unchecked Sendable` with manual synchronisation).
-- Protocols that cross actor boundaries (DI injection points) are always declared `Sendable`, with methods `async throws`.
+- Protocols that cross actor boundaries (DI injection points) are declared `Sendable`, with methods `async throws` — **unless** the only real implementation is itself actor-isolated and wraps a non-`Sendable` framework type it doesn't own (`AVAssetTrack`, `VNRequest`). Forcing `: Sendable` on the protocol in that case triggers an illegal retroactive conformance ("conformance to 'Sendable' must occur in the same source file"), leaving `@unchecked Sendable` as the only escape — which mutes the checker instead of proving the guarantee. Drop the protocol's `Sendable` requirement instead; the actor's isolation already provides the cross-actor safety.
 - For third-party deps that don't support Swift 6 complete checking, in order of preference:
   1. `@preconcurrency import X` to isolate the import
   2. Switch packages
