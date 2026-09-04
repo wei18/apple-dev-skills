@@ -1,6 +1,6 @@
 ---
 name: spec-phase-orchestration
-description: The pre-implementation document pipeline — 5 files + `meetings/` directory (README.md + docs/design.md + docs/foundations.md + docs/plan.md + docs/methodology.md + meetings/), section-by-section approval (§What before §How), prerequisite checklist with Unconfirmed / Resolved gates, "no implementation code before design.md and plan.md approved" rule. Invoke when starting a new project that needs spec-first development, deciding doc structure, or when asked "which documents go in the spec phase".
+description: The pre-implementation document pipeline — 5 files + `meetings/` directory (README.md + docs/design.md + docs/foundations.md + docs/plan.md + docs/methodology.md + meetings/), section-by-section approval (§What before §How), prerequisite checklist with Unconfirmed / Resolved gates, "no implementation code before design.md and plan.md approved" rule. Invoke when deciding doc structure for a spec-first project, or when asked "which documents go in the spec phase".
 ---
 
 # Spec Phase Orchestration
@@ -69,7 +69,7 @@ Any proposal depending on external tools / APIs / third-party packages **must** 
 
 ### Backlog sections
 
-Every living doc carries a §Backlog. Stray ideas are routed by topic: "product → design", "tooling → foundations", "implementation step → plan", "collaboration → methodology", "unclassifiable → meeting log" (see `backlog-routing-by-topic`).
+Every living doc carries a §Backlog; route stray ideas there by topic — see `backlog-routing-by-topic`.
 
 ## Rationale
 

@@ -1,6 +1,6 @@
 ---
 name: mise-tool-management
-description: Use mise (mise.jdx.dev) to manage binary CLI / build tools (swiftlint, swiftformat, xcbeautify, gitleaks, lefthook, etc.) on both dev machines and CI, sharing a single `.mise.toml` for version parity. Invoke when starting a new project, choosing a tool version manager (vs asdf / Homebrew / manual), writing `.mise.toml`, or when asked "how do I manage swiftlint / xcbeautify versions".
+description: Use mise (mise.jdx.dev) to manage binary CLI / build tools (swiftlint, swiftformat, xcbeautify, gitleaks, lefthook, etc.) on both dev machines and CI, sharing a single `.mise.toml` for version parity. Invoke when choosing a tool version manager (vs asdf / Homebrew / manual), writing `.mise.toml`, or when asked "how do I manage swiftlint / xcbeautify versions".
 ---
 
 # mise Tool Management

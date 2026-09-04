@@ -1,6 +1,6 @@
 ---
 name: telemetry-facade-pattern
-description: Single `Telemetry` SwiftPM target with a fan-out facade — callers say "what happened" (`telemetry.observe(event)`), facade dispatches to multiple sinks (OSLog / NoOp tracking / MetricKit / Game Center). Invoke when starting a new project that will log + track, deciding logger / tracker coupling, designing telemetry interfaces, or when asked "should Logger and Tracking be one thing".
+description: Single `Telemetry` SwiftPM target with a fan-out facade — callers say "what happened" (`telemetry.observe(event)`), facade dispatches to multiple sinks (OSLog / NoOp tracking / MetricKit / Game Center). Invoke when deciding logger / tracker coupling, designing telemetry interfaces, or when asked "should Logger and Tracking be one thing".
 ---
 
 # Telemetry Facade Pattern

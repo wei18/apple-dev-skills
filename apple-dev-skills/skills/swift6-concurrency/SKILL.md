@@ -1,6 +1,6 @@
 ---
 name: swift6-concurrency
-description: Default to Swift 6 language mode with complete concurrency checking from the first line of code; treat all in-house types as needing Sendable; isolate third-party deps that lag with @preconcurrency. Invoke when starting a new Swift Apple-platform project, writing Package.swift, picking the Swift language mode in Xcode build settings, or when asked "should I turn on strict concurrency?".
+description: Default to Swift 6 language mode with complete concurrency checking from the first line of code; treat all in-house types as needing Sendable; isolate third-party deps that lag with @preconcurrency. Invoke when writing Package.swift, picking the Swift language mode in Xcode build settings, or when asked "should I turn on strict concurrency?".
 ---
 
 # Swift 6 / Strict Concurrency

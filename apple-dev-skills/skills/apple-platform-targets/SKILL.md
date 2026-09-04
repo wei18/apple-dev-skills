@@ -12,6 +12,18 @@ description: Default minimum deployment targets for Apple-platform Swift Apps an
 - Deciding whether to adopt latest-OS-only APIs (Liquid Glass `.glassEffect()`, new Observation, new SwiftData behaviour, etc.).
 - User asks about minimum iOS / macOS version or whether to support the previous major version.
 
+## Kickoff order
+
+This skill is the entry point for a new Apple-platform project — decide these defaults in this order, each via its own skill:
+
+1. **Platform** (this skill) — minimum deployment target.
+2. `swiftpm-modularization` — package / module shape.
+3. `swift6-concurrency` — language mode and concurrency checking.
+4. `swift-testing-baseline` — test framework and snapshot strategy.
+5. `oslog-logger-defaults`, `telemetry-facade-pattern`, `apple-three-piece-analytics` — logging, telemetry facade, and analytics stack.
+6. `mise-tool-management` — CLI tool version manager.
+7. `xcode-cloud-single-track-ci` — CI pipeline.
+
 ## Default decisions
 
 - **iOS 18 / macOS 15** as the default minimum.
