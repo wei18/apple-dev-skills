@@ -1,9 +1,11 @@
 # apple-dev-skills
 
-> A **curated catalog of skills for AI coding agents** ([Claude Code](https://code.claude.com)) —
-> built and collected from one developer's own shipping experience. First-party **Apple/Swift**
-> and **AI-agent-collaboration** skills, plus best-of-breed **external** skill plugins aggregated
-> **by reference** (credited to their authors, never copied).
+> A **skill catalog for vibe coding iOS (& Apple Ecosystem) apps with an AI coding agent**
+> ([Claude Code](https://code.claude.com)) — for independent developers and small teams taking
+> an idea to a shipped App Store release. Built on **harness engineering**: opinionated defaults,
+> shipped-it war stories, and a consistency gate that keep an agent's output honest. First-party
+> **Apple/Swift** and **AI-agent-collaboration** skills, plus best-of-breed **external** skill
+> plugins aggregated **by reference** (credited to their authors, never copied).
 >
 > Languages: [English](README.md) · [繁體中文](README.zh-Hant.md)
 
@@ -11,8 +13,7 @@ This repo is one **marketplace** hosting two first-party plugins and several agg
 
 ## Install
 
-> Claude Code discovers shared skills through the **plugin** system. This repo is both a
-> marketplace and the home of two first-party plugins.
+> Skills self-trigger from their `description:` — install, then just describe the task.
 
 ### A — marketplace (simplest)
 
@@ -57,18 +58,31 @@ npx skills add wei18/apple-dev-skills --list
 npx skills add wei18/apple-dev-skills --skill swift6-concurrency
 ```
 
-> **Path C does not include the aggregated externals.** `npx skills` scans this
-> repo for `SKILL.md` folders and never reads `marketplace.json`, so the commands
-> above reach only the 37 first-party skills — the 6 externals are silently
-> skipped. To flat-install the whole catalog (externals included, pulled from
-> their authors' repos):
+> **Path C does not include the aggregated externals.** `npx skills` does read this repo's
+> `marketplace.json` / `plugin.json`, but only follows locally-declared skill paths — it
+> doesn't fetch the externals' remote `github` / `git-subdir` sources, so the commands above
+> reach only the 37 first-party skills; the 6 externals are silently skipped. To flat-install
+> the whole catalog (externals included, pulled from their authors' repos):
 
 ```bash
 scripts/install-flat.sh -g          # user-level; drop -g for project-level
 scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 ```
 
+> Newly installed skills are first in line to lose their descriptions: Claude Code's skill
+> listing has a context budget, and on overflow it drops descriptions starting with the
+> least-invoked skills. Run `/doctor` to check the listing's cost; tune `skillListingBudgetFraction` / `skillOverrides` in settings if it's too tight.
+
 ## Catalog
+
+- **Spec** the flow → `spec-phase-orchestration`
+- **Bootstrap** the project → `apple-platform-targets`
+- **Build** the UI → `swiftui-navigation-architecture`
+- **Test** it → `swift-testing-baseline`
+- **Ship** it → `asc-api-automation`
+- **Operate** it → `apple-three-piece-analytics`
+
+Full index in the tables below.
 
 ### apple-dev-skills (25) — Apple/Swift
 
@@ -100,7 +114,7 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 | `host-driven-xcuitest-e2e` | Launch-the-app XCUITest E2E via Tuist — dedicated scheme wiring + macOS window-frame click driving |
 | `cloudkit-schema-source-of-truth` | Committed `.ckdb` + `cktool` export/validate/deploy to Development; Production is a user-owned Console-only gate |
 
-### collaboration-skills (12) — AI-agent process
+### collaboration-skills (12) — harness engineering: dispatch, review, ship
 
 | Skill | One-liner |
 |---|---|

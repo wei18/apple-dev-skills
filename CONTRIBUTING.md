@@ -49,8 +49,15 @@ Pick the plugin: Apple/Swift → `apple-dev-skills/skills/`, generic agent proce
 `name:` equals the dir. Then update `README.md`'s Catalog table + the group `(N)` count and
 the plugin's `plugin.json` description count, and run `mise run check`.
 
+Two gate rules `mise run check` enforces on the frontmatter `description`:
+- Max 800 characters.
+- If it contains `": "`, quote the whole value — an unquoted `": "` breaks strict YAML
+  parsers (see #42).
+
 ### 3. Report a field note (skill vs reality)
 
 Hit a real-world incident where a skill's guidance was wrong, incomplete, or missing —
 or a situation no skill covered? Open a [field note](.github/ISSUE_TEMPLATE/field-note.yml).
-Incidents are how this catalog's Sightings and known-trap entries grow.
+Incidents are how this catalog's Sightings and known-trap entries grow — see
+[`swiftui-interaction-footguns`'s Sightings section](apple-dev-skills/skills/swiftui-interaction-footguns/SKILL.md#sightings-real-bugs-that-shipped-past-review)
+for what a grown-out one looks like.
