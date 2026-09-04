@@ -1,6 +1,6 @@
 ---
 name: swiftui-interaction-footguns
-description: Checklist of known SwiftUI interaction bugs that slipped past pure-code review (tap-target shrink, sidebar inert Labels, sizeClass on Mac, .task re-fire, theme tint propagation, NSHostingView env). Invoke automatically during Code Reviewer dispatch on any `.swift` file under your UI target (e.g. `Sources/.../AppUI/`) or any file matching `*View*.swift`, and whenever reviewing new SwiftUI View components, Button / NavigationLink / TabView / Form, or Mac NavigationSplitView variants.
+description: Checklist of known SwiftUI interaction bugs that slipped past pure-code review (tap-target shrink, sidebar inert Labels, sizeClass on Mac, .task re-fire, theme tint propagation, NSHostingView env). Use when reviewing any SwiftUI View file or a PR that adds Button / NavigationLink / TabView / Form / NavigationSplitView.
 ---
 
 # SwiftUI Interaction Footguns

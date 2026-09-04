@@ -1,6 +1,6 @@
 ---
 name: swiftpm-modularization
-description: Default modularization shape for Apple-platform Swift Apps — single Swift Package, multi-target, thin App target, DI composition root, restricted Apple framework imports, one test target per production target. Invoke when starting a new project, writing Package.swift, deciding how to split modules, planning portability (e.g. Swift on Android), or when asked "single package or multi-package, how should I split modules".
+description: Default modularization shape for Apple-platform Swift Apps — single Swift Package, multi-target, thin App target, DI composition root, restricted Apple framework imports, one test target per production target. Invoke when writing Package.swift, deciding how to split modules, planning portability (e.g. Swift on Android), or when asked "single package or multi-package, how should I split modules".
 ---
 
 # SwiftPM Modularization

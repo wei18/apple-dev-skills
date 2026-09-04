@@ -1,6 +1,6 @@
 ---
 name: ios-accessibility-engineering
-description: Concrete VoiceOver / Dynamic Type / touch-target / Reduce Motion implementation guide for SwiftUI and UIKit. Invoke when building or auditing any user-facing iOS/macOS UI, when asked "make this accessible", or before an App Review submission a11y pass.
+description: Concrete VoiceOver / Dynamic Type / touch-target / Reduce Motion implementation guide for SwiftUI and UIKit. Invoke when adding or auditing VoiceOver labels, Dynamic Type support, touch-target sizing, or Reduce Motion behavior, running a WCAG accessibility audit, when asked "make this accessible", or diagnosing an accessibility-related App Review rejection.
 ---
 
 # iOS Accessibility Engineering
