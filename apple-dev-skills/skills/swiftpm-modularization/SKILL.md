@@ -101,6 +101,16 @@ App target
 - `swift build` plus an import-site `grep` are not sufficient verification for a target/test-directory rename. Non-Swift tooling — CI workflow files, task runners, code-gen scripts — often hard-code the **path string**, which compiles fine and passes the import grep but breaks at the tooling layer.
 - Before pushing a rename, also `grep -rn '<OldName>' <tooling dirs> .github ci_scripts` and run any gate that reads those paths (e.g. localization or fixture generation) locally to confirm it still resolves.
 
+### `.xcassets` inside a package target
+
+- `swift test` does not compile a package target's `.xcassets` at all — asset-catalog resources
+  are silently invisible to the plain SwiftPM test runner.
+- Adding a SwiftPM build-tool plugin to compile the catalog yourself then collides with Xcode's
+  own `LinkAssetCatalog` step when the package is consumed from an Xcode project: both produce
+  `Assets.car` for the same target, giving `Multiple commands produce …Assets.car`.
+- The common guard of checking for a `/SourcePackages/plugins/` path does not reliably tell you
+  whether the build is happening under Xcode — don't rely on it to skip the plugin conditionally.
+
 ## Related skills
 
 - `swift6-concurrency`: Package applies `swiftLanguageModes: [.v6]` in one place.

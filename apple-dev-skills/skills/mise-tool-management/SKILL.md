@@ -18,7 +18,8 @@ description: Use mise (mise.jdx.dev) to manage binary CLI / build tools (swiftli
 - **Adopt `mise`** ([mise.jdx.dev](https://mise.jdx.dev/)) to manage binary CLI / build tools.
 - **Dev machine and CI share the same `.mise.toml`**, committed to git.
 - Plugin backend priority: core plugin → `aqua:` → `ubi:` → `asdf:`.
-- CI (Xcode Cloud `ci_post_clone.sh`) first line: `mise install`; subsequent tool invocations always go through `mise exec <tool> -- <args>`.
+- CI (Xcode Cloud `ci_post_clone.sh`) first line: `mise trust`, then `mise install`; subsequent tool invocations always go through `mise exec <tool> -- <args>`.
+- **A freshly cloned repo or a freshly created git worktree starts with `.mise.toml` untrusted** — `mise install` / `mise exec` don't apply the pinned versions until `mise trust` has run once in that directory. Every new agent worktree and every CI checkout hits this; run `mise trust` before the first `mise install`/`mise exec` in each.
 
 ## Rationale
 

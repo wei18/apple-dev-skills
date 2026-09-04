@@ -108,6 +108,14 @@ Mint fresh per run; a job that outlives the token re-mints instead of extending 
 
 The review-submission flow is the 2022+ `reviewSubmissions` model, which replaced the deprecated one-shot `appStoreVersionSubmissions`.
 
+## Pre-submission prerequisites the three-call flow doesn't mention
+
+The `POST reviewSubmissions` → `POST reviewSubmissionItems` → `PATCH submitted: true` sequence above assumes the app is already submittable; in practice three preconditions block it and have no REST fix:
+
+- **App pricing must be set first.** Apple's ASC Help confirms pricing has to be configured before submission (*Set a price* / *Overview of submitting for review*, help.apple.com/app-store-connect), and it's a **web-UI-only** setting — no `appPricePoints`/pricing write endpoint exists to script around it. Observed in practice (exact error-code string not found in Apple's published API reference): a `POST reviewSubmissions` on an app with no price configured fails with a pricing-state error. Set the price in the ASC web UI once, before automating the rest.
+- **An empty `copyright` attribute blocks submission.** Apple's error-code family for a missing required attribute is documented on the developer forums as `ENTITY_ERROR.ATTRIBUTE.REQUIRED` for other required fields (e.g. `companyName`); the same shape is observed in practice for a blank `copyright` on the app/version resource — not confirmed against Apple's official attribute reference, so treat the exact code as observed-in-practice, not documented fact. Fix: always send a non-empty `copyright` string.
+- **A leftover non-`COMPLETE` `reviewSubmissions` blocks a new `POST`, and there is no DELETE.** Apple's API reference publishes `DELETE /v1/appStoreVersionSubmissions/{id}` only for the deprecated pre-2022 model; the current `reviewSubmissions` resource has no DELETE operation. To clear a stuck submission, `PATCH /v1/reviewSubmissions/<id>` with `attributes.state: "CANCELING"` — `CANCELING` is a documented `ReviewSubmission.Attributes.state` enum value (alongside `READY_FOR_REVIEW`, `WAITING_FOR_REVIEW`, `IN_REVIEW`, `UNRESOLVED_ISSUES`, `COMPLETING`, `COMPLETE`). During `WAITING_FOR_REVIEW`, canceling returns the version to an editable state (observed as `DEVELOPER_REJECTED`, a documented `AppVersionState` value) without leaving an Apple rejection record — this is the withdrawal recipe when a submission needs correcting before Apple starts review.
+
 ## Release automation: SemVer, changelog, and explicit releaseType
 
 - **`versionString` = SemVer, sourced from the build, not reinvented in CI.** Set it to the same value as the archived build's `MARKETING_VERSION` (`CFBundleShortVersionString`) — bump that once at the Xcode-project level (→ `xcode-cloud-single-track-ci` build-number & version automation), then read it back for the `appStoreVersions` call instead of maintaining a second version counter in release tooling.

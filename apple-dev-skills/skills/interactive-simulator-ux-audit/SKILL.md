@@ -108,7 +108,12 @@ and already give a usable answer for most cases.
 idb ui describe-all --udid <udid>            # element frames + accessibility labels
 idb ui tap --udid <udid> <x> <y>              # tap at device-point coordinates
 xcrun simctl io <udid> screenshot <path.png>  # capture, then read the PNG and look at it
+xcrun simctl io <udid> recordVideo <path.mp4> # capture a flow as video
 ```
+
+`recordVideo` fails outright if `<path.mp4>` already exists (`NSPOSIXErrorDomain` code 17,
+"file exists") — pass `-f` to overwrite, or `rm -f <path.mp4>` first, especially when re-running
+the same recording path across attempts.
 
 - **Get tap coordinates from `describe-all`**, not from eyeballing a screenshot — a
   screenshot is rendered at the device's pixel scale (commonly 3×), not point space. Tap the
@@ -118,6 +123,16 @@ xcrun simctl io <udid> screenshot <path.png>  # capture, then read the PNG and l
 - After each tap, `describe-all` again before the next action — a tap can miss, dismiss an
   unrelated system alert, or navigate further than expected, and you need to know where you
   actually landed.
+
+### When `describe-all` legitimately returns an empty tree
+
+`idb`'s accessibility dump is not 100% reliable — observed in practice (and tracked upstream,
+e.g. facebook/idb#767) to come back empty or missing elements on some view hierarchies, with no
+element frame to tap from. When that happens, don't treat "no pixel-coordinate tapping" as
+absolute: fall back to **screenshot pixels ÷ device scale = points** (e.g. a 1206×2622 px
+screenshot at a 3× scale device → tap at pixel ÷ 3, so 402×874 pt for that iPhone 17 Pro) and
+**screenshot after every tap** to confirm it landed correctly — this fallback is only safe
+because you're verifying each step, not because the math is guaranteed accurate.
 
 ## Gotchas
 
@@ -183,8 +198,10 @@ doesn't model. Driving the actual Simulator is the only check that covers the se
 
 ## Common Mistakes
 
-1. **Tapping from screenshot pixel coordinates** instead of `describe-all` point coordinates
-   — taps land at the wrong spot on any non-1× device.
+1. **Tapping from screenshot pixel coordinates without first trying `describe-all`** — taps
+   land at the wrong spot on any non-1× device unless converted (pixel ÷ scale); only fall back
+   to pixel math when `describe-all` legitimately returns an empty tree (see above), and verify
+   every such tap with a follow-up screenshot.
 2. **Reporting a bug from a stale installed build** — always confirm the running version first.
 3. **Treating "online + signed out" and "offline" as one case** — they exercise different code
    paths (fail-fast vs. hang) and must both be driven separately.

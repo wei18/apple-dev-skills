@@ -43,6 +43,15 @@ For each in-flight subagent's dirty-file set vs the new dispatch's likely scope:
 - **Module overlap** (same target directory but different files): WARN but allow with `isolation: "worktree"`. Note in dispatch prompt: "in-flight subagent X is editing target Y; do not touch files Z."
 - **No overlap**: dispatch safely.
 
+### Non-file exclusive resources also conflict
+
+The intersection check above only reasons about file paths, but a **booted Simulator** is
+just as exclusive a resource as a file: pre-assign a UDID per subagent in the dispatch prompt
+rather than letting each agent boot/pick one implicitly. Some `simctl` settings are **device-global**,
+not per-app — `xcrun simctl ui <udid> appearance|content_size` changes the whole device's state,
+so agent A switching to dark mode or Dynamic Type contaminates agent B's screenshots if they
+share a simulator (see `interactive-simulator-ux-audit` for the driving pattern this protects).
+
 ## Pre-dispatch base correctness (verify the worktree base before you dispatch)
 
 `isolation: "worktree"` does **not** always branch from your current local HEAD. The base is
@@ -73,6 +82,14 @@ git merge-base --is-ancestor <dep-sha> HEAD && echo "base OK" || echo "STALE BAS
 If the work depends on a just-merged PR, sync first (`git checkout main && git fetch && git reset --hard origin/main` — `reset --hard` discards uncommitted local changes, so stash them first) THEN dispatch. `<dep-sha>` above is the commit your work depends on (e.g. the merged PR's commit on `main`). State the expected base SHA in the dispatch prompt and tell the agent to verify it (`git log --oneline -5`; confirm a key file/symbol exists) before coding.
 
 > Real incident (pre-v2.1.208 / local-HEAD-fallback behavior): a DEBUG test-hook subagent was dispatched right after a fix merged to `main`, but the dispatching HEAD was a pre-merge commit. The worktree branched from the stale base, so the new code referenced an `init` parameter and a file that only existed post-merge → 2 compile errors that the agent's own package build hadn't surfaced. Cost a full cherry-pick-onto-correct-base + rebuild cycle.
+
+## Two traps specific to resuming an agent
+
+- **A resumed agent isn't necessarily still where you think it is.** Don't trust that a
+  resumed subagent is on the directory/branch it started on — verify `pwd` + `git rev-parse
+  --abbrev-ref HEAD` before trusting its next commit.
+- **A worktree's index can hold ghost entries pointing at pruned objects.** This surfaces as
+  `invalid object … Error building trees` on commit. Recover with `git read-tree origin/main`.
 
 ## Coexisting with another live agent / session on the same repo
 
@@ -117,7 +134,7 @@ Options:
 
 ## Integration with methodology.md
 
-This skill operationalizes `docs/methodology.md §派發契約` item 9 (Leader pre-flight). The pre-flight checklist explicitly lists "kill orphan procs" + "rebase WIP onto main" + "mise trust" — this skill adds the conflict-detection step before those.
+This skill operationalizes `docs/methodology.md §派發契約` item 9 (Leader pre-flight). The pre-flight checklist explicitly lists "kill orphan procs" + "rebase WIP onto main" + "mise trust" — this skill adds the conflict-detection step before those. For why `mise trust` is required before `mise install`/`mise exec` take effect in a fresh worktree or CI checkout, see `mise-tool-management`.
 
 ## False-positive handling
 
