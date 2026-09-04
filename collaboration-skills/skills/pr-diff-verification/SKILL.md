@@ -88,3 +88,7 @@ If git log shows 1 commit (subagent squashed without saying) → OK if intention
 If git log shows 0 commits (commits lost to worktree wipe) → STOP, recover, re-push
 If git diff --stat shows different file count → investigate
 ```
+
+## Related skills
+
+- `github-contribution-workflow` — routes diff-vs-commit verification here before push/PR; that skill owns the gh CLI mechanics, this one owns the post-commit sanity check.

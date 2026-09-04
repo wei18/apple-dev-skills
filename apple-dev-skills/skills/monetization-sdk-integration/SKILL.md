@@ -28,7 +28,7 @@ Default rule: **no third-party SDKs** in the app. Apple-platform native APIs pre
 
 If any of (1)-(5) fails: deny. Reject the SDK proposal; suggest Apple-native fallback or sit it out.
 
-## The isolation contract (§9.1)
+## The isolation contract
 
 For every accepted SDK:
 
@@ -147,3 +147,8 @@ If any field is "TBD" or "?", do NOT proceed — research first.
 - `Sources/<AdsBridge>/<SdkName>Bridge.swift` — protocol seam example
 - `Sources/<AdsBridge>/Live<SdkName>Bridge.swift` — single-import-site example
 - `<App>/Resources/PrivacyInfo.xcprivacy` — tracking domains declaration
+
+## Related skills
+
+- `build-time-secret-injection` — SIBLING; invoke together when wiring AdMob — that skill is the secret-handling layer (xcconfig injection), this skill is the SDK isolation and testing contract.
+- `app-store-review-rejections` — cites this skill's isolation contract when checking the Restore Purchases requirement under guideline 3.1.1.

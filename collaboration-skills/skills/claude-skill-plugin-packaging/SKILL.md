@@ -140,3 +140,8 @@ start with `./`), `github` (`repo`,`ref?`,`sha?`), `url` (git URL), `git-subdir`
 - `claude plugin details your-skills@your-skills` lists the bundled skills + scope.
 - For model B: `git ls-files .claude/settings.json` (it's committed) and the submodule
   gitlink point at the intended version.
+
+## Related skills
+
+- `github-contribution-workflow` — routes plugin distribution/installation questions here; that skill owns PR/issue mechanics, this one owns packaging and discovery.
+- `skill-authoring-patterns` — routes distribution/packaging questions here once a skill is authored; that skill owns authoring conventions, this one owns how the finished skill gets shared.

@@ -22,7 +22,7 @@ Never guess at a performance problem; profile first. Instruments ships with Xcod
 
 **Allocations** — tracks every heap allocation. Use the "Generation" feature: take a snapshot before an action, perform the action repeatedly, take another snapshot, and diff. Any allocation that grew unboundedly across generations is a leak or an accumulation bug. The "Leaks" instrument detects reference cycles automatically but misses logical leaks (objects kept alive longer than needed).
 
-**SwiftUI instrument** — records View body invocation counts, `@State` change propagation, and diffing cost. Available from Xcode 15+. A body that fires more than expected usually means a dependency is too coarse (e.g. observing the whole model when only one field is needed). The instrument shows which property change triggered each body re-render.
+**SwiftUI instrument** — records View body invocation counts, `@State` change propagation, and diffing cost. Xcode 26 introduced a next-generation SwiftUI instrument that tracks the causes of each update. A body that fires more than expected usually means a dependency is too coarse (e.g. observing the whole model when only one field is needed). The instrument shows which property change triggered each body re-render.
 
 **Hangs instrument** (Xcode 14+) — captures main-thread spins longer than a configurable threshold (default 250 ms). Apple classifies blocks 250–500 ms as micro-hangs and ≥500 ms as full hangs. Pairs with the **App Launch** template for pre-first-frame blocking. The system also generates `MXHangDiagnostic` on-device (see MetricKit below).
 

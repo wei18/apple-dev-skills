@@ -104,8 +104,9 @@ Other macOS-driving specifics:
   by its now-stale label on each subsequent tap.
 - Test classes that touch `XCUIElement` APIs must be `@MainActor` under Swift 6 strict
   concurrency — those APIs are main-actor-isolated.
-- `-only-testing:<Target>/<Class>/<method>` requires all three path segments; a partial path
-  silently runs the whole target instead of failing.
+- `-only-testing:` identifiers have the form `TestTarget[/TestClass[/TestMethod]]` (per
+  `man xcodebuild`) — target-only and target/class are both valid, narrowing scope to
+  that target or class; a full three-segment path narrows to one method.
 
 ## Locale-stable queries
 
@@ -160,7 +161,7 @@ replaces them (see the test pyramid in `swift-testing-baseline`).
 - [ ] macOS taps go through window-frame anchoring, not `element.tap()` / `app.coordinate(...)`.
 - [ ] No `hittable` inside an NSPredicate string.
 - [ ] Locale-sensitive elements are queried by accessibility identifier, not label text.
-- [ ] `-only-testing:` invocations include all three path segments.
+- [ ] `-only-testing:` identifiers follow `TestTarget[/TestClass[/TestMethod]]` — only as many segments as the intended scope.
 - [ ] Any debug-only entry-point seam is compiled out of Release builds.
 
 ## Related skills

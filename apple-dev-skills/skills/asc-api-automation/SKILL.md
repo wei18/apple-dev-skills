@@ -18,9 +18,9 @@ This catalog's default way to drive App Store Connect from scripts and CI: an Ap
 
 Owns: token minting, curl conventions, and the endpoint cookbook below. Does NOT own:
 
-- **Building / uploading the binary** — there is no REST endpoint for `.ipa` upload; builds arrive in ASC via Xcode Cloud (→ [[xcode-cloud-single-track-ci]]), Xcode Organizer, or Transporter. This skill picks up *after* the build exists in ASC.
-- **`.p8` key storage & leak prevention** → [[build-time-secret-injection]] (Layer 2 `secrets/.env`) + [[apple-public-repo-security]] (rotate-first SOP).
-- **What metadata will pass review** → [[app-store-review-rejections]]; this skill is *how* to submit, not *what*.
+- **Building / uploading the binary** — there is no REST endpoint for `.ipa` upload; builds arrive in ASC via Xcode Cloud (→ `xcode-cloud-single-track-ci`), Xcode Organizer, or Transporter. This skill picks up *after* the build exists in ASC.
+- **`.p8` key storage & leak prevention** → `build-time-secret-injection` (Layer 2 `secrets/.env`) + `apple-public-repo-security` (rotate-first SOP).
+- **What metadata will pass review** → `app-store-review-rejections`; this skill is *how* to submit, not *what*.
 
 ## Keys: create, scope, store
 
@@ -29,7 +29,7 @@ Owns: token minting, curl conventions, and the endpoint cookbook below. Does NOT
 | **Team key** (default) | Users and Access → Integrations; role-scoped | `iss` = Issuer ID | CI and shared tooling — pick the least-privilege role that works (App Manager covers release ops; avoid Admin) |
 | **Individual key** | Your user profile → Individual API Key | `sub: "user"` (no `iss`) | Personal one-off scripts; inherits *your* permissions |
 
-Store per [[build-time-secret-injection]] Layer 2:
+Store per `build-time-secret-injection` Layer 2:
 
 ```bash
 # secrets/.env (gitignored; .env.example committed)
@@ -110,7 +110,7 @@ The review-submission flow is the 2022+ `reviewSubmissions` model, which replace
 
 ## Release automation: SemVer, changelog, and explicit releaseType
 
-- **`versionString` = SemVer, sourced from the build, not reinvented in CI.** Set it to the same value as the archived build's `MARKETING_VERSION` (`CFBundleShortVersionString`) — bump that once at the Xcode-project level (→ [[xcode-cloud-single-track-ci]] build-number & version automation), then read it back for the `appStoreVersions` call instead of maintaining a second version counter in release tooling.
+- **`versionString` = SemVer, sourced from the build, not reinvented in CI.** Set it to the same value as the archived build's `MARKETING_VERSION` (`CFBundleShortVersionString`) — bump that once at the Xcode-project level (→ `xcode-cloud-single-track-ci` build-number & version automation), then read it back for the `appStoreVersions` call instead of maintaining a second version counter in release tooling.
 - **Changelog → `whatsNew`, generated once, written twice.** Build the "What's New" text from `git log <last-tag>..HEAD --oneline` (or your conventional-commit tooling) in the release job, then `PATCH` it into both `betaBuildLocalizations` (TestFlight) and `appStoreVersionLocalizations` (App Store) per locale — one generated string, two writes, so testers and reviewers see the same notes.
 - **`releaseType` — set it explicitly, every time.** The attribute is optional and Apple's schema documents no default value. The ASC web UI backs the same behavior with an explicit 3-way choice (*Manually release this version* / *Automatically release this version* / *Automatically release this version after App Review, no earlier than*); skipping `releaseType` in a scripted create/update leaves the version's release behavior to an undocumented default — in practice new versions show up as auto-release — instead of a decision your pipeline made on purpose. Default to `MANUAL` in automation unless auto-release is the deliberate intent.
 
@@ -136,7 +136,7 @@ The review-submission flow is the 2022+ `reviewSubmissions` model, which replace
 6. **Parsing `salesReports` as JSON** — it's a gzipped TSV file.
 7. **Tight-polling build processing or analytics** without reading `X-Rate-Limit` — 429 locks out every consumer of the key.
 8. **Admin-role key in CI** when App Manager or a `scope`d token suffices.
-9. **`.p8` committed to the repo** — stop and run the rotate-first SOP in [[apple-public-repo-security]]; storage layout per [[build-time-secret-injection]].
+9. **`.p8` committed to the repo** — stop and run the rotate-first SOP in `apple-public-repo-security`; storage layout per `build-time-secret-injection`.
 10. **Omitting `releaseType` on an `appStoreVersions` create/update** — the attribute has no documented default, so an unset value can leave a version on automatic release; it goes live the instant Apple approves it instead of waiting for a deliberate manual release. Set `releaseType: "MANUAL"` explicitly unless auto-release is intended.
 
 ## Review Checklist
@@ -152,7 +152,7 @@ The review-submission flow is the 2022+ `reviewSubmissions` model, which replace
 
 ## Related skills
 
-- [[xcode-cloud-single-track-ci]] — build & upload side; this skill starts after the build exists in ASC
-- [[build-time-secret-injection]] — where `ASC_KEY_ID` / `ASC_ISSUER_ID` / the `.p8` live (Layer 2 `secrets/.env`)
-- [[apple-public-repo-security]] — `.p8` leak prevention and the rotate-first SOP
-- [[app-store-review-rejections]] — *what* to submit so review passes; this skill is *how* to submit
+- `xcode-cloud-single-track-ci` — build & upload side; this skill starts after the build exists in ASC
+- `build-time-secret-injection` — where `ASC_KEY_ID` / `ASC_ISSUER_ID` / the `.p8` live (Layer 2 `secrets/.env`)
+- `apple-public-repo-security` — `.p8` leak prevention and the rotate-first SOP
+- `app-store-review-rejections` — *what* to submit so review passes; this skill is *how* to submit

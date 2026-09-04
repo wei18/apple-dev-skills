@@ -33,11 +33,13 @@ to *pin* the fix.
 If your project's policy forbids Homebrew, a direct GitHub release download is a distinct,
 usually-allowed path — confirm against your own policy, then:
 
-1. **`idb_companion`**: download `idb-companion.universal.tar.gz` from
+1. **`idb_companion`**: download `idb-companion.macos-arm64.tar.gz` from
    https://github.com/facebook/idb/releases → extract to e.g.
-   `~/idb-tools/companion/idb-companion.universal/` (binary lives in `bin/`, with a sibling
+   `~/idb-tools/companion/idb-companion.macos-arm64/` (binary lives in `bin/`, with a sibling
    `Frameworks/` directory the binary loads via `@executable_path`). An objc
-   duplicate-class warning for `FBProcess` at launch is non-fatal.
+   duplicate-class warning for `FBProcess` at launch is non-fatal. The asset filename
+   changes across releases — confirm the current one first with
+   `gh release view --repo facebook/idb --json assets`.
 2. **`idb` CLI**: `pip3 install --user fb-idb`.
 3. Put both on `PATH`. Symlink `idb` directly. For the companion, use a **wrapper script**
    that `exec`s the real binary's *absolute path* — a bare symlink breaks the
@@ -46,7 +48,7 @@ usually-allowed path — confirm against your own policy, then:
    `idb ui describe-all --udid <udid>` returns the accessibility tree (element frames +
    labels) in **device-point** space (e.g. an iPhone 17 Pro reports 402×874 pt).
 
-## Preflight: how many simulators fit on this Mac
+## Preflight: how many simulators fit locally
 
 Before running multiple agents or audit sessions in parallel, size the fleet with
 arithmetic, not a tool — steps 1-2 need nothing beyond Activity Monitor or `xcrun simctl`

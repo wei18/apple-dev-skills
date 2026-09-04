@@ -27,7 +27,7 @@ description: Default CI strategy for solo / small-team Apple-platform projects â
 | **PR CI** | PR open / push (**enable "Merge with base branch before building"**) | Build + Test (unit / integration with fakes / snapshot) |
 | **Main CI** | Merge to `main` | Build + Archive + upload to internal TestFlight; **do not re-run tests** (already verified by PR CI in pre-merged state) |
 | **Release** | git tag `v*` | Build + upload to App Store Connect (manual submission for review) |
-| **Periodic / Manual** | Scheduled + manual trigger | Project-specific batch jobs (puzzle generation, metadata updates, etc.) |
+| **Periodic / Manual** | Scheduled + manual trigger | Project-specific batch jobs (nightly export, metadata updates, etc.) |
 
 > **Scheduling granularity caveat**: Xcode Cloud's "On a Schedule" start condition supports **hourly / daily / weekly** granularity only â€” arbitrary cron expressions are not supported. For monthly-or-longer cadence, schedule weekly and add a script-side date guard inside `ci_post_clone.sh` that early-exits when the date doesn't match the desired condition.
 
