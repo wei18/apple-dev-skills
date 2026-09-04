@@ -18,6 +18,12 @@ Checks
      always-on context for every consumer session; keeps Lens-3 compression durable).
   8. Each plugin's `.claude-plugin/plugin.json` "version" == the corresponding
      marketplace.json plugins[] entry "version" (the pair bump-version.py maintains).
+  9. README.zh-Hant.md's `## 目錄` section covers the same first-party skills +
+     externals as README.md's Catalog (mirrors check 2; count regex also accepts
+     full-width parens, since the zh mirror is hand-typed).
+  10. Each SKILL.md frontmatter description that is not quoted must not contain
+      ": " or start with a YAML indicator character (PR #42: an unquoted value
+      containing ": " breaks strict YAML parsers).
 Stdlib only.
 """
 from __future__ import annotations
@@ -58,6 +64,12 @@ for plugin, expected in PLUGINS.items():
         if desc is None: fail(f"[skill] {plugin}/{name}: no frontmatter description")
         elif len(desc) > DESC_MAX:
             fail(f"[skill] {plugin}/{name}: description {len(desc)} chars > {DESC_MAX}")
+        # 10. description must survive a strict YAML parse — fm_field() returns the
+        # raw value (quotes intact, not stripped), so check quoting directly on it.
+        if desc:
+            quoted = len(desc) >= 2 and desc[0] in "'\"" and desc[-1] == desc[0]
+            if not quoted and (": " in desc or desc[0] in "[]{}&*>|#%@`"):
+                fail(f"[skill] {plugin}/{name}: description must be quoted (contains ': ' or a YAML indicator)")
 
 # helper: scope README Catalog section
 def scoped(text: str, *markers: str) -> str:
@@ -82,6 +94,24 @@ else:
         if required not in g:
             fail(f"[readme] Catalog counts {sorted(g)} must include {sorted((*PLUGINS.values(), len(EXTERNALS)))}")
             break
+
+# 9. README.zh-Hant.md's 目錄 (Catalog) section — same token coverage check as
+# above, mirrored: it's hand-typed so a translator can silently drop/mistype a
+# skill token without English README.md or the src-sha check ever noticing.
+zh_path = ROOT / "README.zh-Hant.md"
+if zh_path.is_file():
+    zh_sec = scoped(zh_path.read_text(encoding="utf-8"), "## 目錄")
+    if not zh_sec:
+        fail("[zh] no '## 目錄' section")
+    else:
+        zh_tokens = set(re.findall(r"`([a-z0-9][a-z0-9-]+)`", zh_sec))
+        zh_missing = (all_skills | EXTERNALS) - zh_tokens
+        if zh_missing: fail(f"[zh] 目錄 missing: {sorted(zh_missing)}")
+        zg = [int(x) for x in re.findall(r"[\(（](\d+)[\)）]", zh_sec)]
+        for required in (*PLUGINS.values(), len(EXTERNALS)):
+            if required not in zg:
+                fail(f"[zh] 目錄 counts {sorted(zg)} must include {sorted((*PLUGINS.values(), len(EXTERNALS)))}")
+                break
 
 # plugin.json counts
 plugin_json_versions: dict[str, str] = {}
