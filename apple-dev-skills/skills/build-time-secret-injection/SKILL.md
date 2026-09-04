@@ -17,10 +17,10 @@ Examples:
 - Any third-party SDK app key (Firebase, RevenueCat, etc.) where the convention is "hold until ship"
 
 Do NOT invoke for:
-- True per-deploy secrets (signing certs, CloudKit production API keys, push notification keys) — those have stricter patterns (see [[apple-public-repo-security]])
+- True per-deploy secrets (signing certs, CloudKit production API keys, push notification keys) — those have stricter patterns (see `apple-public-repo-security`)
 - Values genuinely public from day 1 (bundle IDs, CKContainer IDs, IAP product IDs, marketing URLs)
 
-## The pattern (locked 2026-06-03)
+## The pattern
 
 ### Two storage layers, one mechanism per layer
 
@@ -57,7 +57,7 @@ secrets/
 ### Project.swift wiring (Tuist)
 
 ```swift
-let sudokuTarget = Target.target(
+let appTarget = Target.target(
     // ...
     settings: .settings(
         base: ["SWIFT_VERSION": "6"],
@@ -78,12 +78,12 @@ When one repo ships multiple app schemes (e.g. AppA + AppB), XCC sets `$CI_PRODU
 ```bash
 case "${CI_XCODE_SCHEME:-${CI_PRODUCT:-}}" in
   AppA)
-    APP_ID="${APPA_ADMOB_APP_ID:?missing APPA_ADMOB_APP_ID}"
-    BANNER_UNIT_ID="${APPA_ADMOB_BANNER_UNIT_ID:?missing APPA_ADMOB_BANNER_UNIT_ID}"
+    APP_ID="${APP_A_ADMOB_APP_ID:?missing APP_A_ADMOB_APP_ID}"
+    BANNER_UNIT_ID="${APP_A_ADMOB_BANNER_UNIT_ID:?missing APP_A_ADMOB_BANNER_UNIT_ID}"
     ;;
   AppB)
-    APP_ID="${APPB_ADMOB_APP_ID:?missing APPB_ADMOB_APP_ID}"
-    BANNER_UNIT_ID="${APPB_ADMOB_BANNER_UNIT_ID:?missing APPB_ADMOB_BANNER_UNIT_ID}"
+    APP_ID="${APP_B_ADMOB_APP_ID:?missing APP_B_ADMOB_APP_ID}"
+    BANNER_UNIT_ID="${APP_B_ADMOB_BANNER_UNIT_ID:?missing APP_B_ADMOB_BANNER_UNIT_ID}"
     ;;
   *)
     echo "Unknown CI_XCODE_SCHEME: ${CI_XCODE_SCHEME:-}" >&2
@@ -126,11 +126,11 @@ A future PR should add a build-phase script that asserts no `$()` literals survi
 
 1. **Production IDs in code comments, docstrings, PR descriptions, commit messages, or `Info.plist <!-- -->` blocks.** Even when the value field uses a sandbox stand-in, the surrounding prose leaks production via git history. **Including the literal ID anywhere in tracked text — even prefixed by TODO / FIXME / "will-replace" — IS the leak.** Reference a project-memory or secrets file by name; never paste the value inline.
 
-2. **Hardcoded production IDs in `Live.swift` with intent to "swap before release"** without an enforcement mechanism. The interim `fatalError("REPLACE_IN_v2.5.3:...")` pattern is acceptable as a TRANSITIONAL guard paired with xcconfig migration (see Migration §3), but is forbidden as a long-term standalone solution. Once xcconfig is in place, replace with: Info.plist `$()` + runtime guard verifying `Bundle.main.object(forInfoDictionaryKey:)` returns non-empty AND non-`$(...)`.
+2. **Hardcoded production IDs in `Live.swift` with intent to "swap before release"** without an enforcement mechanism. The interim `fatalError("REPLACE_BEFORE_RELEASE: ...")` pattern is acceptable as a TRANSITIONAL guard paired with xcconfig migration, but is forbidden as a long-term standalone solution. Once xcconfig is in place, replace with: Info.plist `$()` + runtime guard verifying `Bundle.main.object(forInfoDictionaryKey:)` returns non-empty AND non-`$(...)`.
 
 3. **Conflating GitHub Secrets with XCC env vars.** Apple's XCC does not read GH Secrets — they're separate storage. If CI builds on XCC, secrets must live in XCC's Environment Variables UI, not GH.
 
-4. **Most common mistake**: ❗ **Shell env vars do NOT feed xcconfig `$(VAR)` interpolation.** xcconfig variable resolution reads from the build settings table, not process env. `source admob.env && xcodebuild archive` does NOT populate `$(SUDOKU_ADMOB_APP_ID)`. Only positional `xcodebuild VAR=value` or `-xcconfig override.xcconfig` actually injects, OR a CI script writes the xcconfig file before build. Architect review §A documents this fatal assumption.
+4. **Most common mistake**: ❗ **Shell env vars do NOT feed xcconfig `$(VAR)` interpolation.** xcconfig variable resolution reads from the build settings table, not process env. `source admob.env && xcodebuild archive` does NOT populate `$(ADMOB_APP_ID)`. Only positional `xcodebuild VAR=value` or `-xcconfig override.xcconfig` actually injects, OR a CI script writes the xcconfig file before build.
 
 5. **`Bundle.main.object(forInfoDictionaryKey:) as! String`** — force cast bypasses SwiftLint AND crashes hard if CI generation skipped + xcconfig missing. Use `as? String` + `guard let ... else { preconditionFailure }` with the unresolved-`$()` check.
 
@@ -168,16 +168,16 @@ A future PR should add a build-phase script that asserts no `$()` literals survi
 
 ## Adjacent skills + memory
 
-- **REQUIRED background**: [[apple-public-repo-security]] — broader secret-leak prevention (gitleaks, lefthook, GitHub Secret Scanning)
-- **SIBLING**: [[monetization-sdk-integration]] — invoke together when wiring AdMob; this skill is the secret-handling layer
+- **REQUIRED background**: `apple-public-repo-security` — broader secret-leak prevention (gitleaks, lefthook, GitHub Secret Scanning)
+- **SIBLING**: `monetization-sdk-integration` — invoke together when wiring AdMob; this skill is the secret-handling layer
 - **SIBLING**: your ASC submission-ops workflow (who may push what) — ASC API key handling more broadly
 - Project memory file documenting the secret-scrubbing incident — the incident that triggered this skill pattern
 - Project memory files for each credential set — real values held outside repo (cite by memory-file name, never paste inline)
 
 ## AdMob env keys pattern
 
-`secrets/.env` carries per-app production pairs (e.g. `APPA_ADMOB_APP_ID` /
-`APPA_ADMOB_BANNER_UNIT_ID` and `APPB_*` twins). Two consumers render
+`secrets/.env` carries per-app production pairs (e.g. `APP_A_ADMOB_APP_ID` /
+`APP_A_ADMOB_BANNER_UNIT_ID` and `APP_B_*` twins). Two consumers render
 `Tuist/AdMob.xcconfig` from them: XCC `ci_post_clone.sh` (from workflow
 Secret env vars) and your TestFlight upload task (from `secrets/.env`).
 Values live in secrets/.env (primary) + the XCC workflow config + the

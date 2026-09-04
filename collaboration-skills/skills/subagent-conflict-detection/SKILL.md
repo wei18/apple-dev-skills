@@ -1,6 +1,6 @@
 ---
 name: subagent-conflict-detection
-description: Use before dispatching a subagent (especially `isolation:"worktree"`) to avoid three dispatch hazards — file-scope overlap with an in-flight subagent, a stale dispatch base, and collisions with another live agent/session editing the same checkout or git-submodule path. Invoke when about to call the Agent tool with `isolation:"worktree"`; when another subagent is running; right after a merge or branch switch (verify the dispatch base first); or when another Claude session is editing a shared repo/submodule path.
+description: 'Use before dispatching a subagent with `isolation:"worktree"`, or while another subagent is in flight, to avoid three dispatch hazards — file-scope overlap with an in-flight subagent, a stale dispatch base, and collisions with another live agent/session editing the same checkout or git-submodule path. Invoke when about to call the Agent tool with `isolation:"worktree"`; when another subagent is running; right after a merge or branch switch (verify the dispatch base first); or when another Claude session is editing a shared repo/submodule path.'
 ---
 
 # Subagent Conflict Detection
@@ -43,11 +43,24 @@ For each in-flight subagent's dirty-file set vs the new dispatch's likely scope:
 - **Module overlap** (same target directory but different files): WARN but allow with `isolation: "worktree"`. Note in dispatch prompt: "in-flight subagent X is editing target Y; do not touch files Z."
 - **No overlap**: dispatch safely.
 
-## Pre-dispatch base correctness (verify HEAD before you dispatch)
+## Pre-dispatch base correctness (verify the worktree base before you dispatch)
 
-`isolation: "worktree"` branches the subagent's worktree from the **current HEAD of the dispatching checkout at dispatch time**. So WHAT HEAD points at is part of the dispatch contract — get it wrong and the agent silently works against the wrong base.
+`isolation: "worktree"` does **not** always branch from your current local HEAD. The base is
+decided by `worktree.baseRef`:
 
-The classic failure: you merge PR A to `main`, then immediately dispatch a subagent for follow-up work that depends on A. If HEAD is not actually on the post-merge `main` (e.g. a background build left it detached, you forgot to `git checkout main && git reset --hard origin/main`, or the branch you're on predates A), the worktree branches from a **pre-A base**. The agent then can't see A's new symbols/files — it fails to compile against APIs that "should exist", or worse, re-implements against the old shape. Code review may not catch it (the agent's local build can pass on the stale base); it surfaces only when you try to build the integrated result.
+- **`"fresh"` (the default)** — branches from the repository's **default branch on the
+  remote** (typically `origin/main`), not your local HEAD. Any commit you haven't pushed yet
+  is invisible to the worktree. If the dispatched work depends on your in-progress local
+  branch, push first, or set `worktree.baseRef: "head"` in settings.
+- **`"head"`** — branches from your local HEAD, dirty state included. Dispatching right after
+  a merge without syncing HEAD first branches from the pre-merge base (see the incident
+  below). Confirm with `git log --oneline -3` before dispatching.
+
+Two fallbacks worth knowing: with no remote configured, or when `origin/HEAD` isn't cached
+locally and can't be fetched, `"fresh"` falls back to your current local HEAD. And **before
+v2.1.208**, `"fresh"` used whatever `origin/HEAD` was already cached locally, without fetching
+a current one. Official docs:
+https://code.claude.com/docs/en/worktrees#choose-the-base-branch
 
 **Before dispatching, confirm the base:**
 
@@ -59,7 +72,7 @@ git merge-base --is-ancestor <dep-sha> HEAD && echo "base OK" || echo "STALE BAS
 
 If the work depends on a just-merged PR, sync first (`git checkout main && git fetch && git reset --hard origin/main` — `reset --hard` discards uncommitted local changes, so stash them first) THEN dispatch. `<dep-sha>` above is the commit your work depends on (e.g. the merged PR's commit on `main`). State the expected base SHA in the dispatch prompt and tell the agent to verify it (`git log --oneline -5`; confirm a key file/symbol exists) before coding.
 
-> Real incident: a DEBUG test-hook subagent was dispatched right after a fix merged to `main`, but the dispatching HEAD was a pre-merge commit. The worktree branched from the stale base, so the new code referenced an `init` parameter and a file that only existed post-merge → 2 compile errors that the agent's own package build hadn't surfaced. Cost a full cherry-pick-onto-correct-base + rebuild cycle.
+> Real incident (pre-v2.1.208 / local-HEAD-fallback behavior): a DEBUG test-hook subagent was dispatched right after a fix merged to `main`, but the dispatching HEAD was a pre-merge commit. The worktree branched from the stale base, so the new code referenced an `init` parameter and a file that only existed post-merge → 2 compile errors that the agent's own package build hadn't surfaced. Cost a full cherry-pick-onto-correct-base + rebuild cycle.
 
 ## Coexisting with another live agent / session on the same repo
 
@@ -122,3 +135,7 @@ Intersection: NONE (different AppUI subdir).
 
 Verdict: dispatch safely. Note in prompt: "in-flight subagent on MonetizationStateController — do not touch that file."
 ```
+
+## Related skills
+
+- `github-contribution-workflow` — routes worktree/submodule collision questions here; that skill owns PR/branch mechanics, this one owns pre-dispatch and cross-session conflict checks.

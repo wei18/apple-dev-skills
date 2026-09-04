@@ -154,3 +154,7 @@ Read these files when you need them:
 - `references/sf-symbols.md` — inline SVG snippets for the 20 most common SF Symbols
 
 Read `html-structure.md` before drawing your first screen. Read the other two as needed.
+
+## Related skills
+
+- `swiftui-navigation-architecture` — once a flow sketched here is approved, this is where the real navigation gets implemented; that skill produces working SwiftUI code, this one produces a static visual mockup only.

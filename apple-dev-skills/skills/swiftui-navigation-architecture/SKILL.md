@@ -5,7 +5,7 @@ description: Default navigation shape for SwiftUI Apps (iOS 18 / macOS 15, Swift
 
 # SwiftUI Navigation Architecture
 
-The default navigation shape for Apps on this catalog's baseline ([[apple-platform-targets]]: iOS 18 / macOS 15, Swift 6 language mode): navigation state is **data** — a typed route enum in one observable router — so flows are unit-testable (assert on `[Route]`), deep-linkable (URL → routes is a pure function), and restorable (routes are `Codable`).
+The default navigation shape for Apps on this catalog's baseline (`apple-platform-targets`: iOS 18 / macOS 15, Swift 6 language mode): navigation state is **data** — a typed route enum in one observable router — so flows are unit-testable (assert on `[Route]`), deep-linkable (URL → routes is a pure function), and restorable (routes are `Codable`).
 
 ## When to invoke
 
@@ -16,7 +16,7 @@ The default navigation shape for Apps on this catalog's baseline ([[apple-platfo
 
 ## Scope
 
-Owns container choice (Stack / SplitView / Tab), route modeling, the router object, deep-link funneling, and restoration. Does NOT own: known interaction bugs in nav components → [[swiftui-interaction-footguns]]; injecting the services destination views need → [[swift-dependency-injection]]; nav-chrome accessibility → [[ios-accessibility-engineering]].
+Owns container choice (Stack / SplitView / Tab), route modeling, the router object, deep-link funneling, and restoration. Does NOT own: known interaction bugs in nav components → `swiftui-interaction-footguns`; injecting the services destination views need → `swift-dependency-injection`; nav-chrome accessibility → `ios-accessibility-engineering`.
 
 ## Pick the container
 
@@ -26,7 +26,7 @@ Owns container choice (Stack / SplitView / Tab), route modeling, the router obje
 | 2–5 top-level peer sections | `TabView` + one `NavigationStack` per tab, each with its own path |
 | Source list → detail (iPad / Mac) | `NavigationSplitView`; sidebar selection is router state, the detail column hosts its own `NavigationStack` |
 
-Never `NavigationView` in new code — deprecated since iOS 16.
+Never `NavigationView` in new code — superseded by `NavigationStack` / `NavigationSplitView` since iOS 16, formally deprecated as of iOS 27.
 
 ## The default shape
 
@@ -141,7 +141,7 @@ Route both entry and exit through router methods (as above) so no view ever enco
 
 - `NavigationSplitView`: sidebar selection lives in the router; only the detail column hosts a `NavigationStack`. Don't nest stacks in the sidebar.
 - `TabView`: the router owns `selectedTab` *and* one path per tab — paths kept in per-view `@State` reset whenever tab identity churns. Selecting the already-active tab popping to root becomes a 2-line router method.
-- iPad / Mac footguns in these containers (sizeClass on Mac, inert sidebar Labels) → [[swiftui-interaction-footguns]].
+- iPad / Mac footguns in these containers (sizeClass on Mac, inert sidebar Labels) → `swiftui-interaction-footguns`.
 
 ## Rationale
 
@@ -159,7 +159,7 @@ Route both entry and exit through router methods (as above) so no view ever enco
 
 ## Common Mistakes
 
-1. **`NavigationView` in new code** — deprecated since iOS 16, unpredictable column behavior. Use `NavigationStack` / `NavigationSplitView`.
+1. **`NavigationView` in new code** — superseded since iOS 16, formally deprecated as of iOS 27, unpredictable column behavior. Use `NavigationStack` / `NavigationSplitView`.
 2. **`navigationDestination(for:)` inside `List` / `LazyVStack`** — the lazy container may not have created the registering view yet, so pushes silently fail (runtime console warning). Register at the stack root.
 3. **Mixing `NavigationLink(destination:)` into a path-based stack** — pushes invisible to `path`; back-stack count, deep links, and restoration all desync.
 4. **Sheets modeled as pushed routes** — back-button vs dismiss semantics conflict; keep a separate `Modal` enum.
@@ -187,7 +187,7 @@ Route both entry and exit through router methods (as above) so no view ever enco
 
 ## Related skills
 
-- [[swiftui-interaction-footguns]] — known bugs in the nav components this skill wires together
-- [[swift-dependency-injection]] — how destination views get their services
-- [[apple-platform-targets]] — the iOS 18 / macOS 15 baseline this shape assumes
-- [[ios-accessibility-engineering]] — accessibility of the navigation chrome
+- `swiftui-interaction-footguns` — known bugs in the nav components this skill wires together
+- `swift-dependency-injection` — how destination views get their services
+- `apple-platform-targets` — the iOS 18 / macOS 15 baseline this shape assumes
+- `ios-accessibility-engineering` — accessibility of the navigation chrome

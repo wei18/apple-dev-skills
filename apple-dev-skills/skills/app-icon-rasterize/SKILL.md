@@ -7,7 +7,7 @@ description: Rasterize a designer-authored 1024×1024 SVG into the PNG that Appl
 
 Use when a designer hands off the icon as SVG and you need the PNG that `AppIcon.appiconset/Contents.json` references.
 
-This is the gap discovered during first-pass icon production on a real project — the SVG → 1024 PNG step was undocumented (only the downstream Pillow Lanczos *downscale* to the macOS ladder was written up). Each appearance — Light, Dark, Tinted — is a single 1024 universal PNG produced by exactly one rasterize step, documented here. (Tinted is now a standard third appearance alongside Light and Dark; all apps in the reference project ship `AppIcon-Tinted.png`.)
+This is the gap discovered during first-pass icon production on a real project — the SVG → 1024 PNG step was undocumented (only the downstream Pillow Lanczos *downscale* to the macOS ladder was written up). Each appearance — Light, Dark, Tinted — is a single 1024 universal PNG produced by exactly one rasterize step, documented here. (Tinted is now a standard third appearance alongside Light and Dark; shipped apps ship `AppIcon-Tinted.png`.)
 
 ## When to use
 
@@ -169,7 +169,7 @@ Tinted entry present — `AppIcon-Tinted.png`, `appearance: luminosity / value: 
 
 | Tool | Reason rejected |
 |---|---|
-| `rsvg-convert` (librsvg) | Requires Homebrew, not installed on this Mac |
+| `rsvg-convert` (librsvg) | Requires Homebrew, not assumed present |
 | `inkscape --export-png` | Requires Homebrew or .app install |
 | `imagemagick convert` | Requires Homebrew |
 | `sips` | Does not read SVG input on macOS as of Sequoia |
@@ -180,6 +180,10 @@ Tinted entry present — `AppIcon-Tinted.png`, `appearance: luminosity / value: 
 
 `qlmanage` ships with macOS, takes one command, outputs the exact PNG shape Apple wants. The trade-off is that QuickLook's SVG generator may diverge slightly from full-spec SVG 1.1 — keep the SVG simple (flat shapes, no filters, no text) and the output is faithful.
 
-## Companion skill
+## iOS vs macOS: which output applies
 
-The macOS size-ladder downscale workflow is documented in the "macOS ladder reality check" section above; it is superseded by the universal single-PNG approach for new projects, but remains useful as a reference for older Xcode targets that still require the explicit size ladder.
+For new projects: iOS targets use the single universal 1024 PNG produced by this skill's
+Procedure section. macOS targets additionally need the size-ladder downscale documented in
+"macOS ladder reality check" above — that ladder is not superseded or optional, it's a
+platform requirement that stays in force as of Xcode 26 / macOS Sequoia (see that section
+for the reality check and re-verification note).
