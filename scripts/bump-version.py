@@ -50,6 +50,17 @@ def set_plugin_version(plugin_dir: str, version: str):
 
 
 def set_marketplace_version(version: str):
+    # Refuse to bump while the zh mirror is already stale — otherwise the re-stamp
+    # below just re-freshens a src-sha that was never an honest mirror of README.md
+    # (regression: bump-version.py --marketplace silently launders a stale zh mirror
+    # into a green gate, see check-consistency.py rule 4).
+    zh = ROOT / "README.zh-Hant.md"
+    pre_sha = subprocess.run(["git", "hash-object", "README.md"], cwd=ROOT,
+                             capture_output=True, text=True, check=True).stdout.strip()
+    m = re.search(r"<!-- src-sha: ([0-9a-f]+) -->", zh.read_text(encoding="utf-8"))
+    if not m or m.group(1) != pre_sha:
+        die("README.zh-Hant.md src-sha is stale vs README.md — run `mise run readme-zh` first, then re-run bump")
+
     MP.write_text(sub_once(MP.read_text(encoding="utf-8"),
                            r'("metadata"\s*:\s*\{[^}]*?"version"\s*:\s*")' + SEMVER + r'(")',
                            rf"\g<1>{version}\g<2>", "marketplace metadata"), encoding="utf-8")
@@ -61,7 +72,6 @@ def set_marketplace_version(version: str):
         p.write_text(text, encoding="utf-8")
     sha = subprocess.run(["git", "hash-object", "README.md"], cwd=ROOT,
                          capture_output=True, text=True, check=True).stdout.strip()
-    zh = ROOT / "README.zh-Hant.md"
     zh.write_text(sub_once(zh.read_text(encoding="utf-8"),
                            r"(<!-- src-sha: )[0-9a-f]+( -->)", rf"\g<1>{sha}\g<2>",
                            "zh-Hant src-sha"), encoding="utf-8")
