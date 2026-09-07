@@ -74,6 +74,19 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 > listing has a context budget, and on overflow it drops descriptions starting with the
 > least-invoked skills. Run `/doctor` to check the listing's cost; tune `skillListingBudgetFraction` / `skillOverrides` in settings if it's too tight.
 
+## Quickstart
+
+Install path A, then describe the task — skills route themselves from their `description:`,
+so nothing needs invoking:
+
+- *"I'm starting a new iOS app"* → `apple-platform-targets` answers the deployment target and
+  hands off to the package shape, language mode, and test baseline in order.
+- *"App Review bounced this on guideline 5.1.2"* → `app-store-review-rejections` maps the
+  guideline to the fix.
+
+To force one, use its slash command: `/apple-dev-skills:swift6-concurrency`. `/skills` lists
+what is installed and which plugin each skill came from.
+
 ## Catalog
 
 - **Spec** the flow → `spec-phase-orchestration`

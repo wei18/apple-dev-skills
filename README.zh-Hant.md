@@ -71,6 +71,17 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 > 溢出時會從最少被呼叫的技能開始丟棄描述。執行 `/doctor` 檢查清單的成本；
 > 若太吃緊，可在 settings 調整 `skillListingBudgetFraction` / `skillOverrides`。
 
+## 快速開始
+
+照路徑 A 安裝，然後直接描述你要做的事 —— 技能會依自己的 `description:` 自動路由，不需要手動呼叫：
+
+- *「我要開一個新的 iOS App」* → `apple-platform-targets` 回答最低部署版本，並依序交棒給
+  package 結構、語言模式與測試基準。
+- *「App Review 以 guideline 5.1.2 退件」* → `app-store-review-rejections` 把該條款對應到修法。
+
+要指定某一支，用它的 slash command：`/apple-dev-skills:swift6-concurrency`。`/skills` 會列出
+已安裝的全部技能，以及每一支來自哪個 plugin。
+
 ## 目錄
 
 - **Spec** 流程 → `spec-phase-orchestration`
@@ -156,4 +167,4 @@ OSLog 不用第三方、審查漏掉的執行期 bug）。主題重疊處，兩�
 此處僅以引用方式呈現。催生本 repo 雙 plugin 結構的設計 spec 與計畫原本放在 `docs/superpowers/`，
 現已退役、改由 git 歷史保存；用 `git log -- docs/` 可以找回。MIT —— 見 [LICENSE](LICENSE)。
 
-<!-- src-sha: fd9e946885542b0acccc57ec1b94e93b2cc4e697 -->
+<!-- src-sha: 2e8a7a67a1b1051b9c55e192227a97757f63e63d -->
