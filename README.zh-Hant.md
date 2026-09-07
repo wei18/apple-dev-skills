@@ -133,6 +133,8 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 
 此處僅列出、**並非在此撰寫**；它們會從原作者自己的 repo 安裝（你拿到的是最新版），並完整標註出處。
 **彙整而非佔為己有**：只列出 MIT 相容、不重複的 plugin —— 第一方技能只為真正的空缺而寫。
+這道檢查發生在收錄當下，不是每次上游 commit 都重審：因為你安裝的是原作者的最新版，
+外部 plugin 的範圍與授權在收錄後仍可能變動（`caveman` 就已經變過）。
 外部 plugin 是廣度型的**參考資料**（「這是 API」／「X 要這樣做」）；第一方技能位在下一層，
 是**帶立場的預設值與實際上架的戰場故事**（用 iOS 18、單一 Package、swift-testing + snapshot、
 OSLog 不用第三方、審查漏掉的執行期 bug）。主題重疊處，兩者差在高度，而非重複。
@@ -142,7 +144,7 @@ OSLog 不用第三方、審查漏掉的執行期 bug）。主題重疊處，兩�
 | [`apple-skills`](https://github.com/vabole/apple-skills) | vabole (MIT) | 廣泛的 Apple 框架 —— SwiftUI、SwiftData、App Intents、WidgetKit、StoreKit、HealthKit… |
 | [`swiftui-expert`](https://github.com/AvdLee/SwiftUI-Agent-Skill) | Antoine van der Lee (MIT) | SwiftUI 模式、Swift Charts、Liquid Glass、Instruments 工具鏈 |
 | [`swiftui-pro`](https://github.com/twostraws/SwiftUI-Agent-Skill) | Paul Hudson (MIT) | SwiftUI 陷阱、deprecated API 觀察清單、iOS 26 / Liquid Glass |
-| [`caveman`](https://github.com/JuliusBrussee/caveman) | JuliusBrussee (MIT) | 極度壓縮的溝通模式 —— 省下約 75% token（通用 agent 行為） |
+| [`caveman`](https://github.com/JuliusBrussee/caveman) | JuliusBrussee（技能為 MIT；該 repo 另含 BSL-1.1 授權的 engine） | 極度壓縮的溝通模式 —— 省下約 75% token。之後已長成約 20 個技能的套件，其中部分在講作者自家的 Caveman Cloud 服務（通用 agent 行為） |
 | [`ponytail`](https://github.com/DietrichGebert/ponytail) | DietrichGebert (MIT) | 「懶惰資深工程師」模式 —— 逼出最簡單、最短的解法（通用 agent 行為） |
 | [`i-have-adhd`](https://github.com/ayghri/i-have-adhd) | Ayoub G. (MIT) | 常駐的 ADHD 友善輸出模式 —— 行動優先、編號步驟、每一輪重述狀態；相對於 `caveman`（token 壓縮）與 `ponytail`（解法簡化），這個塑形的是結構（通用 agent 行為） |
 
@@ -153,4 +155,4 @@ OSLog 不用第三方、審查漏掉的執行期 bug）。主題重疊處，兩�
 再加上針對公開的 Apple / WCAG / Swift 標準所做的原創整理。彙整之外部 plugin 仍屬其作者的作品，
 此處僅以引用方式呈現。MIT —— 見 [LICENSE](LICENSE)。
 
-<!-- src-sha: cafbaa4d97f5754c2c072869a445ee2a21efa26e -->
+<!-- src-sha: b4f4e11968fc3d76ee99ab46424d42bce94cdba8 -->

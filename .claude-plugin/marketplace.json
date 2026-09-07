@@ -48,7 +48,7 @@
     {
       "name": "caveman",
       "source": { "source": "github", "repo": "JuliusBrussee/caveman" },
-      "description": "Aggregated (not authored here). Ultra-compressed communication mode that cuts ~75% of tokens. General agent-behavior skill. By JuliusBrussee, MIT.",
+      "description": "Aggregated (not authored here). Ultra-compressed communication mode that cuts ~75% of tokens, now grown into a ~20-skill suite (commit discipline, review, refactor verbs, plus skills for the author's hosted Caveman Cloud). General agent behavior. By JuliusBrussee; skills are MIT, the repo also ships a Business Source License 1.1 engine.",
       "author": { "name": "JuliusBrussee" },
       "category": "workflow"
     },

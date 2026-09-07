@@ -2,3 +2,8 @@
 
 # Personal, per-machine Claude Code settings (carries local absolute paths)
 .claude/settings.local.json
+
+# Agent scratch: Claude Code subagent worktrees are nested git repos —
+# a `git add -A` here silently commits one as a gitlink.
+.claude/worktrees/
+.superpowers/

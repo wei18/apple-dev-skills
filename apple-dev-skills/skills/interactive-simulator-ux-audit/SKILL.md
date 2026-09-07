@@ -48,7 +48,7 @@ usually-allowed path — confirm against your own policy, then:
    `idb ui describe-all --udid <udid>` returns the accessibility tree (element frames +
    labels) in **device-point** space (e.g. an iPhone 17 Pro reports 402×874 pt).
 
-## Preflight: how many simulators fit locally
+## Preflight: how many simulators fit on this Mac
 
 Before running multiple agents or audit sessions in parallel, size the fleet with
 arithmetic, not a tool — steps 1-2 need nothing beyond Activity Monitor or `xcrun simctl`

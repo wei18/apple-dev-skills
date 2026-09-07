@@ -170,7 +170,7 @@ A future PR should add a build-phase script that asserts no `$()` literals survi
 
 - **REQUIRED background**: `apple-public-repo-security` — broader secret-leak prevention (gitleaks, lefthook, GitHub Secret Scanning)
 - **SIBLING**: `monetization-sdk-integration` — invoke together when wiring AdMob; this skill is the secret-handling layer
-- **SIBLING**: your ASC submission-ops workflow (who may push what) — ASC API key handling more broadly
+- **SIBLING**: `asc-api-automation` — ASC API key handling (the `.p8`) once the key leaves the build and drives the REST API
 - Project memory file documenting the secret-scrubbing incident — the incident that triggered this skill pattern
 - Project memory files for each credential set — real values held outside repo (cite by memory-file name, never paste inline)
 
@@ -179,6 +179,6 @@ A future PR should add a build-phase script that asserts no `$()` literals survi
 `secrets/.env` carries per-app production pairs (e.g. `APP_A_ADMOB_APP_ID` /
 `APP_A_ADMOB_BANNER_UNIT_ID` and `APP_B_*` twins). Two consumers render
 `Tuist/AdMob.xcconfig` from them: XCC `ci_post_clone.sh` (from workflow
-Secret env vars) and your TestFlight upload task (from `secrets/.env`).
+Secret env vars) and any local upload task you run (from `secrets/.env`).
 Values live in secrets/.env (primary) + the XCC workflow config + the
 project-memory files as recovery backup — never in code, comments, or diffs.
