@@ -11,6 +11,10 @@ contribution-flow repo settings. Encodes conventions that keep an agent's
 contributions reviewable and consistent. Tool-agnostic in spirit; concrete
 commands are `gh` + `git`.
 
+## Native mechanism
+
+Claude Code's [Hooks](https://code.claude.com/docs/en/hooks) can intercept and block a tool call before it runs — e.g. a `PreToolUse` hook matching `Bash` can deny a `git push --force` or a bare `rm -rf`. Hooks enforce a hard gate at the tool layer; the `--no-verify` rule and CLEAN-before-merge convention below are conventions this skill asks the agent to follow voluntarily where no hook exists to enforce them.
+
 ## When to invoke
 
 - Opening or merging a PR; opening or commenting on an issue.

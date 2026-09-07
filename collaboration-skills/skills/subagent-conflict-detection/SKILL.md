@@ -5,6 +5,10 @@ description: 'Use before dispatching a subagent with `isolation:"worktree"`, or 
 
 # Subagent Conflict Detection
 
+## Native mechanism
+
+Claude Code's own isolation primitives are the [Subagents](https://code.claude.com/docs/en/subagents) feature ("each subagent runs in its own context window with a custom system prompt, specific tool access, and independent permissions") and `isolation:"worktree"`'s [base-branch selection](https://code.claude.com/docs/en/worktrees#choose-the-base-branch). Neither one checks whether a NEW dispatch's file scope overlaps an in-flight one, or whether the worktree base is stale — that pre-flight discipline is what this skill adds on top.
+
 ## When to invoke
 
 Before dispatching a new subagent via the Agent tool — especially with `isolation: "worktree"` — if ANY other subagent is currently running or has an active worktree.
@@ -132,9 +136,9 @@ Options:
 - **Lost-work on worktree wipe**: Subagent A's worktree wipes without commit; subagent B's dispatch reuses the path or branch name; A's work is unrecoverable.
 - **Code Reviewer confusion**: CR sees a PR whose diff includes changes from a parallel subagent that's not yet merged; verdict is on wrong baseline.
 
-## Integration with methodology.md
+## Pre-flight discipline this skill adds
 
-This skill operationalizes `docs/methodology.md §派發契約` item 9 (Leader pre-flight). The pre-flight checklist explicitly lists "kill orphan procs" + "rebase WIP onto main" + "mise trust" — this skill adds the conflict-detection step before those. For why `mise trust` is required before `mise install`/`mise exec` take effect in a fresh worktree or CI checkout, see `mise-tool-management`.
+A Leader's pre-dispatch pre-flight typically includes "kill orphan procs", "rebase WIP onto main", and "mise trust" — this skill adds the conflict-detection step before those. For why `mise trust` is required before `mise install`/`mise exec` take effect in a fresh worktree or CI checkout, see `mise-tool-management`.
 
 ## False-positive handling
 

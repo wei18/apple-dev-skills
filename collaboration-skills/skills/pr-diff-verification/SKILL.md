@@ -61,9 +61,9 @@ Discrepancy resolution options:
 - **Lying commit log + invisible diff**: code review reads the message and assumes the code matches. Trust is misplaced; defects ship.
 - **Force-push wrong ref**: `git push origin worktree-agent-X:feat/Y` pushes worktree-agent-X's HEAD to remote feat/Y. If worktree-agent-X doesn't have the commits (because they were committed to a different local branch by the subagent), remote feat/Y gets reset to whatever worktree-agent-X is at — usually main SHA.
 
-## Integration with methodology
+## Integration with commit discipline
 
-`docs/methodology.md §派發契約 §10` requires commit-early discipline. This skill is the POST-commit verification step — confirms the commits that survived actually contain what the message claims.
+Commit-early discipline (commit before push, avoid large uncommitted batches) is covered by `github-contribution-workflow`. This skill is the POST-commit verification step — confirms the commits that survived actually contain what the message claims.
 
 ## Heuristics for "what to check"
 

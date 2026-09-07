@@ -5,6 +5,10 @@ description: How to distribute Claude Code skills for reuse across repos and how
 
 # Claude Code Skill Plugin Packaging
 
+## Native mechanism
+
+[Plugins](https://code.claude.com/docs/en/plugins) and [plugin marketplaces](https://code.claude.com/docs/en/plugin-marketplaces) are Claude Code's own distribution mechanism — a marketplace repo with `.claude-plugin/marketplace.json` gives "centralized discovery, version tracking, automatic updates". What the official docs don't spell out is the depth-1 discovery trap and the three-model install tradeoff below — that's what this skill adds.
+
 ## When to invoke
 
 - You have skills in one repo and want them reusable across other repos/projects.
