@@ -20,7 +20,7 @@ This repo is one **marketplace** hosting two first-party plugins and several agg
 
 ```
 /plugin marketplace add wei18/apple-dev-skills
-/plugin install apple-dev-skills@apple-dev-skills          # 25 Apple/Swift skills
+/plugin install apple-dev-skills@apple-dev-skills          # 27 Apple/Swift skills
 /plugin install collaboration-skills@apple-dev-skills      # 12 agent-collaboration skills
 ```
 
@@ -62,7 +62,7 @@ npx skills add wei18/apple-dev-skills --skill swift6-concurrency
 > **Path C does not include the aggregated externals.** `npx skills` does read this repo's
 > `marketplace.json` / `plugin.json`, but only follows locally-declared skill paths — it
 > doesn't fetch the externals' remote `github` / `git-subdir` sources, so the commands above
-> reach only the 37 first-party skills; the 7 externals are silently skipped. To flat-install
+> reach only the 39 first-party skills; the 7 externals are silently skipped. To flat-install
 > the whole catalog (externals included, pulled from their authors' repos):
 
 ```bash
@@ -98,7 +98,7 @@ what is installed and which plugin each skill came from.
 
 Full index in the tables below.
 
-### apple-dev-skills (25) — Apple/Swift
+### apple-dev-skills (27) — Apple/Swift
 
 | Skill | One-liner |
 |---|---|
@@ -107,6 +107,7 @@ Full index in the tables below.
 | `swiftpm-modularization` | Single Package, multi-target, thin App, DI composition root, one-to-one tests |
 | `swift-testing-baseline` | swift-testing + pointfreeco snapshot; protocol fakes; strict/tolerant snapshot gate |
 | `xcode-cloud-single-track-ci` | Single-track Xcode Cloud; PR / Main / Release / Periodic; pre-merge PR CI |
+| `local-archive-export-upload` | Local `xcodebuild archive` → export → `altool` upload to TestFlight when Xcode Cloud can't run |
 | `mise-tool-management` | mise manages binary CLI tools; dev + CI share `.mise.toml`; macOS-only `os` guard |
 | `oslog-logger-defaults` | `os.Logger` (no third-party); subsystem = bundle ID; `.private` default |
 | `apple-three-piece-analytics` | ASC Analytics + MetricKit + Game Center; no third-party tracking; PrivacyInfo mandatory |
@@ -117,6 +118,7 @@ Full index in the tables below.
 | `ios-performance-engineering` | Instruments / xctrace / hang-hitch budgets / launch / memory / binary size / MetricKit |
 | `apple-public-repo-security` | Three lines of defence for public iOS/macOS repos + rotate-first leak SOP |
 | `build-time-secret-injection` | xcconfig + Info.plist `$()` + `Bundle.main` for ship-in-binary-but-out-of-diff IDs |
+| `storekit2-iap-defaults` | StoreKit 2 non-consumable IAP defaults; bridge-protocol test seam, entitlements, restore |
 | `monetization-sdk-integration` | Add/upgrade/audit a monetization SDK; isolate `import` to one bridge file |
 | `app-store-review-rejections` | Diagnose & pre-empt App Review rejection classes for free + ads + IAP + CloudKit + GC |
 | `asc-api-automation` | ES256 JWT from the `.p8` + curl against the ASC REST API — TestFlight, metadata, submission, reports; no fastlane |
