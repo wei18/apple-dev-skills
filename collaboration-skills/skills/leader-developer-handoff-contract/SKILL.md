@@ -5,6 +5,10 @@ description: When the main agent dispatches a sub-agent, the prompt MUST include
 
 # Leader → Developer Handoff Contract
 
+## Native mechanism
+
+Claude Code's [Subagents](https://code.claude.com/docs/en/subagents) feature already gives a dispatched agent "its own context window with a custom system prompt, specific tool access, and independent permissions" — but the platform doesn't require or shape what goes in the dispatch *prompt* itself. This skill is the discipline layer on top: the 5 elements a prompt must contain regardless of how well-configured the subagent's own definition is.
+
 ## When to invoke
 
 - About to dispatch a sub-agent (Developer / Designer / Code Reviewer / drafting agent).
