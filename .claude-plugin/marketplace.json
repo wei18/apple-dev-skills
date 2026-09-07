@@ -48,7 +48,7 @@
     {
       "name": "caveman",
       "source": { "source": "github", "repo": "JuliusBrussee/caveman" },
-      "description": "Aggregated (not authored here). Ultra-compressed communication mode that cuts ~75% of tokens, now grown into a ~20-skill suite (commit discipline, review, refactor verbs, plus skills for the author's hosted Caveman Cloud). General agent behavior. By JuliusBrussee; skills are MIT, the repo also ships a Business Source License 1.1 engine.",
+      "description": "Aggregated (not authored here). Ultra-compressed communication mode that cuts ~75% of tokens, now grown into a 20-skill suite (commit discipline, review, refactor verbs, plus 4 skills — caveman-discover, caveman-manage, caveman-evidence-review, caveman-setup — for the author's hosted Caveman Cloud commercial service). General agent behavior. By JuliusBrussee; skills are MIT, the repo also ships a Business Source License 1.1 engine.",
       "author": { "name": "JuliusBrussee" },
       "category": "workflow"
     },
@@ -64,6 +64,13 @@
       "source": { "source": "github", "repo": "ayghri/i-have-adhd" },
       "description": "Aggregated (not authored here). ADHD-friendly output mode — leads with the next action, numbers steps, restates state each turn, makes wins visible. General agent-behavior skill. By Ayoub G. (ayghri), MIT.",
       "author": { "name": "Ayoub G. (ayghri)" },
+      "category": "workflow"
+    },
+    {
+      "name": "xcode-build-skill",
+      "source": { "source": "github", "repo": "pzep1/xcode-build-skill" },
+      "description": "Aggregated (not authored here). `xcodebuild` / `xcrun simctl` CLI reference — discover schemes, find simulators, build, install, launch, and screenshot in a loop. The CLI-driven counterpart to this catalog's idb-driven `interactive-simulator-ux-audit` and Tuist-scheme `host-driven-xcuitest-e2e`. By pz, MIT.",
+      "author": { "name": "pz" },
       "category": "workflow"
     }
   ]

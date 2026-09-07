@@ -11,7 +11,7 @@ Checks
      comments and each plugin.json's "N first-party" are checked exactly.
   4. README.zh-Hant.md exists and its embedded src-sha == git hash-object README.md.
   5. All plugin/marketplace JSON parse; the two subdir plugin sources resolve to dirs;
-     marketplace.json lists exactly the 8 plugins (2 local + 6 externals).
+     marketplace.json lists exactly the 9 plugins (2 local + 7 externals).
   6. The `git checkout v<semver>` pin in both READMEs' Install section ==
      marketplace.json metadata.version (drifted silently before: v1.2.0 → #17).
   7. Each SKILL.md frontmatter description <= DESC_MAX chars (descriptions are
@@ -36,7 +36,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 PLUGINS = {"apple-dev-skills": 25, "collaboration-skills": 12}
-EXTERNALS = {"apple-skills", "swiftui-expert", "swiftui-pro", "caveman", "ponytail", "i-have-adhd"}
+EXTERNALS = {"apple-skills", "swiftui-expert", "swiftui-pro", "caveman", "ponytail", "i-have-adhd", "xcode-build-skill"}
 DESC_MAX = 800  # ceiling on frontmatter description length; which skill is currently
                 # longest shifts as skills are added — don't hardcode a name here
 errors: list[str] = []

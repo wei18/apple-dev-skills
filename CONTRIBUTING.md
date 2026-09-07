@@ -42,6 +42,20 @@ re-implement. Open an [aggregation issue](.github/ISSUE_TEMPLATE/aggregate-a-plu
 Requirements: MIT-compatible license; a real `.claude-plugin/plugin.json` (root → `source: github`,
 subdir → `git-subdir`); no overlap with an existing skill.
 
+`git-subdir` only works when the upstream repo ships a `.claude-plugin/plugin.json`
+*inside that subdirectory itself* — e.g. `swiftui-pro/.claude-plugin/plugin.json` in
+`twostraws/SwiftUI-Agent-Skill` — so a subdir source can point at it. Aggregating just
+one skill folder out of a repo whose only manifest sits at the repo root (e.g.
+`caveman`, which has no `skills/<name>/.claude-plugin/plugin.json`) isn't possible
+without upstream adding one; it's all-or-nothing via `source: github` there.
+
+That MIT/no-overlap check happens once, at listing time — not on every upstream
+commit — so an already-listed external's license, archive status, or skill count
+can drift afterward. Run `mise run check-externals` to re-verify every listed
+external still meets the aggregation requirements above; after a deliberate,
+reviewed change (including right after adding a new one), accept the new baseline
+with `mise run check-externals -- --update` and commit the updated snapshot.
+
 ### 2. Add a first-party skill (only for genuine gaps)
 
 Pick the plugin: Apple/Swift → `apple-dev-skills/skills/`, generic agent process →

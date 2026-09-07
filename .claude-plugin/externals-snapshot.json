@@ -1,0 +1,58 @@
+{
+  "apple-skills": {
+    "archived": false,
+    "license": "MIT",
+    "manifest_present": true,
+    "path": null,
+    "repo": "vabole/apple-skills",
+    "skill_count": 33
+  },
+  "caveman": {
+    "archived": false,
+    "license": "NOASSERTION",
+    "manifest_present": true,
+    "path": null,
+    "repo": "JuliusBrussee/caveman",
+    "skill_count": 20
+  },
+  "i-have-adhd": {
+    "archived": false,
+    "license": "MIT",
+    "manifest_present": true,
+    "path": null,
+    "repo": "ayghri/i-have-adhd",
+    "skill_count": 1
+  },
+  "ponytail": {
+    "archived": false,
+    "license": "MIT",
+    "manifest_present": true,
+    "path": null,
+    "repo": "DietrichGebert/ponytail",
+    "skill_count": 6
+  },
+  "swiftui-expert": {
+    "archived": false,
+    "license": "MIT",
+    "manifest_present": true,
+    "path": null,
+    "repo": "AvdLee/SwiftUI-Agent-Skill",
+    "skill_count": 1
+  },
+  "swiftui-pro": {
+    "archived": false,
+    "license": "MIT",
+    "manifest_present": true,
+    "path": "swiftui-pro",
+    "repo": "twostraws/SwiftUI-Agent-Skill",
+    "skill_count": 1
+  },
+  "xcode-build-skill": {
+    "archived": false,
+    "license": "MIT",
+    "manifest_present": true,
+    "path": null,
+    "repo": "pzep1/xcode-build-skill",
+    "skill_count": 1
+  }
+}

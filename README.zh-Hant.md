@@ -60,7 +60,7 @@ npx skills add wei18/apple-dev-skills --skill swift6-concurrency
 > **路徑 C 不包含彙整而來的外部 plugin。** `npx skills` 確實會讀取本 repo 的
 > `marketplace.json` / `plugin.json`，但只跟隨本地宣告的技能路徑——它不會抓取外部
 > plugin 的遠端 `github` / `git-subdir` 來源，因此上述指令只涵蓋 37 個第一方技能；
-> 6 個外部 plugin 會被靜默略過。若要平鋪安裝整份目錄（含外部 plugin，從原作者的 repo 拉取）：
+> 7 個外部 plugin 會被靜默略過。若要平鋪安裝整份目錄（含外部 plugin，從原作者的 repo 拉取）：
 
 ```bash
 scripts/install-flat.sh -g          # user-level; drop -g for project-level
@@ -140,7 +140,7 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 | `skill-authoring-patterns` | 疊在 `superpowers:writing-skills` 之上的 Apple/Swift 目錄層 —— router 描述、bookend 段落、兩層式 references、證據導向 CR |
 | `github-contribution-workflow` | gh-CLI 貢獻循環 —— PR、issue、GitHub 檔案操作、secrets、貢獻流程的 repo 設定；慣例 + merge 前 CLEAN |
 
-### 彙整之外部 plugin（6）—— 以引用方式收錄，完整標註
+### 彙整之外部 plugin（7）—— 以引用方式收錄，完整標註
 
 此處僅列出、**並非在此撰寫**；它們會從原作者自己的 repo 安裝（你拿到的是最新版），並完整標註出處。
 **彙整而非佔為己有**：只列出 MIT 相容、不重複的 plugin —— 第一方技能只為真正的空缺而寫。
@@ -155,9 +155,10 @@ OSLog 不用第三方、審查漏掉的執行期 bug）。主題重疊處，兩�
 | [`apple-skills`](https://github.com/vabole/apple-skills) | vabole (MIT) | 廣泛的 Apple 框架 —— SwiftUI、SwiftData、App Intents、WidgetKit、StoreKit、HealthKit… |
 | [`swiftui-expert`](https://github.com/AvdLee/SwiftUI-Agent-Skill) | Antoine van der Lee (MIT) | SwiftUI 模式、Swift Charts、Liquid Glass、Instruments 工具鏈 |
 | [`swiftui-pro`](https://github.com/twostraws/SwiftUI-Agent-Skill) | Paul Hudson (MIT) | SwiftUI 陷阱、deprecated API 觀察清單、iOS 26 / Liquid Glass |
-| [`caveman`](https://github.com/JuliusBrussee/caveman) | JuliusBrussee（技能為 MIT；該 repo 另含 BSL-1.1 授權的 engine） | 極度壓縮的溝通模式 —— 省下約 75% token。之後已長成約 20 個技能的套件，其中部分在講作者自家的 Caveman Cloud 服務（通用 agent 行為） |
+| [`caveman`](https://github.com/JuliusBrussee/caveman) | JuliusBrussee（技能為 MIT；該 repo 另含 BSL-1.1 授權的 engine） | 極度壓縮的溝通模式 —— 省下約 75% token。之後已長成 20 個技能的套件；其中 4 個（`caveman-discover`、`caveman-manage`、`caveman-evidence-review`、`caveman-setup`）在講作者自家托管的 Caveman Cloud 商業服務（通用 agent 行為） |
 | [`ponytail`](https://github.com/DietrichGebert/ponytail) | DietrichGebert (MIT) | 「懶惰資深工程師」模式 —— 逼出最簡單、最短的解法（通用 agent 行為） |
 | [`i-have-adhd`](https://github.com/ayghri/i-have-adhd) | Ayoub G. (MIT) | 常駐的 ADHD 友善輸出模式 —— 行動優先、編號步驟、每一輪重述狀態；相對於 `caveman`（token 壓縮）與 `ponytail`（解法簡化），這個塑形的是結構（通用 agent 行為） |
+| [`xcode-build-skill`](https://github.com/pzep1/xcode-build-skill) | pz (MIT) | `xcodebuild`/`xcrun simctl` CLI 參考 —— 找 scheme → 找模擬器 → build → install → launch → 截圖；CLI 驅動，與 `interactive-simulator-ux-audit`（idb 驅動的互動式 UX 稽核）、`host-driven-xcuitest-e2e`（Tuist scheme 接線的 XCUITest E2E）三者不重疊 |
 
 ## 出處
 
@@ -167,4 +168,4 @@ OSLog 不用第三方、審查漏掉的執行期 bug）。主題重疊處，兩�
 此處僅以引用方式呈現。催生本 repo 雙 plugin 結構的設計 spec 與計畫原本放在 `docs/superpowers/`，
 現已退役、改由 git 歷史保存；用 `git log -- docs/` 可以找回。MIT —— 見 [LICENSE](LICENSE)。
 
-<!-- src-sha: 2e8a7a67a1b1051b9c55e192227a97757f63e63d -->
+<!-- src-sha: cb94661e7b508a9836d35fdeac9a7e84e97da823 -->
