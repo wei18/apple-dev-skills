@@ -19,6 +19,14 @@ Claude Code's [Subagents](https://code.claude.com/docs/en/subagents) feature alr
 
 Every dispatch prompt must contain:
 
+### 0. Tell the sub-agent to keep impl notes
+
+Non-trivial dispatches carry a sixth, standing instruction: the sub-agent opens its running
+impl-notes file at the *start* of the task, not when it first hits trouble. That file is where
+early assumptions and scope calls get recorded — exactly the ones that are invisible by the time
+a report is written. `agent-impl-notes-log` owns the file's format and routing; this contract is
+what makes it start on time, since that skill's own trigger fires on mid-task ambiguity.
+
 ### 1. Task scope with verifiable target
 
 - One sentence stating the goal.

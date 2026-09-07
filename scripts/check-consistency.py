@@ -38,13 +38,28 @@ DESC_MAX = 800  # ceiling on frontmatter description length; which skill is curr
 errors: list[str] = []
 def fail(m): errors.append(m)
 
+BLOCK_SCALAR = "\x00block\x00"  # internal marker: value came from a YAML block scalar
+
 def fm_field(p: Path, field: str):
+    """Raw frontmatter value, quotes intact. Block scalars (`>`/`|`) come back as
+    the folded text with a BLOCK marker so callers can tell them from a bare `>`."""
     t = p.read_text(encoding="utf-8")
     if not t.startswith("---"): return None
     end = t.find("\n---", 3)
     if end == -1: return None
-    m = re.search(rf"^{field}:\s*(.+?)\s*$", t[3:end], re.MULTILINE)
-    return m.group(1).strip() if m else None
+    fm = t[3:end]
+    m = re.search(rf"^{field}:\s*(.*?)\s*$", fm, re.MULTILINE)
+    if not m: return None
+    head = m.group(1).strip()
+    if head and head[0] in "|>":
+        # YAML block scalar: the value is the indented block that follows.
+        lines = fm[m.end():].splitlines()
+        body = []
+        for ln in lines:
+            if ln.strip() and not ln.startswith((" ", "\t")): break
+            body.append(ln.strip())
+        return BLOCK_SCALAR + " ".join(x for x in body if x)
+    return head
 
 # 1. skill dirs + frontmatter
 all_skills: set[str] = set()
@@ -61,14 +76,18 @@ for plugin, expected in PLUGINS.items():
         if fn != name: fail(f"[skill] {plugin}/{name}: frontmatter name={fn!r} != dir")
         # 7. description length budget
         desc = fm_field(md, "description")
+        # A block scalar (`description: >`) is already YAML-safe: everything after the
+        # indicator is literal text, so `: ` and indicator characters need no quoting.
+        block = bool(desc) and desc.startswith(BLOCK_SCALAR)
+        if block: desc = desc[len(BLOCK_SCALAR):]
         if desc is None: fail(f"[skill] {plugin}/{name}: no frontmatter description")
         elif len(desc) > DESC_MAX:
             fail(f"[skill] {plugin}/{name}: description {len(desc)} chars > {DESC_MAX}")
         # 10. description must survive a strict YAML parse — fm_field() returns the
         # raw value (quotes intact, not stripped), so check quoting directly on it.
-        if desc:
+        if desc and not block:
             quoted = len(desc) >= 2 and desc[0] in "'\"" and desc[-1] == desc[0]
-            if not quoted and (": " in desc or desc[0] in "[]{}&*>|#%@`"):
+            if not quoted and (": " in desc or desc[0] in "[]{}&*>|#%@`!"):
                 fail(f"[skill] {plugin}/{name}: description must be quoted (contains ': ' or a YAML indicator)")
 
 # helper: scope README Catalog section

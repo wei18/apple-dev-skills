@@ -2,10 +2,11 @@
 
 > A **skill catalog for vibe coding iOS (& Apple Ecosystem) apps with an AI coding agent**
 > ([Claude Code](https://code.claude.com)) — for independent developers and small teams taking
-> an idea to a shipped App Store release. Built on **harness engineering**: opinionated defaults,
-> shipped-it war stories, and a consistency gate that keep an agent's output honest. First-party
-> **Apple/Swift** and **AI-agent-collaboration** skills, plus best-of-breed **external** skill
-> plugins aggregated **by reference** (credited to their authors, never copied).
+> an idea to a shipped App Store release. Two first-party halves: **Apple/Swift** skills for what
+> you are building, and **harness engineering** skills for how you drive the agent that builds it —
+> dispatch, review, ship. Both are opinionated defaults and shipped-it war stories, held to a
+> consistency gate. Plus best-of-breed **external** skill plugins aggregated **by reference**
+> (credited to their authors, never copied).
 >
 > Languages: [English](README.md) · [繁體中文](README.zh-Hant.md)
 
