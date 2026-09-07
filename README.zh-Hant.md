@@ -1,10 +1,10 @@
 # apple-dev-skills
 
 > 一份**用 AI coding agent（[Claude Code](https://code.claude.com)）vibe coding iOS（與 Apple 生態系）App 的技能目錄**
-> —— 為獨立開發者與小型團隊而寫，把一個點子帶到 App Store 上架。建構於 **harness engineering**：
-> 帶立場的預設值、實際上架的戰場故事，以及一道讓 agent 產出保持誠實的一致性把關。
-> 內含第一方 **Apple/Swift** 與 **AI-agent 協作** 技能，另以**引用方式**彙整同類最佳的**外部**技能
-> plugin（完整標註原作者，絕不複製）。
+> —— 為獨立開發者與小型團隊而寫，把一個點子帶到 App Store 上架。第一方技能分兩半：**Apple/Swift**
+> 管你在做什麼，**harness engineering** 管你怎麼駕馭那個在做事的 agent —— 派工、審查、出貨。
+> 兩者都是帶立場的預設值與實際上架的戰場故事，並受一道一致性把關。另以**引用方式**彙整
+> 同類最佳的**外部**技能 plugin（完整標註原作者，絕不複製）。
 >
 > 語言：[English](README.md) · [繁體中文](README.zh-Hant.md)
 
@@ -155,4 +155,4 @@ OSLog 不用第三方、審查漏掉的執行期 bug）。主題重疊處，兩�
 再加上針對公開的 Apple / WCAG / Swift 標準所做的原創整理。彙整之外部 plugin 仍屬其作者的作品，
 此處僅以引用方式呈現。MIT —— 見 [LICENSE](LICENSE)。
 
-<!-- src-sha: b4f4e11968fc3d76ee99ab46424d42bce94cdba8 -->
+<!-- src-sha: c14d17f40999570b710bbda7421266df1a49c4db -->

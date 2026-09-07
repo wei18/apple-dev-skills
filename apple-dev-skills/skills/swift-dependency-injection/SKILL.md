@@ -39,7 +39,7 @@ No layer below `makeApp` imports `LiveStorage` or any other concrete type.
 
 Both are idiomatic Swift; the choice is a matter of callsite ergonomics:
 
-- **Protocol existential (`any ServiceProtocol`)**: clear intent, straightforward generics. Works well for most app-layer seams. Requires the protocol to be `Sendable` if passed across actors.
+- **Protocol existential (`any ServiceProtocol`)**: clear intent, straightforward generics. Works well for most app-layer seams. Requires the protocol to be `Sendable` if passed across actors, and the values it returns must be `Sendable` too.
 - **Struct protocol witness (`struct ServiceClient { var fetch: @Sendable () async throws -> [Item] }`)**: eliminates dynamic dispatch, composes without `any`, easier to construct partial fakes. Favoured by pointfreeco/swift-dependencies. Good when a service has a small, stable API surface.
 
 Either is fine. Pick the one that reads naturally; don't mix both styles for the same seam.
@@ -130,7 +130,7 @@ Avoid `@TaskLocal` for dependencies that should be visible in the public interfa
 
 ## Swift 6 concurrency rules for dependencies
 
-- Any type passed across actor boundaries — including a dependency — must conform to `Sendable`, **except** when the only implementation is actor-isolated and wraps a non-`Sendable` framework type it doesn't own (`AVAssetTrack`, `VNRequest`) — see `swift6-concurrency`'s Sendable exception: forcing conformance there is an illegal retroactive conformance, and the actor's own isolation already supplies the guarantee.
+- Any type passed across actor boundaries — including a dependency — must conform to `Sendable`. When the implementation is an actor wrapping a non-`Sendable` framework type it doesn't own (`AVAssetTrack`, `VNRequest`), the fix is at the boundary, not on the protocol: return a `Sendable` value type instead of the framework object, or `@preconcurrency import` the framework. Do not drop the protocol's `Sendable` requirement — it does not silence the diagnostic (see `swift6-concurrency`).
 - Protocol requirements that are called from concurrent contexts must be `async` (or the protocol itself must be `@MainActor`-isolated).
 - Closures stored in a struct client must be `@Sendable`:
 
@@ -153,7 +153,7 @@ Both are valid; they solve the same problem with different ergonomics. Evaluate 
 ## Verification checklist
 
 - No layer below the composition root imports a concrete implementation type (`Live*`, `URLSession.shared`, `Date()`, `UUID()`).
-- All protocol types (or struct clients) used across actor boundaries declare `Sendable`, except an actor-isolated implementation wrapping a non-`Sendable` framework type it doesn't own (see `swift6-concurrency`).
+- All protocol types (or struct clients) used across actor boundaries declare `Sendable` — no exceptions; a non-`Sendable` framework type is handled at the boundary instead (see `swift6-concurrency`).
 - Async protocol requirements are `async throws`; synchronous fakes return immediately (no `Task.sleep` in a fake).
 - Each test constructs its own fake/stub — no shared mutable test state at module level.
 - The composition root (`makeApp(...)`) is the only call site that knows about live implementations.

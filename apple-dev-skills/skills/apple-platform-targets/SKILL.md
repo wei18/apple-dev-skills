@@ -24,6 +24,11 @@ This skill is the entry point for a new Apple-platform project — decide these 
 6. `mise-tool-management` — CLI tool version manager.
 7. `xcode-cloud-single-track-ci` — CI pipeline.
 
+Then, per screen rather than per project: `swiftui-navigation-architecture` for the route shape and
+`ios-accessibility-engineering` for every new user-facing screen. The a11y skill triggers on explicit
+accessibility work, so on a new screen you invoke it deliberately — VoiceOver labels, Dynamic Type,
+and hit targets are cheaper to build in than to retrofit.
+
 ## Default decisions
 
 - **iOS 18 / macOS 15** as the default minimum.
