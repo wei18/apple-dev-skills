@@ -18,7 +18,7 @@
 
 ```
 /plugin marketplace add wei18/apple-dev-skills
-/plugin install apple-dev-skills@apple-dev-skills          # 25 Apple/Swift skills
+/plugin install apple-dev-skills@apple-dev-skills          # 27 Apple/Swift skills
 /plugin install collaboration-skills@apple-dev-skills      # 12 agent-collaboration skills
 ```
 
@@ -59,7 +59,7 @@ npx skills add wei18/apple-dev-skills --skill swift6-concurrency
 
 > **路徑 C 不包含彙整而來的外部 plugin。** `npx skills` 確實會讀取本 repo 的
 > `marketplace.json` / `plugin.json`，但只跟隨本地宣告的技能路徑——它不會抓取外部
-> plugin 的遠端 `github` / `git-subdir` 來源，因此上述指令只涵蓋 37 個第一方技能；
+> plugin 的遠端 `github` / `git-subdir` 來源，因此上述指令只涵蓋 39 個第一方技能；
 > 7 個外部 plugin 會被靜默略過。若要平鋪安裝整份目錄（含外部 plugin，從原作者的 repo 拉取）：
 
 ```bash
@@ -93,7 +93,7 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 
 完整索引見下方表格。
 
-### apple-dev-skills（25）—— Apple/Swift
+### apple-dev-skills（27）—— Apple/Swift
 
 | Skill | 一句話說明 |
 |---|---|
@@ -102,6 +102,7 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 | `swiftpm-modularization` | 單一 Package、多 target、薄 App、DI composition root、測試一對一 |
 | `swift-testing-baseline` | swift-testing + pointfreeco snapshot；protocol fake；嚴格/寬鬆 snapshot 把關 |
 | `xcode-cloud-single-track-ci` | 單軌 Xcode Cloud；PR / Main / Release / Periodic；merge 前的 PR CI |
+| `local-archive-export-upload` | Xcode Cloud 不可用時的本機 `xcodebuild archive` → export → `altool` 上傳 TestFlight |
 | `mise-tool-management` | 以 mise 管理二進位 CLI 工具；開發與 CI 共用 `.mise.toml`；macOS-only `os` guard |
 | `oslog-logger-defaults` | `os.Logger`（不用第三方）；subsystem = bundle ID；預設 `.private` |
 | `apple-three-piece-analytics` | ASC Analytics + MetricKit + Game Center；不用第三方追蹤；PrivacyInfo 必備 |
@@ -112,6 +113,7 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 | `ios-performance-engineering` | Instruments / xctrace / hang-hitch 預算 / 啟動 / 記憶體 / 二進位大小 / MetricKit |
 | `apple-public-repo-security` | 公開 iOS/macOS repo 的三道防線 + rotate-first 洩漏處理 SOP |
 | `build-time-secret-injection` | xcconfig + Info.plist `$()` + `Bundle.main`，讓識別碼進得了二進位、出不了 diff |
+| `storekit2-iap-defaults` | StoreKit 2 非消耗型 IAP 預設：bridge protocol 測試接縫、entitlements、restore |
 | `monetization-sdk-integration` | 新增／升級／稽核變現 SDK；把 `import` 隔離在單一 bridge 檔 |
 | `app-store-review-rejections` | 診斷並預先化解 free + 廣告 + IAP + CloudKit + GC 的 App Review 退件類型 |
 | `asc-api-automation` | 用 `.p8` 產 ES256 JWT + curl 打 ASC REST API —— TestFlight、metadata、送審、報表；不用 fastlane |
@@ -168,4 +170,4 @@ OSLog 不用第三方、審查漏掉的執行期 bug）。主題重疊處，兩�
 此處僅以引用方式呈現。催生本 repo 雙 plugin 結構的設計 spec 與計畫原本放在 `docs/superpowers/`，
 現已退役、改由 git 歷史保存；用 `git log -- docs/` 可以找回。MIT —— 見 [LICENSE](LICENSE)。
 
-<!-- src-sha: cb94661e7b508a9836d35fdeac9a7e84e97da823 -->
+<!-- src-sha: 15492afaba6d5b24cd21e213f3ec4892a4f40ca0 -->

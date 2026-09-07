@@ -35,7 +35,7 @@ import json, re, subprocess, sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-PLUGINS = {"apple-dev-skills": 25, "collaboration-skills": 12}
+PLUGINS = {"apple-dev-skills": 27, "collaboration-skills": 12}
 EXTERNALS = {"apple-skills", "swiftui-expert", "swiftui-pro", "caveman", "ponytail", "i-have-adhd", "xcode-build-skill"}
 DESC_MAX = 800  # ceiling on frontmatter description length; which skill is currently
                 # longest shifts as skills are added — don't hardcode a name here
