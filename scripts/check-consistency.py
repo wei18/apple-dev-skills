@@ -23,7 +23,11 @@ Checks
      full-width parens, since the zh mirror is hand-typed).
   10. Each SKILL.md frontmatter description that is not quoted must not contain
       ": " or start with a YAML indicator character (PR #42: an unquoted value
-      containing ": " breaks strict YAML parsers).
+      containing ": " breaks strict YAML parsers). A block scalar (`description: >`)
+      is exempt: everything after the indicator is literal text.
+  11. Every skill named in the Catalog's journey anchor list (above the tables)
+      exists — rule 2 only checks the missing direction, so a rename would leave a
+      dead pointer there while the tables below stayed correct.
 Stdlib only.
 """
 from __future__ import annotations
@@ -113,6 +117,12 @@ else:
         if required not in g:
             fail(f"[readme] Catalog counts {sorted(g)} must include {sorted((*PLUGINS.values(), len(EXTERNALS)))}")
             break
+    # 11. The journey anchor list sits above the tables, so rule 2's "nothing is
+    # missing" direction can't see a stale name in it — a renamed skill would
+    # leave a dead pointer here while the tables below stayed correct.
+    anchors = scoped(sec, "## Catalog").split("###")[0]
+    stale = {t for t in re.findall(r"`([a-z0-9][a-z0-9-]+)`", anchors)} - (all_skills | EXTERNALS)
+    if stale: fail(f"[readme] Catalog anchor list names no such skill: {sorted(stale)}")
 
 # 9. README.zh-Hant.md's 目錄 (Catalog) section — same token coverage check as
 # above, mirrored: it's hand-typed so a translator can silently drop/mistype a
