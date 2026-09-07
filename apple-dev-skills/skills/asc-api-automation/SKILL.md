@@ -116,6 +116,35 @@ The `POST reviewSubmissions` → `POST reviewSubmissionItems` → `PATCH submitt
 - **An empty `copyright` attribute blocks submission.** Apple's error-code family for a missing required attribute is documented on the developer forums as `ENTITY_ERROR.ATTRIBUTE.REQUIRED` for other required fields (e.g. `companyName`); the same shape is observed in practice for a blank `copyright` on the app/version resource — not confirmed against Apple's official attribute reference, so treat the exact code as observed-in-practice, not documented fact. Fix: always send a non-empty `copyright` string.
 - **A leftover non-`COMPLETE` `reviewSubmissions` blocks a new `POST`, and there is no DELETE.** Apple's API reference publishes `DELETE /v1/appStoreVersionSubmissions/{id}` only for the deprecated pre-2022 model; the current `reviewSubmissions` resource has no DELETE operation. To clear a stuck submission, `PATCH /v1/reviewSubmissions/<id>` with `attributes.state: "CANCELING"` — `CANCELING` is a documented `ReviewSubmission.Attributes.state` enum value (alongside `READY_FOR_REVIEW`, `WAITING_FOR_REVIEW`, `IN_REVIEW`, `UNRESOLVED_ISSUES`, `COMPLETING`, `COMPLETE`). During `WAITING_FOR_REVIEW`, canceling returns the version to an editable state (observed as `DEVELOPER_REJECTED`, a documented `AppVersionState` value) without leaving an Apple rejection record — this is the withdrawal recipe when a submission needs correcting before Apple starts review.
 
+## Steps with no ASC API at all — must be clicked by a human
+
+The three prerequisites above are gaps in an otherwise-scriptable flow. These are different:
+Apple publishes no REST resource for them at all, so no amount of scripting closes the gap —
+budget a manual, one-time (or rarely-repeated) click in the ASC web UI.
+
+- **Verified ✓ — Agreements, Tax, and Banking (including accepting the Paid Apps Agreement).**
+  Apple's App Store Connect API topic index (`developer.apple.com/tutorials/data/documentation/AppStoreConnectAPI.md`,
+  checked 2026-09) lists every automatable area — App Store, TestFlight, Game Center,
+  Provisioning, Xcode Cloud, Webhooks, Reporting, Users and Access, Alternative App
+  Distribution — and "Agreements, Tax, and Banking" is absent from all of them; no
+  `agreements`/`taxForms`/`bankAccounts`-shaped resource exists anywhere in the reference.
+  ASC Help's *Schedule price changes for apps* page confirms the practical consequence for
+  this skill's pricing prerequisite above: "If you've accepted the Paid Apps Agreement and
+  submitted your app for review, you can schedule price changes for your app" — the
+  Agreement is accepted only in ASC's *Manage Agreements* section, by the Account Holder, in
+  the browser. This is the actual gate behind the "app pricing must be set first" prerequisite
+  above, not a scriptable pricing endpoint being missing (as of 2026, `POST /v1/appPriceSchedules`
+  does exist for pricing itself — but it 404s/403s until the Agreement is accepted, and the
+  Agreement has no API path).
+- **Verified ✓ — App promo codes (whole-app free-download codes, Apps → \<App\> → Promo Codes).**
+  ASC Help's *Request and manage promo codes* page (`developer.apple.com/help/app-store-connect/offer-promo-codes/request-and-manage-promo-codes`)
+  documents only the web click-path ("In Apps, select the app you want to view. In the
+  sidebar, click Promo Codes. The Promo Code page opens with Generate selected.") with no
+  REST alternative mentioned; no `promoCodes`-shaped resource appears in the API topic index
+  either. Don't confuse this with **Subscription Offer Codes**, which do have a documented API
+  (`POST /v1/subscriptionOfferCodeCustomCodes` and siblings under *Subscription Offer Codes*)
+  — the API gap is specific to whole-app promo codes, not offer codes in general.
+
 ## Release automation: SemVer, changelog, and explicit releaseType
 
 - **`versionString` = SemVer, sourced from the build, not reinvented in CI.** Set it to the same value as the archived build's `MARKETING_VERSION` (`CFBundleShortVersionString`) — bump that once at the Xcode-project level (→ `xcode-cloud-single-track-ci` build-number & version automation), then read it back for the `appStoreVersions` call instead of maintaining a second version counter in release tooling.

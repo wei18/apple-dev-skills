@@ -28,6 +28,8 @@ under test → `swiftui-navigation-architecture`.
 
 ## Tuist wiring: a dedicated scheme, not a test plan
 
+(Assumes a Tuist-generated project — see `build-time-secret-injection`'s Tuist-assumption note; a hand-maintained `.xcodeproj` adds the same dedicated scheme directly in Xcode's scheme editor instead of via `Project.swift`.)
+
 A Tuist `.uiTests` product target needs **its own scheme** with an explicit
 `testAction: .targets([...])` — not membership in an existing scheme's `.xctestplan`.
 
