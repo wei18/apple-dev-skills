@@ -53,6 +53,8 @@ let appTargetSettings: SettingsDictionary = swiftSettings.merging([
 ]) { _, new in new }
 ```
 
+Non-Tuist projects: set both keys directly on the target's Build Settings tab instead — see `build-time-secret-injection`'s Tuist-assumption note.
+
 ## SVG authoring contract — read BEFORE writing the SVG
 
 The designer's SVG **must NOT** bake rounded corners into the artwork. Apple's compositor applies the squircle mask at render time (iOS Springboard, macOS Dock, every preview surface). Baking corners produces a *double-mask* look — the icon shows up smaller than its peers with visible inner padding.
