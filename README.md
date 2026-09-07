@@ -158,4 +158,6 @@ slipped past review). Where a topic overlaps, they differ by altitude, not dupli
 First-party skills were distilled and genericized from [`wei18/Sudoku`](https://github.com/wei18/Sudoku)'s
 `.claude/skills/` — a spec-first, AI-Leader/Developer-built portfolio of shipping Apple-platform
 games — plus original write-ups of public Apple / WCAG / Swift standards. Aggregated externals
-remain their authors' work, surfaced by reference only. MIT — see [LICENSE](LICENSE).
+remain their authors' work, surfaced by reference only. The design specs and plans that produced
+this repo's two-plugin shape lived under `docs/superpowers/` until they were retired in favour of
+git history; `git log -- docs/` finds them. MIT — see [LICENSE](LICENSE).

@@ -153,6 +153,7 @@ OSLog 不用第三方、審查漏掉的執行期 bug）。主題重疊處，兩�
 第一方技能萃取並去專案化自 [`wei18/Sudoku`](https://github.com/wei18/Sudoku) 的
 `.claude/skills/` —— 一組 spec-first、由 AI Leader/Developer 打造、已上架的 Apple 平台遊戲作品集 ——
 再加上針對公開的 Apple / WCAG / Swift 標準所做的原創整理。彙整之外部 plugin 仍屬其作者的作品，
-此處僅以引用方式呈現。MIT —— 見 [LICENSE](LICENSE)。
+此處僅以引用方式呈現。催生本 repo 雙 plugin 結構的設計 spec 與計畫原本放在 `docs/superpowers/`，
+現已退役、改由 git 歷史保存；用 `git log -- docs/` 可以找回。MIT —— 見 [LICENSE](LICENSE)。
 
-<!-- src-sha: c14d17f40999570b710bbda7421266df1a49c4db -->
+<!-- src-sha: fd9e946885542b0acccc57ec1b94e93b2cc4e697 -->
