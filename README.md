@@ -136,6 +136,8 @@ Full index in the tables below.
 Listed here but **not authored here**; they install from their authors' own repos (you get
 their latest), credited in full. **Aggregate, don't appropriate**: only MIT-compatible,
 non-duplicate plugins are listed — first-party skills are written only for genuine gaps.
+That check happens when a plugin is listed, not on every upstream commit: because you install
+the author's latest, an external's scope and licence can move after listing (`caveman` already has).
 The externals are broad **reference** ("here's the API / here's how to build X"); the
 first-party skills sit a layer below as **opinionated defaults and shipped-it war stories**
 (use iOS 18, one Package, swift-testing + snapshot, OSLog no-third-party, runtime bugs that
@@ -146,7 +148,7 @@ slipped past review). Where a topic overlaps, they differ by altitude, not dupli
 | [`apple-skills`](https://github.com/vabole/apple-skills) | vabole (MIT) | Broad Apple frameworks — SwiftUI, SwiftData, App Intents, WidgetKit, StoreKit, HealthKit … |
 | [`swiftui-expert`](https://github.com/AvdLee/SwiftUI-Agent-Skill) | Antoine van der Lee (MIT) | SwiftUI patterns, Swift Charts, Liquid Glass, Instruments toolchain |
 | [`swiftui-pro`](https://github.com/twostraws/SwiftUI-Agent-Skill) | Paul Hudson (MIT) | SwiftUI pitfalls, deprecated-API watchlist, iOS 26 / Liquid Glass |
-| [`caveman`](https://github.com/JuliusBrussee/caveman) | JuliusBrussee (MIT) | Ultra-compressed communication mode — cuts ~75% of tokens (general agent behavior) |
+| [`caveman`](https://github.com/JuliusBrussee/caveman) | JuliusBrussee (skills MIT; repo also ships a BSL-1.1 engine) | Ultra-compressed communication mode — cuts ~75% of tokens. Has since grown into a ~20-skill suite, some of it about the author's hosted Caveman Cloud (general agent behavior) |
 | [`ponytail`](https://github.com/DietrichGebert/ponytail) | DietrichGebert (MIT) | "Lazy senior dev" mode — forces the simplest, shortest solution (general agent behavior) |
 | [`i-have-adhd`](https://github.com/ayghri/i-have-adhd) | Ayoub G. (MIT) | Always-on ADHD-friendly output mode — action-first, numbered steps, state restated each turn; vs `caveman` (token compression) and `ponytail` (solution simplicity), this shapes structure (general agent behavior) |
 
