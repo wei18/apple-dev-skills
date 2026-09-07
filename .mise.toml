@@ -12,3 +12,7 @@ run = "scripts/gen-readme-zh.sh"
 [tasks.bump]
 description = "Bump release versions on all gate-checked surfaces (e.g. mise run bump -- --marketplace 1.4.0 --collab 1.4.0)"
 run = "python3 scripts/bump-version.py"
+
+[tasks.check-externals]
+description = "Opt-in: re-verify aggregated externals still meet listing conditions (needs gh + network — not in pre-commit/CI; mise run check-externals -- --update to accept a reviewed change)"
+run = "python3 scripts/check-externals.py"

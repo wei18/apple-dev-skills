@@ -62,7 +62,7 @@ npx skills add wei18/apple-dev-skills --skill swift6-concurrency
 > **Path C does not include the aggregated externals.** `npx skills` does read this repo's
 > `marketplace.json` / `plugin.json`, but only follows locally-declared skill paths — it
 > doesn't fetch the externals' remote `github` / `git-subdir` sources, so the commands above
-> reach only the 37 first-party skills; the 6 externals are silently skipped. To flat-install
+> reach only the 37 first-party skills; the 7 externals are silently skipped. To flat-install
 > the whole catalog (externals included, pulled from their authors' repos):
 
 ```bash
@@ -145,7 +145,7 @@ Full index in the tables below.
 | `skill-authoring-patterns` | Apple/Swift catalog layer over `superpowers:writing-skills` — router descriptions, bookend sections, two-tier references, evidence-based CR |
 | `github-contribution-workflow` | gh-CLI contribution loop — PRs, issues, GitHub file ops, secrets, contribution-flow repo settings; conventions + CLEAN-before-merge |
 
-### Aggregated external (6) — by reference, credited
+### Aggregated external (7) — by reference, credited
 
 Listed here but **not authored here**; they install from their authors' own repos (you get
 their latest), credited in full. **Aggregate, don't appropriate**: only MIT-compatible,
@@ -162,9 +162,10 @@ slipped past review). Where a topic overlaps, they differ by altitude, not dupli
 | [`apple-skills`](https://github.com/vabole/apple-skills) | vabole (MIT) | Broad Apple frameworks — SwiftUI, SwiftData, App Intents, WidgetKit, StoreKit, HealthKit … |
 | [`swiftui-expert`](https://github.com/AvdLee/SwiftUI-Agent-Skill) | Antoine van der Lee (MIT) | SwiftUI patterns, Swift Charts, Liquid Glass, Instruments toolchain |
 | [`swiftui-pro`](https://github.com/twostraws/SwiftUI-Agent-Skill) | Paul Hudson (MIT) | SwiftUI pitfalls, deprecated-API watchlist, iOS 26 / Liquid Glass |
-| [`caveman`](https://github.com/JuliusBrussee/caveman) | JuliusBrussee (skills MIT; repo also ships a BSL-1.1 engine) | Ultra-compressed communication mode — cuts ~75% of tokens. Has since grown into a ~20-skill suite, some of it about the author's hosted Caveman Cloud (general agent behavior) |
+| [`caveman`](https://github.com/JuliusBrussee/caveman) | JuliusBrussee (skills MIT; repo also ships a BSL-1.1 engine) | Ultra-compressed communication mode — cuts ~75% of tokens. Has since grown into a 20-skill suite; 4 of them (`caveman-discover`, `caveman-manage`, `caveman-evidence-review`, `caveman-setup`) document the author's hosted Caveman Cloud commercial service (general agent behavior) |
 | [`ponytail`](https://github.com/DietrichGebert/ponytail) | DietrichGebert (MIT) | "Lazy senior dev" mode — forces the simplest, shortest solution (general agent behavior) |
 | [`i-have-adhd`](https://github.com/ayghri/i-have-adhd) | Ayoub G. (MIT) | Always-on ADHD-friendly output mode — action-first, numbered steps, state restated each turn; vs `caveman` (token compression) and `ponytail` (solution simplicity), this shapes structure (general agent behavior) |
+| [`xcode-build-skill`](https://github.com/pzep1/xcode-build-skill) | pz (MIT) | `xcodebuild`/`xcrun simctl` CLI reference — discover schemes → find simulators → build → install → launch → screenshot; CLI-driven, distinct from `interactive-simulator-ux-audit` (idb-driven interactive UX audit) and `host-driven-xcuitest-e2e` (Tuist-scheme XCUITest E2E) — the three don't overlap |
 
 ## Provenance
 
