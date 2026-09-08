@@ -3,9 +3,10 @@
 
 Surfaces (previously a 4-file manual dance, see v1.3.1 / PR #16):
   --marketplace X.Y.Z  -> marketplace.json metadata.version
-                          + `git checkout vX.Y.Z` pin in README.md AND README.zh-Hant.md
-                          + re-stamp README.zh-Hant.md src-sha (pin line is hand-mirrored;
-                            no full zh regeneration needed for this one-line change)
+                          + `"ref": "vX.Y.Z"` marketplace pin in README.md AND every
+                            mirror in scripts/mirrors.py
+                          + re-stamp each mirror's src-sha (pin line is hand-mirrored;
+                            no full mirror regeneration needed for this one-line change)
   --apple X.Y.Z        -> apple-dev-skills/.claude-plugin/plugin.json version
                           + its marketplace.json plugins[] entry version
   --collab X.Y.Z       -> same pair for collaboration-skills
@@ -20,6 +21,8 @@ Stdlib only.
 from __future__ import annotations
 import argparse, json, re, subprocess, sys
 from pathlib import Path
+
+from mirrors import MIRRORS
 
 ROOT = Path(__file__).resolve().parent.parent
 MP = ROOT / ".claude-plugin" / "marketplace.json"
@@ -50,32 +53,35 @@ def set_plugin_version(plugin_dir: str, version: str):
 
 
 def set_marketplace_version(version: str):
-    # Refuse to bump while the zh mirror is already stale — otherwise the re-stamp
+    # Refuse to bump while any mirror is already stale — otherwise the re-stamp
     # below just re-freshens a src-sha that was never an honest mirror of README.md
-    # (regression: bump-version.py --marketplace silently launders a stale zh mirror
+    # (regression: bump-version.py --marketplace silently launders a stale mirror
     # into a green gate, see check-consistency.py rule 4).
-    zh = ROOT / "README.zh-Hant.md"
     pre_sha = subprocess.run(["git", "hash-object", "README.md"], cwd=ROOT,
                              capture_output=True, text=True, check=True).stdout.strip()
-    m = re.search(r"<!-- src-sha: ([0-9a-f]+) -->", zh.read_text(encoding="utf-8"))
-    if not m or m.group(1) != pre_sha:
-        die("README.zh-Hant.md src-sha is stale vs README.md — run `mise run readme-zh` first, then re-run bump")
+    for mirror_name in MIRRORS:
+        mirror = ROOT / mirror_name
+        m = re.search(r"<!-- src-sha: ([0-9a-f]+) -->", mirror.read_text(encoding="utf-8"))
+        if not m or m.group(1) != pre_sha:
+            die(f"{mirror_name} src-sha is stale vs README.md — run `mise run readme-zh` first, then re-run bump")
 
     MP.write_text(sub_once(MP.read_text(encoding="utf-8"),
                            r'("metadata"\s*:\s*\{[^}]*?"version"\s*:\s*")' + SEMVER + r'(")',
                            rf"\g<1>{version}\g<2>", "marketplace metadata"), encoding="utf-8")
-    for name in ("README.md", "README.zh-Hant.md"):
+    for name in ("README.md", *MIRRORS):
         p = ROOT / name
-        text, n = re.subn(rf"git checkout v{SEMVER}", f"git checkout v{version}",
+        text, n = re.subn(r'"ref":\s*"v' + SEMVER + r'"', f'"ref": "v{version}"',
                           p.read_text(encoding="utf-8"))
-        if n == 0: die(f"no 'git checkout v<semver>' pin in {name}")
+        if n == 0: die(f'no \'"ref": "v<semver>"\' pin in {name}')
         p.write_text(text, encoding="utf-8")
     sha = subprocess.run(["git", "hash-object", "README.md"], cwd=ROOT,
                          capture_output=True, text=True, check=True).stdout.strip()
-    zh.write_text(sub_once(zh.read_text(encoding="utf-8"),
-                           r"(<!-- src-sha: )[0-9a-f]+( -->)", rf"\g<1>{sha}\g<2>",
-                           "zh-Hant src-sha"), encoding="utf-8")
-    print(f"  marketplace metadata + README pins: -> {version} (zh src-sha re-stamped)")
+    for mirror_name in MIRRORS:
+        mirror = ROOT / mirror_name
+        mirror.write_text(sub_once(mirror.read_text(encoding="utf-8"),
+                               r"(<!-- src-sha: )[0-9a-f]+( -->)", rf"\g<1>{sha}\g<2>",
+                               f"{mirror_name} src-sha"), encoding="utf-8")
+    print(f"  marketplace metadata + README pins: -> {version} (mirror src-sha re-stamped)")
 
 
 def main():
