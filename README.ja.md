@@ -156,7 +156,7 @@ UX監査）や`host-driven-xcuitest-e2e`（Tuist scheme配線のXCUITest E2E）�
 {
   "extraKnownMarketplaces": {
     "apple-dev-skills": {
-      "source": { "source": "github", "repo": "wei18/apple-dev-skills", "ref": "v1.7.0" }
+      "source": { "source": "github", "repo": "wei18/apple-dev-skills", "ref": "v1.7.1" }
     }
   },
   "enabledPlugins": {
@@ -206,4 +206,4 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 `docs/superpowers/`にありました——現在は廃止され、git履歴として保存されています。
 `git log -- docs/`で見つけることができます。MIT——[LICENSE](LICENSE)を参照してください。
 
-<!-- src-sha: 8fc1a7010cd5feed7c9962639693a63a1ff0aa55 -->
+<!-- src-sha: 7c20ff7b825eb59f0a020ab728e0b736f548e845 -->

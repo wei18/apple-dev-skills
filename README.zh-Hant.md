@@ -143,7 +143,7 @@ repo。
 {
   "extraKnownMarketplaces": {
     "apple-dev-skills": {
-      "source": { "source": "github", "repo": "wei18/apple-dev-skills", "ref": "v1.7.0" }
+      "source": { "source": "github", "repo": "wei18/apple-dev-skills", "ref": "v1.7.1" }
     }
   },
   "enabledPlugins": {
@@ -186,4 +186,4 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 此處僅以引用方式呈現。催生本 repo 雙 plugin 結構的設計 spec 與計畫原本放在 `docs/superpowers/`
 —— 已退役、改由 git 歷史保存；用 `git log -- docs/` 可以找回。MIT —— 見 [LICENSE](LICENSE)。
 
-<!-- src-sha: 8fc1a7010cd5feed7c9962639693a63a1ff0aa55 -->
+<!-- src-sha: 7c20ff7b825eb59f0a020ab728e0b736f548e845 -->
