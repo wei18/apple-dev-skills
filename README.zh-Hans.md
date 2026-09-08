@@ -125,7 +125,7 @@ swift-testing + snapshot、OSLog 不用第三方、审查漏掉的运行时 bug�
 {
   "extraKnownMarketplaces": {
     "apple-dev-skills": {
-      "source": { "source": "github", "repo": "wei18/apple-dev-skills", "ref": "v1.6.0" }
+      "source": { "source": "github", "repo": "wei18/apple-dev-skills", "ref": "v1.7.0" }
     }
   },
   "enabledPlugins": {
@@ -171,4 +171,4 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 此处仅以引用方式呈现。催生本 repo 双 plugin 结构的设计 spec 与计划原本放在 `docs/superpowers/`
 —— 已退役、改由 git 历史保存；用 `git log -- docs/` 可以找回。MIT —— 见 [LICENSE](LICENSE)。
 
-<!-- src-sha: da96d1ff6df67b1dd6e5e2a91efd8cfe4eb0f734 -->
+<!-- src-sha: fd7cc386adec78f5bf329db7857b0b9855658d43 -->
