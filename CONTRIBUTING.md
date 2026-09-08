@@ -16,6 +16,7 @@ mise install && lefthook install
 - `mise run readme-zh` — regenerate `README.zh-Hant.md` (Catalog heading `## 目錄`) from
   `README.md` (needs `claude` on PATH; auto-fires in pre-commit when `README.md` changes).
 - `mise run readme-zh-hans` — same, for `README.zh-Hans.md` (Catalog heading `## 目录`).
+- `mise run readme-ja` — same, for `README.ja.md` (Catalog heading `## カタログ`).
   Every mirror listed in `scripts/mirrors.py` has its own task and its own pre-commit
   trigger; add both when a mirror is added.
 
@@ -27,15 +28,16 @@ half-width), burying the real change in review. So hand-mirroring is the default
 
 - **Default — any content change**: hand-mirror the same lines into each mirror in
   `scripts/mirrors.py` (currently `README.zh-Hant.md`, `## 目錄`; `README.zh-Hans.md`,
-  `## 目录`), re-stamp each one's freshness marker, and commit with the regen hooks
-  excluded (they would otherwise clobber the hand-mirror with a full regen):
+  `## 目录`; `README.ja.md`, `## カタログ`), re-stamp each one's freshness marker, and
+  commit with the regen hooks excluded (they would otherwise clobber the hand-mirror
+  with a full regen):
 
   ```bash
-  for f in README.zh-Hant.md README.zh-Hans.md; do
+  for f in README.zh-Hant.md README.zh-Hans.md README.ja.md; do
     sed -i '' "s/src-sha: [0-9a-f]*/src-sha: $(git hash-object README.md)/" "$f"
   done
-  git add README.md README.zh-Hant.md README.zh-Hans.md
-  LEFTHOOK_EXCLUDE=readme-zh,readme-zh-hans git commit -m "..."   # `check` still runs and verifies freshness
+  git add README.md README.zh-Hant.md README.zh-Hans.md README.ja.md
+  LEFTHOOK_EXCLUDE=readme-zh,readme-zh-hans,readme-ja git commit -m "..."   # `check` still runs and verifies freshness
   ```
 - **Fallback — large / structural changes**: run `mise run readme-zh` for a full
   regeneration, then manually re-check punctuation (full-width vs half-width) and
