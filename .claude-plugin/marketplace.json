@@ -26,9 +26,9 @@
     },
     {
       "name": "apple-skills",
-      "source": { "source": "github", "repo": "vabole/apple-skills" },
-      "description": "Aggregated (not authored here). Broad Apple-framework skills — SwiftUI, UIKit, Swift Testing, Concurrency, SwiftData, App Intents, WidgetKit, StoreKit, HealthKit, MapKit, TipKit, and more. By vabole, MIT.",
-      "author": { "name": "vabole" },
+      "source": { "source": "github", "repo": "Prisma-Labs-Dev/apple-skills" },
+      "description": "Aggregated (not authored here). Broad Apple-framework skills — SwiftUI, UIKit, Swift Testing, Concurrency, SwiftData, App Intents, WidgetKit, StoreKit, HealthKit, MapKit, TipKit, and more. By Prisma Labs (vabole), MIT.",
+      "author": { "name": "Prisma Labs (vabole)" },
       "category": "workflow"
     },
     {
