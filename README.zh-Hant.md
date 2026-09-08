@@ -31,7 +31,7 @@
 
 ```bash
 git submodule add https://github.com/wei18/apple-dev-skills.git .claude/skills/apple-dev-skills
-cd .claude/skills/apple-dev-skills && git checkout v1.6.0 && cd -
+cd .claude/skills/apple-dev-skills && git checkout v1.7.0 && cd -
 ```
 
 `.claude/settings.json`（納入版控）：
@@ -170,4 +170,4 @@ OSLog 不用第三方、審查漏掉的執行期 bug）。主題重疊處，兩�
 此處僅以引用方式呈現。催生本 repo 雙 plugin 結構的設計 spec 與計畫原本放在 `docs/superpowers/`，
 現已退役、改由 git 歷史保存；用 `git log -- docs/` 可以找回。MIT —— 見 [LICENSE](LICENSE)。
 
-<!-- src-sha: 15492afaba6d5b24cd21e213f3ec4892a4f40ca0 -->
+<!-- src-sha: 895de96f290994972ddfd2bdab32e3cf5c899032 -->
