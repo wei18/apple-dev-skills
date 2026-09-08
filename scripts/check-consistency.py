@@ -9,18 +9,20 @@ Checks
   3. Counts present: the values 25/12/6 each appear among the Catalog's "(N)" group
      headers (set membership, not per-header association); the Install one-liner
      comments and each plugin.json's "N first-party" are checked exactly.
-  4. README.zh-Hant.md exists and its embedded src-sha == git hash-object README.md.
+  4. Each README mirror (scripts/mirrors.py; currently README.zh-Hant.md) exists and its
+     embedded src-sha == git hash-object README.md.
   5. All plugin/marketplace JSON parse; the two subdir plugin sources resolve to dirs;
      marketplace.json lists exactly the 9 plugins (2 local + 7 externals).
-  6. The `git checkout v<semver>` pin in both READMEs' Install section ==
-     marketplace.json metadata.version (drifted silently before: v1.2.0 → #17).
+  6. The `"ref": "v<semver>"` marketplace pin in README.md and every mirror ==
+     marketplace.json metadata.version (drifted silently before as a
+     `git checkout v<semver>` string: v1.2.0 → #17).
   7. Each SKILL.md frontmatter description <= DESC_MAX chars (descriptions are
      always-on context for every consumer session; keeps Lens-3 compression durable).
   8. Each plugin's `.claude-plugin/plugin.json` "version" == the corresponding
      marketplace.json plugins[] entry "version" (the pair bump-version.py maintains).
-  9. README.zh-Hant.md's `## 目錄` section covers the same first-party skills +
-     externals as README.md's Catalog (mirrors check 2; count regex also accepts
-     full-width parens, since the zh mirror is hand-typed).
+  9. Each README mirror's own Catalog-equivalent section (scripts/mirrors.py) covers
+     the same first-party skills + externals as README.md's Catalog (mirrors check 2;
+     count regex also accepts full-width parens, since mirrors are hand-typed).
   10. Each SKILL.md frontmatter description that is not quoted must not contain
       ": " or start with a YAML indicator character (PR #42: an unquoted value
       containing ": " breaks strict YAML parsers). A block scalar (`description: >`)
@@ -33,6 +35,8 @@ Stdlib only.
 from __future__ import annotations
 import json, re, subprocess, sys
 from pathlib import Path
+
+from mirrors import MIRRORS
 
 ROOT = Path(__file__).resolve().parent.parent
 PLUGINS = {"apple-dev-skills": 27, "collaboration-skills": 12}
@@ -124,23 +128,25 @@ else:
     stale = {t for t in re.findall(r"`([a-z0-9][a-z0-9-]+)`", anchors)} - (all_skills | EXTERNALS)
     if stale: fail(f"[readme] Catalog anchor list names no such skill: {sorted(stale)}")
 
-# 9. README.zh-Hant.md's 目錄 (Catalog) section — same token coverage check as
-# above, mirrored: it's hand-typed so a translator can silently drop/mistype a
-# skill token without English README.md or the src-sha check ever noticing.
-zh_path = ROOT / "README.zh-Hant.md"
-if zh_path.is_file():
-    zh_sec = scoped(zh_path.read_text(encoding="utf-8"), "## 目錄")
-    if not zh_sec:
-        fail("[zh] no '## 目錄' section")
-    else:
-        zh_tokens = set(re.findall(r"`([a-z0-9][a-z0-9-]+)`", zh_sec))
-        zh_missing = (all_skills | EXTERNALS) - zh_tokens
-        if zh_missing: fail(f"[zh] 目錄 missing: {sorted(zh_missing)}")
-        zg = [int(x) for x in re.findall(r"[\(（](\d+)[\)）]", zh_sec)]
-        for required in (*PLUGINS.values(), len(EXTERNALS)):
-            if required not in zg:
-                fail(f"[zh] 目錄 counts {sorted(zg)} must include {sorted((*PLUGINS.values(), len(EXTERNALS)))}")
-                break
+# 9. Each mirror's own Catalog-equivalent section — same token coverage check as
+# above, mirrored: mirrors are hand-typed so a translator can silently drop/mistype
+# a skill token without README.md or the src-sha check (rule 4) ever noticing.
+for mirror_name, heading in MIRRORS.items():
+    mirror_path = ROOT / mirror_name
+    if not mirror_path.is_file():
+        continue  # rule 4 below already flags a missing mirror
+    m_sec = scoped(mirror_path.read_text(encoding="utf-8"), heading)
+    if not m_sec:
+        fail(f"[{mirror_name}] no '{heading}' section")
+        continue
+    m_tokens = set(re.findall(r"`([a-z0-9][a-z0-9-]+)`", m_sec))
+    m_missing = (all_skills | EXTERNALS) - m_tokens
+    if m_missing: fail(f"[{mirror_name}] {heading} missing: {sorted(m_missing)}")
+    mg = [int(x) for x in re.findall(r"[\(（](\d+)[\)）]", m_sec)]
+    for required in (*PLUGINS.values(), len(EXTERNALS)):
+        if required not in mg:
+            fail(f"[{mirror_name}] {heading} counts {sorted(mg)} must include {sorted((*PLUGINS.values(), len(EXTERNALS)))}")
+            break
 
 # plugin.json counts
 plugin_json_versions: dict[str, str] = {}
@@ -157,16 +163,17 @@ for plugin, n in re.findall(r"/plugin install (\S+?)@apple-dev-skills\s+#\s*(\d+
     if plugin in PLUGINS and int(n) != PLUGINS[plugin]:
         fail(f"[readme] Install comment says '{n}' for {plugin}, expected {PLUGINS[plugin]}")
 
-# 4. zh-Hant freshness
-zh = ROOT / "README.zh-Hant.md"
-if not zh.is_file():
-    fail("[zh] README.zh-Hant.md missing — run `mise run readme-zh`")
-else:
-    m = re.search(r"src-sha:\s*([0-9a-f]+)", zh.read_text(encoding="utf-8"))
+# 4. Mirror freshness
+for mirror_name in MIRRORS:
+    mirror = ROOT / mirror_name
+    if not mirror.is_file():
+        fail(f"[{mirror_name}] missing — run `mise run readme-zh`")
+        continue
+    m = re.search(r"src-sha:\s*([0-9a-f]+)", mirror.read_text(encoding="utf-8"))
     cur = subprocess.run(["git", "hash-object", "README.md"], cwd=ROOT,
                          capture_output=True, text=True, check=True).stdout.strip()
-    if not m: fail("[zh] no embedded src-sha")
-    elif m.group(1) != cur: fail("[zh] stale — run `mise run readme-zh` (src-sha != README.md)")
+    if not m: fail(f"[{mirror_name}] no embedded src-sha")
+    elif m.group(1) != cur: fail(f"[{mirror_name}] stale — run `mise run readme-zh` (src-sha != README.md)")
 
 # 5. marketplace JSON + subdir sources
 mp = ROOT / ".claude-plugin" / "marketplace.json"
@@ -188,13 +195,13 @@ try:
             fail(f"[manifest] {plugin} version missing — plugin.json={pj_v!r}, marketplace.json={mp_v!r}")
         elif pj_v != mp_v:
             fail(f"[manifest] {plugin} plugin.json version {pj_v!r} != marketplace.json plugins[].version {mp_v!r} — run `mise run bump`")
-    # 6. README Install pin == marketplace metadata.version
+    # 6. README marketplace-pin == marketplace metadata.version
     mp_version = d.get("metadata", {}).get("version", "")
-    for readme_name in ("README.md", "README.zh-Hant.md"):
+    for readme_name in ("README.md", *MIRRORS):
         text = (ROOT / readme_name).read_text(encoding="utf-8") if (ROOT / readme_name).is_file() else ""
-        pins = re.findall(r"git checkout v(\d+\.\d+\.\d+)", text)
+        pins = re.findall(r'"ref":\s*"v(\d+\.\d+\.\d+)"', text)
         if not pins:
-            fail(f"[readme] {readme_name}: no 'git checkout v<semver>' pin found")
+            fail(f'[readme] {readme_name}: no \'"ref": "v<semver>"\' pin found')
         for pin in pins:
             if pin != mp_version:
                 fail(f"[readme] {readme_name}: Install pin v{pin} != marketplace metadata.version {mp_version} — run `mise run bump`")

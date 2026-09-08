@@ -13,16 +13,18 @@ mise install && lefthook install
 ## Tasks (always via mise — never call the scripts directly)
 
 - `mise run check` — SSOT consistency gate (run before every PR; CI runs the same).
-- `mise run readme-zh` — regenerate `README.zh-Hant.md` from `README.md` (needs `claude`
-  on PATH; auto-fires in pre-commit when `README.md` changes).
+- `mise run readme-zh` — regenerate each README mirror listed in `scripts/mirrors.py`
+  (currently `README.zh-Hant.md`) from `README.md` (needs `claude` on PATH; auto-fires
+  in pre-commit when `README.md` changes).
 
-### zh-Hant mirror: hand-mirror small diffs, regenerate large ones
+### README mirrors: hand-mirror by default, regenerate only as fallback
 
 Full regeneration is non-deterministic — even for a 2-line content fix it rewrites
-~40 lines of synonym churn, burying the real change in review. So:
+~40 lines of synonym churn (and has previously flipped full-width punctuation to
+half-width), burying the real change in review. So hand-mirroring is the default:
 
-- **≤ 5 changed content lines in `README.md`**: hand-mirror the same lines into
-  `README.zh-Hant.md`, re-stamp its freshness marker, and commit with the regen
+- **Default — any content change**: hand-mirror the same lines into each mirror in
+  `scripts/mirrors.py`, re-stamp its freshness marker, and commit with the regen
   hook excluded (it would otherwise clobber the hand-mirror with a full regen):
 
   ```bash
@@ -30,7 +32,9 @@ Full regeneration is non-deterministic — even for a 2-line content fix it rewr
   git add README.md README.zh-Hant.md
   LEFTHOOK_EXCLUDE=readme-zh git commit -m "..."   # `check` still runs and verifies freshness
   ```
-- **Larger / structural changes**: run `mise run readme-zh` for a full regeneration.
+- **Fallback — large / structural changes**: run `mise run readme-zh` for a full
+  regeneration, then manually re-check punctuation (full-width vs half-width) and
+  wording before committing — regeneration is not a substitute for review.
 
 ## Ways to contribute
 
