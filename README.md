@@ -8,20 +8,24 @@
 apple-dev-skills is one **marketplace** for independent developers and small teams
 taking an idea to a shipped App Store release. Its first-party skills come in two halves:
 **Apple/Swift** skills for what you are building, and **harness engineering** skills for
-how you drive the agent that builds it — dispatch, review, ship. Every skill is an
-opinionated default backed by a shipped-it war story and held to a consistency gate;
-alongside them sit best-of-breed **external** skill plugins, aggregated by reference and
-credited to their authors, never copied.
+how you direct Claude Code itself — planning, reviewing, and shipping the work. Every
+skill is an opinionated default backed by a shipped-it war story and held to a consistency
+gate. Alongside them sit best-of-breed **external** skill plugins, **aggregated by
+reference** — not written here, linked and credited to their authors, never copied.
 
 ## Quickstart
 
-> Skills self-trigger from their `description:` — install, then just describe the task.
+> Skills trigger automatically from what you ask for — install, then just describe the task.
+
+Inside a Claude Code session, run:
 
 ```
 /plugin marketplace add wei18/apple-dev-skills
 /plugin install apple-dev-skills@apple-dev-skills          # 27 Apple/Swift skills
 /plugin install collaboration-skills@apple-dev-skills      # 12 agent-collaboration skills
 ```
+
+If the install summary says `Run /reload-plugins to activate.`, run it — older clients always need it.
 
 Install either or both. Externals install the same way, e.g. `/plugin install swiftui-expert@apple-dev-skills`.
 
@@ -34,6 +38,10 @@ Then just describe the task:
 
 To force one, use its slash command: `/apple-dev-skills:swift6-concurrency`. `/skills` lists
 what is installed and which plugin each skill came from.
+
+> Newly installed skills are first to lose their descriptions if Claude Code's skill-listing
+> context budget overflows. Run `/doctor` to check the listing's cost; tune
+> `skillListingBudgetFraction` / `skillOverrides` in settings if it's too tight.
 
 ## Catalog
 
@@ -56,22 +64,22 @@ Full index in the tables below.
 | `swift-testing-baseline` | swift-testing + pointfreeco snapshot; protocol fakes; strict/tolerant snapshot gate |
 | `xcode-cloud-single-track-ci` | Single-track Xcode Cloud; PR / Main / Release / Periodic; pre-merge PR CI |
 | `local-archive-export-upload` | Local `xcodebuild archive` → export → `altool` upload to TestFlight when Xcode Cloud can't run |
-| `mise-tool-management` | mise manages binary CLI tools; dev + CI share `.mise.toml`; macOS-only `os` guard |
-| `oslog-logger-defaults` | `os.Logger` (no third-party); subsystem = bundle ID; `.private` default |
-| `apple-three-piece-analytics` | ASC Analytics + MetricKit + Game Center; no third-party tracking; PrivacyInfo mandatory |
-| `telemetry-facade-pattern` | One `Telemetry` target, fan-out facade; OSLog / NoOp / MetricKit / GameCenter sinks |
+| `mise-tool-management` | Pin CLI tool versions (swiftlint, xcbeautify…) with mise, so local dev and CI use the exact same ones |
+| `oslog-logger-defaults` | Default logging setup: Apple's own `os.Logger`, no third-party library, log values private unless you opt in |
+| `apple-three-piece-analytics` | App Store Connect (ASC) Analytics + MetricKit + Game Center; no third-party tracking; PrivacyInfo mandatory |
+| `telemetry-facade-pattern` | One logging call, routed to OSLog / MetricKit / Game Center — swap where events go without touching call sites |
 | `ai-translated-localization` | Default 7 locales; AI translation flow; `Localizable.xcstrings`; completeness gates |
 | `ios-accessibility-engineering` | VoiceOver / Dynamic Type / touch-target / Reduce Motion for SwiftUI & UIKit; WCAG 2.2 |
-| `swift-dependency-injection` | Protocol injection + composition root; environment vs constructor; `@TaskLocal`; Sendable |
+| `swift-dependency-injection` | Make services swappable for tests — protocol injection + a composition root (environment vs constructor, `@TaskLocal`, Sendable) |
 | `ios-performance-engineering` | Instruments / xctrace / hang-hitch budgets / launch / memory / binary size / MetricKit |
 | `apple-public-repo-security` | Three lines of defence for public iOS/macOS repos + rotate-first leak SOP |
 | `build-time-secret-injection` | xcconfig + Info.plist `$()` + `Bundle.main` for ship-in-binary-but-out-of-diff IDs |
 | `storekit2-iap-defaults` | StoreKit 2 non-consumable IAP defaults; bridge-protocol test seam, entitlements, restore |
 | `monetization-sdk-integration` | Add/upgrade/audit a monetization SDK; isolate `import` to one bridge file |
-| `app-store-review-rejections` | Diagnose & pre-empt App Review rejection classes for free + ads + IAP + CloudKit + GC |
+| `app-store-review-rejections` | Diagnose & pre-empt App Review rejection classes for free + ads + IAP + CloudKit + Game Center (GC) |
 | `asc-api-automation` | ES256 JWT from the `.p8` + curl against the ASC REST API — TestFlight, metadata, submission, reports; no fastlane |
 | `swiftui-interaction-footguns` | Known SwiftUI interaction bugs that slip past pure-code review |
-| `swiftui-navigation-architecture` | Typed `Route` enum + `@Observable` router; value-based `NavigationStack`; per-transition presentation semantics with macOS fallbacks; deep links; per-tab paths |
+| `swiftui-navigation-architecture` | Typed-route navigation for SwiftUI — one `@Observable` router, `NavigationStack`, deep links, macOS fallbacks handled |
 | `app-icon-rasterize` | Rasterize a 1024 SVG icon to asset-catalog PNG via `qlmanage` — no Homebrew |
 | `ios-design-mockup` | Single-file HTML iOS design mockup from a spec — iPhone frames + tokens |
 | `interactive-simulator-ux-audit` | Drive a booted Simulator with `idb` (tap/describe/screenshot) to catch nav/modal/safe-area bugs snapshots can't |
@@ -101,25 +109,36 @@ Listed here but **not authored here**: each installs from its author's own repo 
 their latest) and is credited in full. **Aggregate, don't appropriate** — only MIT-compatible,
 non-duplicate plugins are listed, and only for genuine gaps. That check happens once, at
 listing time, not on every upstream commit, so an external's scope and licence can drift
-afterwards (`caveman` already has). Externals are broad **reference** ("here's the API, here's
-how to build X"); first-party skills sit a layer below as **opinionated defaults and shipped-it
-war stories** (iOS 18, one Package, swift-testing + snapshot, OSLog with no third party, runtime
-bugs that slipped past review). Where a topic overlaps, the two differ by altitude, not by
-duplication.
+afterwards (`caveman` already has). Externals are broad **reference** — "here's the API,
+here's how to build X." First-party skills are narrower: one opinionated default per topic
+(iOS 18 as the floor, one Package, swift-testing + snapshot, OSLog only, known runtime bugs
+to avoid). Where a topic overlaps, the two aren't duplicates — they answer at a different
+level of detail.
 
 | Plugin | Author | Covers |
 |---|---|---|
-| [`apple-skills`](https://github.com/vabole/apple-skills) | vabole (MIT) | Broad Apple frameworks — SwiftUI, SwiftData, App Intents, WidgetKit, StoreKit, HealthKit … |
+| [`apple-skills`](https://github.com/Prisma-Labs-Dev/apple-skills) | Prisma Labs (vabole), MIT | Broad Apple frameworks — SwiftUI, SwiftData, App Intents, WidgetKit, StoreKit, HealthKit … |
 | [`swiftui-expert`](https://github.com/AvdLee/SwiftUI-Agent-Skill) | Antoine van der Lee (MIT) | SwiftUI patterns, Swift Charts, Liquid Glass, Instruments toolchain |
 | [`swiftui-pro`](https://github.com/twostraws/SwiftUI-Agent-Skill) | Paul Hudson (MIT) | SwiftUI pitfalls, deprecated-API watchlist, iOS 26 / Liquid Glass |
-| [`caveman`](https://github.com/JuliusBrussee/caveman) | JuliusBrussee (skills MIT; repo also ships a BSL-1.1 engine) | Ultra-compressed communication mode — cuts ~75% of tokens (general agent behavior) |
+| [`caveman`](https://github.com/JuliusBrussee/caveman) | JuliusBrussee (MIT) | Ultra-compressed communication mode — cuts ~75% of tokens (general agent behavior) |
 | [`ponytail`](https://github.com/DietrichGebert/ponytail) | DietrichGebert (MIT) | "Lazy senior dev" mode — forces the simplest, shortest solution (general agent behavior) |
-| [`i-have-adhd`](https://github.com/ayghri/i-have-adhd) | Ayoub G. (MIT) | Always-on ADHD-friendly output mode — action-first, numbered steps, state restated each turn; vs `caveman` (token compression) and `ponytail` (solution simplicity), this shapes structure (general agent behavior) |
-| [`xcode-build-skill`](https://github.com/pzep1/xcode-build-skill) | pz (MIT) | `xcodebuild`/`xcrun simctl` CLI reference — discover schemes → find simulators → build → install → launch → screenshot; CLI-driven, distinct from `interactive-simulator-ux-audit` (idb-driven interactive UX audit) and `host-driven-xcuitest-e2e` (Tuist-scheme XCUITest E2E) — the three don't overlap |
+| [`i-have-adhd`](https://github.com/ayghri/i-have-adhd) | Ayoub G. (MIT) | Always-on ADHD-friendly output mode — numbered steps, state restated each turn (general agent behavior) |
+| [`xcode-build-skill`](https://github.com/pzep1/xcode-build-skill) | pz (MIT) | `xcodebuild`/`xcrun simctl` CLI cheatsheet — schemes → simulators → build → install → launch → screenshot |
 
-`caveman` has since grown into a 20-skill suite; 4 of them (`caveman-discover`, `caveman-manage`,
+`caveman`'s license: skills MIT; repo also ships a BSL-1.1 engine. `caveman` has since grown
+into a 20-skill suite; 4 of them (`caveman-discover`, `caveman-manage`,
 `caveman-evidence-review`, `caveman-setup`) document the author's hosted Caveman Cloud commercial
 service (general agent behavior).
+
+`i-have-adhd` vs `caveman` (token compression) and `ponytail` (solution simplicity), this shapes
+structure.
+
+`xcode-build-skill` is CLI-driven, distinct from `interactive-simulator-ux-audit` (idb-driven
+interactive UX audit) and `host-driven-xcuitest-e2e` (Tuist-scheme XCUITest E2E) — the three
+don't overlap.
+
+`apple-skills` moved from the `vabole` personal account to the `Prisma-Labs-Dev` organization;
+this table lists the org's repo.
 
 ## Other ways to install
 
@@ -142,7 +161,8 @@ Pin the marketplace to a released tag directly in `.claude/settings.json` — no
 ```
 
 Commit it — collaborators get the marketplace automatically once they trust the project
-folder, no separate prompt.
+folder, no separate prompt. If Claude Code still reports a plugin as not installed, run the
+`/plugin install` command it shows once.
 
 ### C — `npx skills` (flat, no plugin)
 
@@ -151,20 +171,16 @@ npx skills add wei18/apple-dev-skills --list
 npx skills add wei18/apple-dev-skills --skill swift6-concurrency
 ```
 
-> **Path C does not include the aggregated externals.** `npx skills` does read this repo's
-> `marketplace.json` / `plugin.json`, but only follows locally-declared skill paths — it
-> doesn't fetch the externals' remote `github` / `git-subdir` sources, so the commands above
-> reach only the 39 first-party skills; the 7 externals are silently skipped. To flat-install
-> the whole catalog (externals included, pulled from their authors' repos):
+> **Path C does not include the aggregated externals.** `npx skills` reads this repo's
+> `marketplace.json` / `plugin.json`, but it only follows locally-declared skill paths. It
+> does not fetch the externals' remote `github` / `git-subdir` sources. So the commands above
+> install only the 39 first-party skills — the 7 externals are silently skipped. To
+> flat-install the whole catalog (externals included, pulled from their authors' repos):
 
 ```bash
 scripts/install-flat.sh -g          # user-level; drop -g for project-level
 scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 ```
-
-> Newly installed skills are first in line to lose their descriptions: Claude Code's skill
-> listing has a context budget, and on overflow it drops descriptions starting with the
-> least-invoked skills. Run `/doctor` to check the listing's cost; tune `skillListingBudgetFraction` / `skillOverrides` in settings if it's too tight.
 
 ## Contributing
 
