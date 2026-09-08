@@ -13,9 +13,11 @@ mise install && lefthook install
 ## Tasks (always via mise — never call the scripts directly)
 
 - `mise run check` — SSOT consistency gate (run before every PR; CI runs the same).
-- `mise run readme-zh` — regenerate each README mirror listed in `scripts/mirrors.py`
-  (currently `README.zh-Hant.md`) from `README.md` (needs `claude` on PATH; auto-fires
-  in pre-commit when `README.md` changes).
+- `mise run readme-zh` — regenerate `README.zh-Hant.md` (Catalog heading `## 目錄`) from
+  `README.md` (needs `claude` on PATH; auto-fires in pre-commit when `README.md` changes).
+- `mise run readme-zh-hans` — same, for `README.zh-Hans.md` (Catalog heading `## 目录`).
+  Every mirror listed in `scripts/mirrors.py` has its own task and its own pre-commit
+  trigger; add both when a mirror is added.
 
 ### README mirrors: hand-mirror by default, regenerate only as fallback
 
@@ -24,13 +26,16 @@ Full regeneration is non-deterministic — even for a 2-line content fix it rewr
 half-width), burying the real change in review. So hand-mirroring is the default:
 
 - **Default — any content change**: hand-mirror the same lines into each mirror in
-  `scripts/mirrors.py`, re-stamp its freshness marker, and commit with the regen
-  hook excluded (it would otherwise clobber the hand-mirror with a full regen):
+  `scripts/mirrors.py` (currently `README.zh-Hant.md`, `## 目錄`; `README.zh-Hans.md`,
+  `## 目录`), re-stamp each one's freshness marker, and commit with the regen hooks
+  excluded (they would otherwise clobber the hand-mirror with a full regen):
 
   ```bash
-  sed -i '' "s/src-sha: [0-9a-f]*/src-sha: $(git hash-object README.md)/" README.zh-Hant.md
-  git add README.md README.zh-Hant.md
-  LEFTHOOK_EXCLUDE=readme-zh git commit -m "..."   # `check` still runs and verifies freshness
+  for f in README.zh-Hant.md README.zh-Hans.md; do
+    sed -i '' "s/src-sha: [0-9a-f]*/src-sha: $(git hash-object README.md)/" "$f"
+  done
+  git add README.md README.zh-Hant.md README.zh-Hans.md
+  LEFTHOOK_EXCLUDE=readme-zh,readme-zh-hans git commit -m "..."   # `check` still runs and verifies freshness
   ```
 - **Fallback — large / structural changes**: run `mise run readme-zh` for a full
   regeneration, then manually re-check punctuation (full-width vs half-width) and

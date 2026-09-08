@@ -3,7 +3,7 @@
 > Skills for vibe coding iOS & Apple-ecosystem apps with Claude Code — and for driving
 > the agent that builds them.
 >
-> Languages: [English](README.md) · [繁體中文](README.zh-Hant.md)
+> Languages: [English](README.md) · [繁體中文](README.zh-Hant.md) · [简体中文](README.zh-Hans.md)
 
 apple-dev-skills is one **marketplace** for independent developers and small teams
 taking an idea to a shipped App Store release. Its first-party skills come in two halves:

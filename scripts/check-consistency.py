@@ -9,8 +9,8 @@ Checks
   3. Counts present: the values 25/12/6 each appear among the Catalog's "(N)" group
      headers (set membership, not per-header association); the Install one-liner
      comments and each plugin.json's "N first-party" are checked exactly.
-  4. Each README mirror (scripts/mirrors.py; currently README.zh-Hant.md) exists and its
-     embedded src-sha == git hash-object README.md.
+  4. Each README mirror (scripts/mirrors.py; currently README.zh-Hant.md, README.zh-Hans.md)
+     exists and its embedded src-sha == git hash-object README.md.
   5. All plugin/marketplace JSON parse; the two subdir plugin sources resolve to dirs;
      marketplace.json lists exactly the 9 plugins (2 local + 7 externals).
   6. The `"ref": "v<semver>"` marketplace pin in README.md and every mirror ==
@@ -212,4 +212,5 @@ if errors:
     print(f"FAIL — {len(errors)} error(s):", file=sys.stderr)
     for e in errors: print(f"  - {e}", file=sys.stderr)
     sys.exit(1)
-print(f"OK — 2 plugins ({'/'.join(map(str, PLUGINS.values()))}), catalog + counts + zh-Hant consistent.")
+print(f"OK — 2 plugins ({'/'.join(map(str, PLUGINS.values()))}), catalog + counts + "
+      f"{len(MIRRORS)} README mirror(s) ({'/'.join(MIRRORS)}) consistent.")
