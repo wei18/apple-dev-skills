@@ -2,7 +2,7 @@ name: Repo audit (upkeep)
 
 on:
   schedule:
-    - cron: '0 20 * * *'   # 04:00 Asia/Taipei (UTC+8) daily
+    - cron: '0 20 * * 0'   # 04:00 Asia/Taipei (UTC+8) daily
   workflow_dispatch:
 
 permissions:
