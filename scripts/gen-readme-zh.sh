@@ -7,7 +7,8 @@ cd "$(git rev-parse --show-toplevel)"
 LOCALE="${1:?usage: gen-readme-zh.sh <locale>, e.g. zh-Hant}"
 case "$LOCALE" in
   zh-Hant) LANG_NAME="Traditional Chinese (zh-Hant)" ;;
-  *) echo "unsupported locale: $LOCALE (known: zh-Hant)" >&2; exit 1 ;;
+  zh-Hans) LANG_NAME="Simplified Chinese (zh-Hans), using mainland-China terminology and simplified characters throughout" ;;
+  *) echo "unsupported locale: $LOCALE (known: zh-Hant, zh-Hans)" >&2; exit 1 ;;
 esac
 OUT="README.$LOCALE.md"
 

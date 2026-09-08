@@ -4,5 +4,8 @@ pre-commit:
     readme-zh:
       glob: "README.md"
       run: mise run readme-zh
+    readme-zh-hans:
+      glob: "README.md"
+      run: mise run readme-zh-hans
     check:
       run: mise run check
