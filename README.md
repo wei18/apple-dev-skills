@@ -6,12 +6,12 @@
 > Languages: [English](README.md) · [繁體中文](README.zh-Hant.md)
 
 apple-dev-skills is one **marketplace** for independent developers and small teams
-taking an idea to a shipped App Store release, split into two first-party halves:
-**Apple/Swift** skills for what you are building, and **harness engineering** skills
-for how you drive the agent that builds it — dispatch, review, ship. Quality is held
-up by opinionated defaults, shipped-it war stories, and a consistency gate — plus
-best-of-breed **external** skill plugins aggregated by reference (credited to their
-authors, never copied).
+taking an idea to a shipped App Store release. Its first-party skills come in two halves:
+**Apple/Swift** skills for what you are building, and **harness engineering** skills for
+how you drive the agent that builds it — dispatch, review, ship. Every skill is an
+opinionated default backed by a shipped-it war story and held to a consistency gate;
+alongside them sit best-of-breed **external** skill plugins, aggregated by reference and
+credited to their authors, never copied.
 
 ## Quickstart
 
@@ -97,15 +97,15 @@ Full index in the tables below.
 
 ### Aggregated external (7) — by reference, credited
 
-Listed here but **not authored here** — installed from the authors' own repos (you get
-their latest), credited in full. **Aggregate, don't appropriate**: only MIT-compatible,
-non-duplicate plugins are listed, for genuine gaps only — that check happens once at
+Listed here but **not authored here**: each installs from its author's own repo (you get
+their latest) and is credited in full. **Aggregate, don't appropriate** — only MIT-compatible,
+non-duplicate plugins are listed, and only for genuine gaps. That check happens once, at
 listing time, not on every upstream commit, so an external's scope and licence can drift
-after listing (`caveman` already has). Externals are broad **reference** ("here's the API /
-here's how to build X"); first-party skills sit a layer below as **opinionated defaults and
-shipped-it war stories** (iOS 18, one Package, swift-testing + snapshot, OSLog no-third-party,
-runtime bugs that slipped past review) — where a topic overlaps, they differ by altitude,
-not duplication.
+afterwards (`caveman` already has). Externals are broad **reference** ("here's the API, here's
+how to build X"); first-party skills sit a layer below as **opinionated defaults and shipped-it
+war stories** (iOS 18, one Package, swift-testing + snapshot, OSLog with no third party, runtime
+bugs that slipped past review). Where a topic overlaps, the two differ by altitude, not by
+duplication.
 
 | Plugin | Author | Covers |
 |---|---|---|

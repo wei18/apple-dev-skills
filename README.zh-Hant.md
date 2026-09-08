@@ -4,11 +4,11 @@
 >
 > 語言：[English](README.md) · [繁體中文](README.zh-Hant.md)
 
-apple-dev-skills 是一個 **marketplace**，為獨立開發者與小型團隊而寫，把一個點子帶到 App Store
-上架，分成兩個第一方半邊：**Apple/Swift** 技能管你在做什麼，**harness engineering** 技能管你
-怎麼駕馭那個在做事的 agent —— 派工、審查、出貨。品質靠帶立場的預設值、實際上架的戰場故事，
-以及一道一致性把關撐住 —— 另以引用方式彙整同類最佳的**外部**技能 plugin（完整標註原作者，
-絕不複製）。
+apple-dev-skills 是一個 **marketplace**，為獨立開發者與小型團隊而寫，陪你把一個點子帶到
+App Store 上架。第一方技能分成兩組：**Apple/Swift** 技能管你在做什麼，**harness engineering**
+技能管你怎麼駕馭那個在做事的 agent —— 派工、審查、出貨。每一支技能都是帶立場的預設值，背後
+有實際上架的戰場故事，並受一道一致性把關；旁邊另以引用方式彙整同類最佳的**外部**技能
+plugin，完整標註原作者，絕不複製。
 
 ## 快速開始
 
@@ -20,7 +20,7 @@ apple-dev-skills 是一個 **marketplace**，為獨立開發者與小型團隊�
 /plugin install collaboration-skills@apple-dev-skills      # 12 agent-collaboration skills
 ```
 
-裝其中一個或兩個都裝皆可。外部 plugin 的安裝方式相同，例如 `/plugin install swiftui-expert@apple-dev-skills`。
+裝一個或兩個都可以。外部 plugin 的安裝方式相同，例如 `/plugin install swiftui-expert@apple-dev-skills`。
 
 接著直接描述你要做的事：
 
@@ -171,4 +171,4 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 此處僅以引用方式呈現。催生本 repo 雙 plugin 結構的設計 spec 與計畫原本放在 `docs/superpowers/`
 —— 已退役、改由 git 歷史保存；用 `git log -- docs/` 可以找回。MIT —— 見 [LICENSE](LICENSE)。
 
-<!-- src-sha: df1cfc347ca98c41ad42a2245b2ae9c1234045e1 -->
+<!-- src-sha: 8f9e00b3a218facc793b00bded93746ca484cc15 -->
