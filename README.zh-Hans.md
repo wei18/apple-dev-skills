@@ -2,7 +2,7 @@
 
 > 用 Claude Code vibe coding iOS 与 Apple 生态系统 App 的技能——以及驾驭那个打造它们的 agent 的技能。
 >
-> 语言：[English](README.md) · [繁體中文](README.zh-Hant.md) · [简体中文](README.zh-Hans.md)
+> 语言：[English](README.md) · [繁體中文](README.zh-Hant.md) · [简体中文](README.zh-Hans.md) · [日本語](README.ja.md)
 
 apple-dev-skills 是一个 **marketplace**，为独立开发者与小型团队而写，陪你把一个点子带到
 App Store 上架。第一方技能分成两组：**Apple/Swift** 技能管你在做什么，**harness engineering**
@@ -171,4 +171,4 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 此处仅以引用方式呈现。催生本 repo 双 plugin 结构的设计 spec 与计划原本放在 `docs/superpowers/`
 —— 已退役、改由 git 历史保存；用 `git log -- docs/` 可以找回。MIT —— 见 [LICENSE](LICENSE)。
 
-<!-- src-sha: fd7cc386adec78f5bf329db7857b0b9855658d43 -->
+<!-- src-sha: c65fc1aab4f4d04aefe8d22f290fc6dae4c7f1d2 -->
