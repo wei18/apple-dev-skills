@@ -8,7 +8,10 @@ LOCALE="${1:?usage: gen-readme-zh.sh <locale>, e.g. zh-Hant}"
 case "$LOCALE" in
   zh-Hant) LANG_NAME="Traditional Chinese (zh-Hant)" ;;
   zh-Hans) LANG_NAME="Simplified Chinese (zh-Hans), using mainland-China terminology and simplified characters throughout" ;;
-  *) echo "unsupported locale: $LOCALE (known: zh-Hant, zh-Hans)" >&2; exit 1 ;;
+  ja) LANG_NAME="natural, idiomatic Japanese (ja) written in polite desu/masu style throughout, using terminology
+and phrasing familiar to the Japanese iOS/Swift developer community (katakana or English mixed in the way
+Japanese technical writing conventionally does), with full-width punctuation (、。（）「」・)" ;;
+  *) echo "unsupported locale: $LOCALE (known: zh-Hant, zh-Hans, ja)" >&2; exit 1 ;;
 esac
 OUT="README.$LOCALE.md"
 

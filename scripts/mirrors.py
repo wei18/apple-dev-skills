@@ -11,4 +11,5 @@ hardcoding a filename.
 MIRRORS = {
     "README.zh-Hant.md": "## 目錄",
     "README.zh-Hans.md": "## 目录",
+    "README.ja.md": "## カタログ",
 }
