@@ -53,10 +53,10 @@ Meaningful images need a label: `Image("trophy").accessibilityLabel("Achievement
 
 ```swift
 AccessibilityNotification.Announcement("Level complete").post()
-// or for a layout change:
-AccessibilityNotification.LayoutChanged(element: focusTarget).post()
+// or for a layout change (the initializer takes the element unlabeled):
+AccessibilityNotification.LayoutChanged(focusTarget).post()
 // or for a screen change (modal, full replacement):
-AccessibilityNotification.ScreenChanged(element: focusTarget).post()
+AccessibilityNotification.ScreenChanged(focusTarget).post()
 ```
 
 In UIKit: `UIAccessibility.post(notification: .announcement, argument: "Level complete")`.
@@ -100,7 +100,7 @@ idb screenshot --udid <udid> after-ax5.png
 # Tap through the UI with VoiceOver via idb ui tap / idb ui describe-all
 ```
 
-**CI a11y gate** — CVS Health's `a11y-audit` (open source, Swift-based) provides a programmatic audit runner that can fail CI on missing labels or contrast violations; treat it as a complementary gate, not a replacement for manual Accessibility Inspector review.
+**CI a11y gate**: in XCUITest, call `try app.performAccessibilityAudit()` (iOS 17 / macOS 14 / Xcode 15+; narrow with `for:` to specific audit types such as `.dynamicType`, `.contrast`, `.hitRegion`) to fail CI on accessibility violations — this is Apple's own runtime audit gate. Supplement with `cvs-health/ios-swiftui-accessibility-techniques`'s `a11y-check`, a **static scanner** (not a runtime audit runner), as a complementary lint-layer check. Treat both as complements to, not replacements for, manual Accessibility Inspector review.
 
 ## WCAG 2.2 mapping for App Review
 

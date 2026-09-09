@@ -93,7 +93,7 @@ A test target for the bridge ships `Fake<SdkName>Bridge` (actor or class). All u
 ## Real-world incidents this skill encodes
 
 ### AdMob v11 → v13 upgrade (from a real project)
-- Symbol renames: `GADBannerView` → `BannerView`, `GADRequest` → `Request`, etc.
+- Symbol renames landed in **v12.0.0**: the `GAD`-prefixed banner view type and `GADRequest` dropped their prefix for Swift (`BannerView`, `Request`), etc. — Swift code now uses the un-prefixed name; the `GAD`-prefixed spellings remain only in the Objective-C API.
 - Audit broke briefly when migrator missed file boundary; recovered by re-running isolation audit
 
 ### Production ID swap safety
@@ -101,7 +101,7 @@ A test target for the bridge ships `Fake<SdkName>Bridge` (actor or class). All u
 - A paired-flip checklist ensures Info.plist `GADApplicationIdentifier` + bridge constant are always updated together
 
 ### Real banner landed + SDK-view-crossing seam
-- The `GADBannerView` SwiftUI host shipped. `import GoogleMobileAds` stays confined to the live bridge file; the live banner crosses into the UI layer via `BannerViewProviding.bannerView(for:) -> AnyView?` — an **`AnyView` (SwiftUI), never a GoogleMobileAds type** — so UI targets import zero SDK. One shared `BannerSlotView` replaced per-app placeholder slots.
+- The `BannerView` SwiftUI host shipped (the `GAD`-prefixed name is Objective-C-only since v12.0.0; Swift code uses `BannerView`). `import GoogleMobileAds` stays confined to the live bridge file; the live banner crosses into the UI layer via `BannerViewProviding.bannerView(for:) -> AnyView?` — an **`AnyView` (SwiftUI), never a GoogleMobileAds type** — so UI targets import zero SDK. One shared `BannerSlotView` replaced per-app placeholder slots.
 - ID split: `#if DEBUG` forces Google's universal test unit; Release reads the per-app prod id from `Bundle.main` via xcconfig.
 
 ### macOS conditional gating

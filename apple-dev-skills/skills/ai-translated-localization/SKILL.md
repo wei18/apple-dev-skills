@@ -15,7 +15,7 @@ description: Default localization scope AND execution playbook for Apple-platfor
 
 **Execution:**
 - Adding new user-facing strings (UI keys, GC titles, ASC metadata, achievement descriptions) and need to fill out their non-source locales.
-- Refreshing strings whose source language changed (`extractionState: stale` entries in xcstrings).
+- Refreshing strings whose source text changed after translation shipped (locales showing `stringUnit.state: needs_review` in xcstrings — not to be confused with `extractionState: stale`, which flags a key no longer referenced in code, not a changed source).
 - Auditing whether a release's xcstrings is complete (every key has every locale, no `<TRANSLATE>` placeholders shipping).
 
 ## Default decisions
@@ -64,7 +64,7 @@ description: Default localization scope AND execution playbook for Apple-platfor
 ## Deviation considerations
 
 - **Focused target market**: shrink to zh-Hant + en + one target-market locale.
-- **No budget / no time**: ship zh-Hant + en first; mark others as `extractionState: stale` for later.
+- **No budget / no time**: ship zh-Hant + en first; leave the other locales absent, or set them to `stringUnit.state: new`, for later — not `extractionState: stale`, which marks a key no longer used in code, not a not-yet-translated locale.
 - **Regulated / sensitive content** (medical / financial / kids): **mandatory human review** after AI translation; add a review step to `plan.md`.
 - **Special scripts / RTL** (Arabic / Hebrew): UI needs additional layout verification, not just translation.
 
@@ -89,7 +89,7 @@ For each target locale, translate each key from `en` (source-of-truth) into the 
 - **Match register / tone**: derive from `en`'s tone. Buttons are imperative, descriptions are neutral, error messages are direct. Don't add politeness markers absent in source (see locale gotchas below).
 - **Preserve product nouns**: app name, brand terms, mode names that share visual identity across locales (e.g., "Practice" → 練習 in both zh-Hant and ja for visual consistency). Maintain a small **glossary** captured per-project to enforce this.
 
-After translation, set `extractionState: translated` (per Apple xcstrings convention) so Xcode no longer flags the key as needing attention.
+After translation, set that locale's `stringUnit.state` to `translated` — `translated` is a value of `stringUnit.state`, not of `extractionState`; leave `extractionState` at `manual` or `extracted_with_value` — so Xcode no longer flags the locale as needing attention.
 
 ### Step 3 — Tricky-case review (locale-specific gotchas)
 
@@ -138,7 +138,9 @@ Maintain the glossary as either inline comments in xcstrings, or a sidecar `Loca
 Verification gates before merging a translation pass:
 
 - `<TRANSLATE>` count across xcstrings = 0 (none shipped).
-- `extractionState: stale` count = 0 (all stale entries refreshed).
+- `stringUnit.state: needs_review` count = 0 across all locales (source text changed since last translation, now resolved).
+- `stringUnit.state: new` count = 0 across all locales (nothing left untranslated).
+- `extractionState: stale` count = 0 (no orphaned keys left in the catalog that the source code no longer references).
 - Per-key locale coverage = 100% (parse xcstrings JSON; every `localizations` dict has every declared locale).
 - For plural keys: every locale has every plural form required by CLDR for that locale.
 - Substitution token parity per key: `en` has N `%@` → all locales have N `%@` (or locale-specific reordering via `%1$@` / `%2$@`).

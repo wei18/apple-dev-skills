@@ -52,9 +52,12 @@ These are the canonical iOS values. Drop them into the HTML as CSS variables and
   /* ===== Typography ===== */
   /* size / line-height / weight */
   --font-large-title:     34px / 41px / 700;
-  --font-title-1:         28px / 34px / 700;
-  --font-title-2:         22px / 28px / 700;
-  --font-title-3:         20px / 25px / 600;
+  --font-title-1:            28px / 34px / 400;  /* HIG default weight is Regular */
+  --font-title-1-emphasized: 28px / 34px / 700;
+  --font-title-2:            22px / 28px / 400;  /* HIG default weight is Regular */
+  --font-title-2-emphasized: 22px / 28px / 700;
+  --font-title-3:            20px / 25px / 400;  /* HIG default weight is Regular */
+  --font-title-3-emphasized: 20px / 25px / 600;
   --font-headline:        17px / 22px / 600;
   --font-body:            17px / 22px / 400;
   --font-body-emphasized: 17px / 22px / 600;
@@ -109,9 +112,9 @@ These are the canonical iOS values. Drop them into the HTML as CSS variables and
 <section>
   <h3>Typography</h3>
   <div class="type-sample" style="font-size:34px;line-height:41px;font-weight:700">Large Title — 34/41 Bold</div>
-  <div class="type-sample" style="font-size:28px;line-height:34px;font-weight:700">Title 1 — 28/34 Bold</div>
-  <div class="type-sample" style="font-size:22px;line-height:28px;font-weight:700">Title 2 — 22/28 Bold</div>
-  <div class="type-sample" style="font-size:20px;line-height:25px;font-weight:600">Title 3 — 20/25 Semibold</div>
+  <div class="type-sample" style="font-size:28px;line-height:34px;font-weight:400">Title 1 — 28/34 Regular (Bold when emphasized)</div>
+  <div class="type-sample" style="font-size:22px;line-height:28px;font-weight:400">Title 2 — 22/28 Regular (Bold when emphasized)</div>
+  <div class="type-sample" style="font-size:20px;line-height:25px;font-weight:400">Title 3 — 20/25 Regular (Semibold when emphasized)</div>
   <div class="type-sample" style="font-size:17px;line-height:22px;font-weight:600">Headline — 17/22 Semibold</div>
   <div class="type-sample" style="font-size:17px;line-height:22px;font-weight:400">Body — 17/22 Regular</div>
   <div class="type-sample" style="font-size:16px;line-height:21px;font-weight:400">Callout — 16/21 Regular</div>

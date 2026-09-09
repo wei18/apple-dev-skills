@@ -117,10 +117,12 @@ repeatedly without asking anyone.
 4. **Just-in-time (JIT) schema exists only in Development.** A debug build auto-creates record
    types and fields the first time it writes them, in Development only — Production never does
    this. Corollary: any field the app code writes that was never JIT-seeded in Development
-   *before* the last Console promotion is **missing in Production**, and live writes of it fail
-   silently — typically only surfacing through an error-reporting funnel much later, not at the
-   write call site. **Audit method**: `export-schema --environment production` to a scratch
-   file and diff its field set against every field the code actually writes.
+   *before* the last Console promotion is **missing in Production**, and the server returns a
+   `CKError` for the unknown field when the app tries to save it — this only *looks* silent if
+   the app's own save-completion handling swallows or ignores that error instead of surfacing
+   it. **Audit method**: `export-schema --environment production` to a scratch file and diff
+   its field set against every field the code actually writes, and confirm every CloudKit save
+   call actually surfaces its error instead of discarding it.
 5. **JIT marks every field it creates `QUERYABLE SEARCHABLE SORTABLE`.** A hand-authored
    `.ckdb` should declare the **minimal** index set the app's actual queries need instead
    (e.g. only the one field a specific equality query filters on, as `QUERYABLE`) — because
@@ -161,7 +163,8 @@ correspondingly irreversible, deliberately manual approval step.
 1. **Assuming `import-schema --environment production` works** because it's syntactically
    accepted-looking — it is Development-only; Production is Console-only.
 2. **Skipping the Development JIT-seed step before an export** — the export then reflects an
-   incomplete schema, and the gap resurfaces later as a silent Production write failure.
+   incomplete schema, and the gap resurfaces later as a Production write returning `CKError`
+   for the unknown field, which looks like a silent failure only if that error is discarded.
 3. **Leaving the management token in `cktool`'s keychain store** after a session — purge it
    even on script failure via a `trap`.
 4. **Hand-editing `.ckdb` opportunistically** without re-validating against the live
@@ -169,7 +172,8 @@ correspondingly irreversible, deliberately manual approval step.
 5. **Over-indexing a hand-authored `.ckdb`** (marking every field `QUERYABLE SEARCHABLE
    SORTABLE` out of caution) when Production indexes can only be added to later, never removed.
 6. **Never diffing Production's actual schema against the code's write surface** — the
-   silent-missing-field failure mode is only caught by an explicit audit, not by normal testing.
+   missing-field write returns a `CKError` that many apps never surface anywhere visible, so
+   the failure mode is only caught by an explicit audit, not by normal testing.
 
 ## Review Checklist
 
