@@ -112,7 +112,7 @@ xcrun simctl io <udid> recordVideo <path.mp4> # capture a flow as video
 ```
 
 `recordVideo` fails outright if `<path.mp4>` already exists (`NSPOSIXErrorDomain` code 17,
-"file exists") — pass `-f` to overwrite, or `rm -f <path.mp4>` first, especially when re-running
+"file exists") — pass `--force` to overwrite, or `rm -f <path.mp4>` first, especially when re-running
 the same recording path across attempts.
 
 - **Get tap coordinates from `describe-all`**, not from eyeballing a screenshot — a

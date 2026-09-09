@@ -53,12 +53,10 @@ signposter.endInterval("TileRender", state)
 ### `xctrace` — Instruments from CI
 
 ```bash
-xctrace record \
-  --template "Time Profiler" \
-  --launch -- /path/to/MyApp.app \
-  --output trace.xctrace \
-  --time-limit 30s
+xctrace record --template 'Time Profiler' --output trace.trace --time-limit 30s --launch -- /path/App.app
 ```
+
+`--launch -- command` must come last: everything after `--` is passed through to the launched process, so `--output` / `--time-limit` have to precede it or they get swallowed as app launch arguments instead of being read by `xctrace` itself.
 
 `xctrace` can drive any built-in or custom Instruments template headlessly and export the trace as a `.xctrace` bundle. Post-process with `xctrace export` to pull out human-readable XML. Wire this into a CI step on a dedicated Mac runner to catch regressions before they reach users.
 

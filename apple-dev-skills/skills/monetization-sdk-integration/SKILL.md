@@ -108,9 +108,9 @@ A test target for the bridge ships `Fake<SdkName>Bridge` (actor or class). All u
 - Initial AdMob integration left `import GoogleMobileAds` ungated → macOS build broke
 - Fix: `canImport(GoogleMobileAds)` + Package.swift `condition: .when(platforms: [.iOS])` + macOS fallback uses `NoopAdProvider`
 
-### lefthook parallel deadlock — secondary effect
-- Multiple SDK installs triggered concurrent `mise exec` invocations
-- `lefthook.yml pre-commit.parallel: false` makes hook timing predictable
+### lefthook parallel invocations — secondary effect
+- Multiple SDK installs can trigger concurrent `mise exec` invocations
+- Keep `lefthook.yml pre-commit.parallel: true` (matches `apple-public-repo-security`'s baseline); if a specific pair of commands genuinely races, serialize those two, not the whole file
 
 ## Anti-patterns
 

@@ -48,7 +48,7 @@ hardcoded in tooling.
 set -a; source secrets/.env; set +a
 
 # 1. Authenticate cktool for this session (positional arg — see gotcha 1 below).
-xcrun cktool save-token --team-id "$CK_TEAM_ID" "$CK_MANAGEMENT_TOKEN"
+xcrun cktool save-token --type management --force "$CK_MANAGEMENT_TOKEN"
 
 # 2. Export the live Development schema to the committed source-of-truth file.
 #    Seed step first: run a debug build once so the app's JIT schema provisions
@@ -68,7 +68,7 @@ xcrun cktool import-schema \
   --environment development --file cloudkit/myapp.ckdb
 
 # 5. Always clear the token from cktool's keychain store when done.
-xcrun cktool delete-token --team-id "$CK_TEAM_ID"
+xcrun cktool remove-token --type management --force
 ```
 
 Run step 5 in a shell `trap ... EXIT` around steps 1–4 so the token is purged even if a step

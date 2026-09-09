@@ -96,8 +96,8 @@ withAnimation(reduceMotion ? nil : .easeInOut) { state.toggle() }
 ```bash
 # Set content size to AX5 and screenshot
 xcrun simctl ui <udid> content_size accessibility-extra-extra-extra-large
-idb screenshot <udid> after-ax5.png
-# Tap through the UI with VoiceOver via idb ui_tap / ui_describe_all
+idb screenshot --udid <udid> after-ax5.png
+# Tap through the UI with VoiceOver via idb ui tap / idb ui describe-all
 ```
 
 **CI a11y gate** — CVS Health's `a11y-audit` (open source, Swift-based) provides a programmatic audit runner that can fail CI on missing labels or contrast violations; treat it as a complementary gate, not a replacement for manual Accessibility Inspector review.

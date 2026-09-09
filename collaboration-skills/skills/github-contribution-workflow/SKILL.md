@@ -36,11 +36,12 @@ Claude Code's [Hooks](https://code.claude.com/docs/en/hooks) can intercept and b
 | Intent | Command |
 |---|---|
 | Open a PR | `gh pr create --title "<conventional title>" --body "<body + 🤖 footer>"` |
-| Check CI before merge | `gh pr checks <n> --repo <o/r>` ; `gh pr view <n> --json mergeStateStatus` |
-| Merge a PR | `gh pr merge <n> --squash --delete-branch` (only when status is `CLEAN`) |
+| Check CI before merge | `gh pr checks <n> --repo <o/r> --watch` ; `gh pr view <n> --json mergeStateStatus` |
+| Merge a PR | `gh pr merge <n> --squash --delete-branch` (only when `mergeStateStatus` is `CLEAN`) |
 | Open an issue | `gh issue create --title "<title>" --body "<body>"` |
 | Comment on an issue | `gh issue comment <n> --body "<text>"` |
-| Create/edit a file via GitHub | `gh api -X PUT repos/<o/r>/contents/<path> -f message=… -f content=$(base64) …` (no local clone needed) |
+| Create a new file via GitHub | `gh api -X PUT repos/<o/r>/contents/<path> -f message=… -f content=$(base64) …` (no local clone needed) |
+| Edit an existing file via GitHub | Same, plus `-f sha=<current-blob-sha>` (from a prior `GET` on the same path) — omitting it on an update fails with 422 |
 | Set a repo secret | `gh secret set <NAME> --repo <o/r>` (interactive paste; see Conventions) |
 | List secrets | `gh secret list --repo <o/r>` (names only; values are write-only) |
 | Configure merge / branch protection | `gh api -X PATCH repos/<o/r> -F allow_squash_merge=true -F delete_branch_on_merge=true` ; `gh api -X PUT repos/<o/r>/branches/<b>/protection …` |
@@ -50,11 +51,11 @@ Claude Code's [Hooks](https://code.claude.com/docs/en/hooks) can intercept and b
 - **Branch names** use Conventional prefixes: `feat/ fix/ chore/ docs/ ci/ refactor/ test/`.
 - **PR titles** follow Conventional Commits (some repos enforce this with a CI gate — e.g. a "Validate PR title" check; a non-conforming title fails the PR).
 - **Commit trailer**: end commit messages with the agreed `Co-Authored-By:` trailer. **PR body**: end with the 🤖 footer.
-- **Merge**: `--squash --delete-branch`. **Never merge unless `gh pr checks` / `mergeStateStatus` is `CLEAN`.** `BLOCKED` is usually just *pending required checks*, not a failure — poll until they finish, don't force-merge.
+- **Merge**: `--squash --delete-branch`. **Never merge unless `mergeStateStatus` is `CLEAN`** — `gh pr checks` itself never prints `CLEAN`; that's a `gh pr view --json mergeStateStatus` value, not a `gh pr checks` state. Use `gh pr checks <n> --watch` to wait for checks (exit `0` = all pass, exit `8` = still pending, any other non-zero = a check failed). `BLOCKED` covers more than pending checks — it also covers a failed required check, a missing review, or an unresolved conversation — so don't poll it indefinitely assuming it will clear on its own; also watch for `UNSTABLE` (a non-required check failing) and `BEHIND` (branch needs updating against base).
 - **Secrets**: `gh secret set <NAME>` **without `--body`** — the interactive prompt keeps the value out of shell history. Never `gh secret set X --body "$TOKEN"`. Verify presence (not value) with `gh secret list`.
 - **Submodule pin bump**: set the gitlink surgically with
   `git update-index --cacheinfo 160000,<commit-sha>,<submodule-path>` — no submodule checkout needed (works in a fresh worktree). Confirm the target SHA is pushed/tag-reachable on the submodule's remote first (`git ls-remote --tags <url> <tag>`).
-- **`--no-verify`**: allowed ONLY for a commit with **no code and no secrets** (a submodule-pin bump, a `.gitmodules`/config-only change) when the repo's pre-commit gate is heavy and times out. Never for code or content commits — those must pass the hooks.
+- **`--no-verify`**: allowed ONLY for a commit with **no code and no secrets** (a submodule-pin bump, a `.gitmodules`/config-only change) when the repo's pre-commit gate is heavy and times out. `git commit --no-verify` skips both the pre-commit **and** commit-msg hooks (a commitlint-style message check is bypassed too — double-check the message format by hand); `git push --no-verify` separately skips pre-push. Never use either for code or content commits — those must pass the hooks.
 - **Shared repo / submodule**: edit via an isolated worktree branched from `origin/main` + PR, never in place — see `subagent-conflict-detection`.
 
 ## Repo settings (contribution-flow only)
@@ -66,7 +67,7 @@ protection) are owned by `apple-public-repo-security`** — set them there, not 
 
 ## Common Mistakes
 
-1. **Merging on a non-CLEAN status** — treating `BLOCKED` (pending checks) as a failure, or force-merging past a real red check. Poll; merge only on `CLEAN`.
+1. **Merging on a non-CLEAN `mergeStateStatus`** — assuming `BLOCKED` only ever means pending checks and polling it forever, or force-merging past a real red check. Use `gh pr checks <n> --watch` plus `mergeStateStatus`; merge only on `CLEAN`.
 2. **`gh secret set --body "$TOKEN"`** — leaks the token into shell history. Use the interactive prompt.
 3. **Non-Conventional PR title** — fails a repo's title-lint gate; the PR can't merge.
 4. **Editing a shared repo / submodule in place** — two writers clobber each other; use a worktree + PR.
@@ -78,7 +79,7 @@ protection) are owned by `apple-public-repo-security`** — set them there, not 
 
 - [ ] Branch name uses a Conventional prefix; PR title is Conventional Commits.
 - [ ] Commit carries the `Co-Authored-By:` trailer; PR body ends with the 🤖 footer.
-- [ ] `gh pr checks` is `CLEAN` before merge; merged with `--squash --delete-branch`.
+- [ ] `mergeStateStatus` is `CLEAN` before merge (via `gh pr checks <n> --watch` + `gh pr view <n> --json mergeStateStatus`); merged with `--squash --delete-branch`.
 - [ ] Any secret was set via interactive `gh secret set` (no `--body`); verified with `gh secret list`.
 - [ ] A submodule bump used `git update-index --cacheinfo` against a remote-reachable SHA.
 - [ ] `--no-verify` used only on a no-code/no-secret commit, with the reason stated.
@@ -87,7 +88,7 @@ protection) are owned by `apple-public-repo-security`** — set them there, not 
 
 ## Related skills
 
-- `pr-diff-verification` — verify `git show --stat HEAD` matches the commit's claims before push/PR.
+- `pr-diff-verification` — verify `git show --stat --summary HEAD` matches the commit's claims before push/PR.
 - `apple-public-repo-security` — security repo settings + secret-leak prevention.
 - `subagent-conflict-detection` — worktree + PR flow for parallel sessions / submodules.
 - `claude-skill-plugin-packaging` — distributing/installing skill plugins.

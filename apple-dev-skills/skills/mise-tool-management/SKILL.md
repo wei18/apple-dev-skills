@@ -17,8 +17,8 @@ description: Use mise (mise.jdx.dev) to manage binary CLI / build tools (swiftli
 
 - **Adopt `mise`** ([mise.jdx.dev](https://mise.jdx.dev/)) to manage binary CLI / build tools.
 - **Dev machine and CI share the same `.mise.toml`**, committed to git.
-- Plugin backend priority: core plugin → `aqua:` → `ubi:` → `asdf:`.
-- CI (Xcode Cloud `ci_post_clone.sh`) first line: `mise trust`, then `mise install`; subsequent tool invocations always go through `mise exec <tool> -- <args>`.
+- Plugin backend priority: core plugin → `aqua:` → `github:`/`gitlab:` (release assets) → `asdf:` (legacy). `ubi:` is deprecated — mise's own release-backend docs mark it "Legacy release installer (deprecated)".
+- **Xcode Cloud has no mise preinstalled** — its build environment ships only Homebrew, so a `ci_post_clone.sh` that starts with a bare `mise` command fails with "command not found". Commit a bootstrapped `bin/mise` (`mise generate bootstrap -l -w bin/mise`) and call it explicitly: first line `./bin/mise trust`, then `./bin/mise install`; subsequent tool invocations always go through `./bin/mise exec -- <tool> <args>` (see `xcode-cloud-single-track-ci` for the full hook). On a dev machine or any CI runner that already has mise on `PATH`, drop the `./bin/` prefix: `mise exec -- <tool> <args>`.
 - **A freshly cloned repo or a freshly created git worktree starts with `.mise.toml` untrusted** — `mise install` / `mise exec` don't apply the pinned versions until `mise trust` has run once in that directory. Every new agent worktree and every CI checkout hits this; run `mise trust` before the first `mise install`/`mise exec` in each.
 
 ## Rationale
@@ -32,11 +32,14 @@ description: Use mise (mise.jdx.dev) to manage binary CLI / build tools (swiftli
 
 ```toml
 [tools]
-swift = "system"
 swiftlint = "0.54"
 xcbeautify = "1"
 "aqua:gitleaks/gitleaks" = "8"
 "aqua:evilmartians/lefthook" = "1"
+# Xcode's own swift toolchain is already on PATH — don't pin it via a
+# `swift = "system"` entry: mise deprecated @system tool versions
+# ("use MISE_DISABLE_TOOLS instead"; set that env var if you need to
+# suppress a swift entry inherited from a parent .mise.toml).
 # Xcode version can also be managed via a mise plugin if you need to lock it
 ```
 
@@ -63,7 +66,7 @@ xcbeautify = "1"
 ## Verification checklist
 
 - `.mise.toml` lives at the repo root, committed to git.
-- After local `mise install`, `mise exec <tool> -- --version` matches CI log.
+- After local `mise install`, `mise exec -- <tool> --version` matches CI log.
 - CI scripts go through `mise exec`, never calling `/usr/local/bin/<tool>` or other preinstalled paths.
 - New-contributor setup guide (`docs/setup.md`) starts with "install mise → `mise install`".
 

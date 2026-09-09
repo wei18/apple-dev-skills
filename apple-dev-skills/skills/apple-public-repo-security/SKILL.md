@@ -88,14 +88,19 @@ pre-commit:
   parallel: true
   commands:
     gitleaks:
-      run: mise exec gitleaks -- git --pre-commit --staged --redact --verbose
+      run: mise exec -- gitleaks git --pre-commit --staged --redact --verbose
 ```
 
-`ci_post_clone.sh` example:
+`ci_post_clone.sh` example — Xcode Cloud has no mise preinstalled (see
+`xcode-cloud-single-track-ci`), so this goes through the committed `bin/mise`
+wrapper, and scans the checked-out working directory rather than the staged
+diff (a fresh clone has nothing staged, so `--staged` would scan zero lines
+and leave this line of defence empty):
 
 ```bash
-mise install
-mise exec gitleaks -- git --pre-commit --staged --redact
+./bin/mise trust
+./bin/mise install
+./bin/mise exec -- gitleaks dir . --redact --verbose
 if [ $? -ne 0 ]; then
   echo "gitleaks detected potential secrets — failing build"
   exit 1

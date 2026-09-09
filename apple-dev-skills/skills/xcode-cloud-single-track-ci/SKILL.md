@@ -35,7 +35,7 @@ description: Default CI strategy for solo / small-team Apple-platform projects �
 
 - Xcode version is locked to match `.mise.toml` on the local machine.
 - When bumping Xcode, open a dedicated PR to refresh snapshot baselines.
-- Any tool inside `ci_scripts/` is activated via `mise` first, to avoid drift from Xcode Cloud's preinstalled versions.
+- **Xcode Cloud's build environment does not include mise** — Apple documents it as including only Homebrew among third-party tools. Commit a bootstrapped `bin/mise` wrapper (`mise generate bootstrap -l -w bin/mise`, from `mise-tool-management`) and call every tool inside `ci_scripts/` through it (`./bin/mise trust`, `./bin/mise install`, `./bin/mise exec -- <tool> <args>`) instead of a bare `mise` invocation, which fails with "command not found".
 - Test environment disables iCloud / Game Center sign-in; all tests go through protocol fakes.
 
 ### Build number & version automation
@@ -49,9 +49,20 @@ description: Default CI strategy for solo / small-team Apple-platform projects �
 ### Three Xcode Cloud hooks
 
 Apple provides:
-- `ci_post_clone.sh` — runs right after clone, before any build resources are spent (**secret scan, `mise install` go here, cheapest stage**)
+- `ci_post_clone.sh` — runs right after clone, before any build resources are spent (**secret scan, the `bin/mise` bootstrap go here, cheapest stage**)
 - `ci_pre_xcodebuild.sh` — before build
 - `ci_post_xcodebuild.sh` — after build
+
+Minimal `ci_post_clone.sh`, using the committed `bin/mise` wrapper (see Environment lock above):
+
+```sh
+#!/bin/sh
+set -eu
+cd "$CI_PRIMARY_REPOSITORY_PATH"
+./bin/mise trust
+./bin/mise install
+./bin/mise exec -- swiftlint lint
+```
 
 ## Rationale
 
@@ -82,7 +93,7 @@ When two PRs each pass pre-merge and merge back to back, **their combined result
 
 - The Xcode version in the Xcode Cloud workflow matches `.mise.toml`.
 - PR CI has "Merge with base branch before building" enabled.
-- First line of `ci_post_clone.sh` is `mise install`.
+- `bin/mise` is committed; `ci_post_clone.sh` starts with `./bin/mise trust` then `./bin/mise install`, not a bare `mise` call.
 - Periodic workflow trigger time is explicit (UTC recommended).
 - Existing Mac apps: Xcode Cloud's next build number (App Store Connect → Xcode Cloud → Settings → Build Number) is set above the last shipped build number.
 
