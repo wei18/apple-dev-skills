@@ -70,7 +70,7 @@ gaps in the "today" column are historical debt, not evidence the convention is o
 | Heading | Purpose | Retrofit status | Today (of 38 skills) |
 |---|---|---|---|
 | `## Rationale` | *why* this default was chosen. Unique to this catalog. | Not retrofitted | 20/38 |
-| `## Deviation considerations` | *when to override* the default, and the cost (e.g. "Drop to iOS 18 when an existing user base still runs it — you lose the Swift 6 runtime-dependent features"). Also ours. | Not retrofitted | 22/38 |
+| `## Deviation considerations` | *when to override* the default, and the cost (e.g. "Drop to iOS 18 when an existing user base still runs it — every Liquid Glass API then needs an availability guard, and the pre-26 chrome must be snapshot-tested separately"). Also ours. | Not retrofitted | 22/38 |
 | `## Common Mistakes` | concrete, anti-pattern-named items ("Using `DateFormatter()` in `body`"), as many as are real — do not pad to a number. | Not retrofitted; older skills express this as inline anti-pattern sections instead. | 10/38 |
 | `## Review Checklist` | a `- [ ]` list at the **end**, runnable top-to-bottom. | Not retrofitted; older skills use a prose `## Verification checklist` instead. | 25/38 (incl. the older prose form) |
 
