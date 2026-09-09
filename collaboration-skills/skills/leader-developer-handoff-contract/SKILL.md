@@ -47,7 +47,7 @@ what makes it start on time, since that skill's own trigger fires on mid-task am
 
 - List the skill names the sub-agent should invoke (with plugin prefix).
 - Don't assume the sub-agent will guess.
-- Example: "invoke `swift6-concurrency`, `swiftpm-modularization`, `swift-testing-baseline`; review-style dispatches also list `subagent-review-cycles`".
+- Example: "invoke `apple-dev-skills:swift6-concurrency`, `apple-dev-skills:swiftpm-modularization`, `apple-dev-skills:swift-testing-baseline`; review-style dispatches also list `collaboration-skills:subagent-review-cycles`".
 
 ### 4. Expected return format
 
@@ -105,7 +105,7 @@ You are a <role> dispatched by the Leader.
 
 - **Scope**: draft `design.md §How.3` GC integration section, covering leaderboard / achievement / protocol / auth fallback / friends scope
 - **Inputs**: `design.md §What.GC`, `foundations.md §1-§4`
-- **Skills**: `swift6-concurrency`, `swiftpm-modularization`, `swift-testing-baseline`
+- **Skills**: `apple-dev-skills:swift6-concurrency`, `apple-dev-skills:swiftpm-modularization`, `apple-dev-skills:swift-testing-baseline`
 - **Return**: complete markdown section, ready to merge into design.md
 - **Verification**: includes 3 leaderboards + 10 achievements, protocol covers friends scope, auth failure has a fallback path
 
@@ -113,7 +113,7 @@ You are a <role> dispatched by the Leader.
 
 - **Scope**: review `design.md §How.1 – §How.7` for technical correctness
 - **Inputs**: full design.md, foundations.md
-- **Skills**: `subagent-review-cycles`
+- **Skills**: `collaboration-skills:subagent-review-cycles`
 - **Return**: BLOCKER / MAJOR / MINOR finding list; each item with section location + suggestion
 - **Verification**: covers 4 dimensions (correctness / consistency / completeness / efficiency); cites Apple docs instead of CLI experimentation
 - **Constraints**: DO NOT run CLI; DO use WebSearch

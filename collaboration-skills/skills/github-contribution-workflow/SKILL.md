@@ -26,7 +26,7 @@ Claude Code's [Hooks](https://code.claude.com/docs/en/hooks) can intercept and b
 ## Scope — what this does NOT own (route to sibling)
 
 - **Verifying the diff matches the commit's claims** before push/PR → `pr-diff-verification`.
-- **Security repo settings** (Secret Scanning, push protection, gitleaks, `.gitignore` baseline) → `apple-public-repo-security`.
+- **Security repo settings** (Secret Scanning, push protection, gitleaks, `.gitignore` baseline) → `apple-dev-skills:apple-public-repo-security`.
 - **Parallel-session / submodule worktree conflicts** → `subagent-conflict-detection`.
 - **Distributing or installing skill plugins** (marketplace, depth-1 rule) → `claude-skill-plugin-packaging`.
 - **Pure local git** with no GitHub surface → out of scope.
@@ -63,7 +63,7 @@ Claude Code's [Hooks](https://code.claude.com/docs/en/hooks) can intercept and b
 This skill owns the *contribution-flow* repo config: merge-button policy
 (`allow_squash_merge`, `delete_branch_on_merge`), branch protection requiring CI,
 required status checks, and labels. **Security settings (Secret Scanning, push
-protection) are owned by `apple-public-repo-security`** — set them there, not here.
+protection) are owned by `apple-dev-skills:apple-public-repo-security`** — set them there, not here.
 
 ## Common Mistakes
 
@@ -89,6 +89,6 @@ protection) are owned by `apple-public-repo-security`** — set them there, not 
 ## Related skills
 
 - `pr-diff-verification` — verify `git show --stat --summary HEAD` matches the commit's claims before push/PR.
-- `apple-public-repo-security` — security repo settings + secret-leak prevention.
+- `apple-dev-skills:apple-public-repo-security` — security repo settings + secret-leak prevention.
 - `subagent-conflict-detection` — worktree + PR flow for parallel sessions / submodules.
 - `claude-skill-plugin-packaging` — distributing/installing skill plugins.

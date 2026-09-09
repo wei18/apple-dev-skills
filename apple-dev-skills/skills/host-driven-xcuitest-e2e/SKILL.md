@@ -1,6 +1,6 @@
 ---
 name: host-driven-xcuitest-e2e
-description: 'Use when wiring or debugging launch-the-app XCUITest E2E with Tuist — a native `.uiTests` target needs its own scheme with `testAction: .targets([...])` (adding it to an `.xctestplan` builds but fails with "no test bundles available to test"), named to avoid colliding with an SPM `<Target>UITests` package test target. Also covers driving SwiftUI on macOS, where `element.tap()` throws `point.x != INFINITY` and `app.coordinate(...)` resolves to `(-inf, -inf)` — worked around by anchoring on the window element and clicking finite element frames — plus `hittable` being an invalid NSPredicate key, the sandbox rejecting `/tmp` writes, and locale-stable accessibility queries. Use when asked "why does xcodebuild say no test bundles" or "how do I XCUITest-drive my macOS app".'
+description: 'Wire and debug launch-the-app XCUITest E2E tests in a Tuist project: a native `.uiTests` target needs its own scheme with `testAction: .targets([...])`, not `.xctestplan` membership; a name that does not collide with an SPM UITests package target; window-frame-anchored clicks for SwiftUI on macOS where `element.tap()` fails. Use when `xcodebuild test` reports no test bundles available to test, when XCUITest taps do not land on a macOS window, when adding a first E2E target, or when pinning a Simulator audit finding as a CI regression test. Manual exploration → interactive-simulator-ux-audit.'
 ---
 
 # Host-Driven XCUITest E2E

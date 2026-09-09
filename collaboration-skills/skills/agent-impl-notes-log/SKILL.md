@@ -86,7 +86,7 @@ _Things you want Leader / User to confirm. Be specific. Block on these before fi
 
 When Leader dispatches a subagent matching the invoke criteria, the dispatch prompt MUST include:
 
-> Create `meetings/{date}_{topic}.impl-notes.md` at the start of your work using the `agent-impl-notes-log` skill format. Update it incrementally — design decisions, deviations, tradeoffs, open questions. Mark `Status: COMPLETE` before final report. Include the file path in your report.
+> Create `meetings/{date}_{topic}.impl-notes.md` at the start of your work using the `collaboration-skills:agent-impl-notes-log` skill format (or have it preloaded via the agent definition's `skills:` field). Update it incrementally — design decisions, deviations, tradeoffs, open questions. Mark `Status: COMPLETE` before final report. Include the file path in your report.
 
 Subagent's final report MUST link the impl-notes file. Leader reads it before merging the work to verify decisions match Leader's intent.
 

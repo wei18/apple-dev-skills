@@ -54,7 +54,7 @@ just as exclusive a resource as a file: pre-assign a UDID per subagent in the di
 rather than letting each agent boot/pick one implicitly. Some `simctl` settings are **device-global**,
 not per-app — `xcrun simctl ui <udid> appearance|content_size` changes the whole device's state,
 so agent A switching to dark mode or Dynamic Type contaminates agent B's screenshots if they
-share a simulator (see `interactive-simulator-ux-audit` for the driving pattern this protects).
+share a simulator (see `apple-dev-skills:interactive-simulator-ux-audit` for the driving pattern this protects).
 
 ## Pre-dispatch base correctness (verify the worktree base before you dispatch)
 
@@ -138,7 +138,7 @@ Options:
 
 ## Pre-flight discipline this skill adds
 
-A Leader's pre-dispatch pre-flight typically includes "kill orphan procs", "rebase WIP onto main", and "mise trust" — this skill adds the conflict-detection step before those. For why `mise trust` is required before `mise install`/`mise exec` take effect in a fresh worktree or CI checkout, see `mise-tool-management`.
+A Leader's pre-dispatch pre-flight typically includes "kill orphan procs", "rebase WIP onto main", and "mise trust" — this skill adds the conflict-detection step before those. For why `mise trust` is required before `mise install`/`mise exec` take effect in a fresh worktree or CI checkout, see `apple-dev-skills:mise-tool-management`.
 
 ## False-positive handling
 

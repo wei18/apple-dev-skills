@@ -199,7 +199,7 @@ buries the real change. Splicing keeps a clean, reviewable diff (real example:
 ## Related skills
 
 - `apple-platform-targets`: xcstrings requires Xcode 15+; aligns with the deployment target's toolchain.
-- `spec-phase-orchestration`: "translation" should be an explicit step in `plan.md`.
+- `collaboration-skills:spec-phase-orchestration`: "translation" should be an explicit step in `plan.md`.
 
 ## Field notes
 
