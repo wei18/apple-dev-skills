@@ -16,7 +16,7 @@ description: The pre-implementation document pipeline — 5 files + `meetings/` 
 ### 5 files + `meetings/` directory
 
 ```
-<project>-spec/
+<repo>/
 ├── README.md                  # Project entry point
 ├── docs/
 │   ├── foundations.md         # Engineering substrate (language version, modules, CI, L10n, secrets)
@@ -26,6 +26,10 @@ description: The pre-implementation document pipeline — 5 files + `meetings/` 
 └── meetings/
     └── {YYYY-MM-DD}_{topic}.md
 ```
+
+Default: these live in the same repo as the code. A separate `<project>-spec` repo is a
+deviation for teams that need spec review gated independently of the code repo — not the
+default.
 
 Don't split further:
 - No separate spec.md / rfc.md / tasks.md (folded into design.md / plan.md)

@@ -1,6 +1,7 @@
 ---
 name: local-archive-export-upload
 description: 'Local `xcodebuild archive` → export → upload path to TestFlight when Xcode Cloud is unavailable (quota exhausted, outage, not yet wired). Covers `-exportArchive -exportOptionsPlist` keys (`method`, `destination`, `teamID`, `signingStyle`, `uploadSymbols`), `-authenticationKeyPath` vs `-allowProvisioningUpdates` signing, `xcrun altool --upload-package`, and build-number coordination with Xcode Cloud''s counter. Invoke when asked "ship a build locally / export archive fails / TestFlight without Xcode Cloud". Fallback for `xcode-cloud-single-track-ci`; does NOT cover ASC API automation after upload.'
+allowed-tools: Bash(xcodebuild archive *) Bash(xcodebuild -exportArchive *)
 ---
 
 # Local Archive, Export, Upload
@@ -39,7 +40,7 @@ signing/export-key semantics. Does NOT own:
 |---|---|---|
 | 1. Archive | `xcodebuild archive -scheme <Scheme> -destination 'generic/platform=iOS' -archivePath build/App.xcarchive` | `-destination` picks the platform; a `generic/platform=...` destination (not a specific simulator/device) is what produces an archivable, distributable build. |
 | 2. Export | `xcodebuild -exportArchive -archivePath build/App.xcarchive -exportPath build/export -exportOptionsPlist ExportOptions.plist` | Requires `-archivePath` + `-exportOptionsPlist`; `-exportPath` only needed when the plist's `destination` is `export` (see below). |
-| 3. Upload | `xcrun altool --upload-package build/export/App.ipa --apiKey <keyID> --apiIssuer <issuerID>` | Or fold into step 2 — see "One-step vs two-step" below. |
+| 3. Upload | `xcrun altool --upload-package build/export/App.ipa --api-key <keyID> --api-issuer <issuerID>` | Or fold into step 2 — see "One-step vs two-step" below. |
 
 ## Signing: two non-interactive paths
 
@@ -54,7 +55,7 @@ interactive Accounts UI (needed on a script/cron path, not just CI):
 ## ExportOptions.plist: the common shape
 
 The full key set is printed by `xcodebuild -help` under "Available keys for
--exportOptionsPlist" (30+ keys covering thinning, manifests, on-demand
+-exportOptionsPlist" (18 keys on Xcode 26.5, covering thinning, manifests, on-demand
 resources). For a plain "ship to TestFlight" export, six keys are load-bearing
 — confirmed as the intersection across four real ExportOptions.plist files
 (two apps × two platforms, all identical on these keys):
@@ -102,8 +103,8 @@ key lives in a gitignored `secrets/` dir, rather than moving the real file.
 (outside-the-App-Store distribution), unrelated to TestFlight/App Store
 uploads. There is also **no ASC REST endpoint for binary upload**
 (`asc-api-automation`'s own scope note): Xcode Cloud, Xcode Organizer,
-`xcodebuild -exportArchive` (`destination: upload`), and `altool` are the only
-upload paths that exist.
+`xcodebuild -exportArchive` (`destination: upload`), `altool`, and Transporter
+are the only upload paths that exist.
 
 ## Build-number coordination with Xcode Cloud
 

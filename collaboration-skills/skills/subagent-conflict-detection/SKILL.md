@@ -1,6 +1,7 @@
 ---
 name: subagent-conflict-detection
 description: 'Use before dispatching a subagent with `isolation:"worktree"`, or while another subagent is in flight, to avoid three dispatch hazards — file-scope overlap with an in-flight subagent, a stale dispatch base, and collisions with another live agent/session editing the same checkout or git-submodule path. Invoke when about to call the Agent tool with `isolation:"worktree"`; when another subagent is running; right after a merge or branch switch (verify the dispatch base first); or when another Claude session is editing a shared repo/submodule path.'
+allowed-tools: Bash(git worktree list) Bash(git status *) Bash(git log *) Bash(git rev-parse *) Bash(git merge-base *)
 ---
 
 # Subagent Conflict Detection
@@ -36,7 +37,7 @@ For each worktree path, capture:
 ### Step 2 — enumerate the NEW dispatch's likely file scope
 
 Read the planned subagent's task prompt. Extract:
-- Explicit file paths it'll edit (usually under "Mission" / "Required reads to edit" sections)
+- Explicit file paths it'll edit (usually under the prompt's `## Task scope` and `## Inputs` sections — see `leader-developer-handoff-contract`)
 - Likely-touched files via the task domain (e.g. "Settings redesign" → `Sources/.../Settings/`)
 - Test files it'll add or modify
 
@@ -54,7 +55,7 @@ just as exclusive a resource as a file: pre-assign a UDID per subagent in the di
 rather than letting each agent boot/pick one implicitly. Some `simctl` settings are **device-global**,
 not per-app — `xcrun simctl ui <udid> appearance|content_size` changes the whole device's state,
 so agent A switching to dark mode or Dynamic Type contaminates agent B's screenshots if they
-share a simulator (see `interactive-simulator-ux-audit` for the driving pattern this protects).
+share a simulator (see `apple-dev-skills:interactive-simulator-ux-audit` for the driving pattern this protects).
 
 ## Pre-dispatch base correctness (verify the worktree base before you dispatch)
 
@@ -65,9 +66,10 @@ decided by `worktree.baseRef`:
   remote** (typically `origin/main`), not your local HEAD. Any commit you haven't pushed yet
   is invisible to the worktree. If the dispatched work depends on your in-progress local
   branch, push first, or set `worktree.baseRef: "head"` in settings.
-- **`"head"`** — branches from your local HEAD, dirty state included. Dispatching right after
-  a merge without syncing HEAD first branches from the pre-merge base (see the incident
-  below). Confirm with `git log --oneline -3` before dispatching.
+- **`"head"`** — branches from your local HEAD **commit**; uncommitted working-tree edits are
+  NOT carried over — commit first (gitignored files can be copied via `.worktreeinclude`).
+  Dispatching right after a merge without syncing HEAD first branches from the pre-merge base
+  (see the incident below). Confirm with `git log --oneline -3` before dispatching.
 
 Two fallbacks worth knowing: with no remote configured, or when `origin/HEAD` isn't cached
 locally and can't be fetched, `"fresh"` falls back to your current local HEAD. And **before
@@ -83,7 +85,7 @@ git log --oneline -3                     # does it include the commit/PR this wo
 git merge-base --is-ancestor <dep-sha> HEAD && echo "base OK" || echo "STALE BASE"
 ```
 
-If the work depends on a just-merged PR, sync first (`git checkout main && git fetch && git reset --hard origin/main` — `reset --hard` discards uncommitted local changes, so stash them first) THEN dispatch. `<dep-sha>` above is the commit your work depends on (e.g. the merged PR's commit on `main`). State the expected base SHA in the dispatch prompt and tell the agent to verify it (`git log --oneline -5`; confirm a key file/symbol exists) before coding.
+If the work depends on a just-merged PR, sync first (`git checkout main && git fetch && git reset --hard origin/main` — `reset --hard` discards uncommitted local changes, so commit them to a WIP commit or `git stash push -u -m <tag>` first — never a bare `git stash`/`pop` in a worktree session, since the stash stack is shared across worktrees) THEN dispatch. `<dep-sha>` above is the commit your work depends on (e.g. the merged PR's commit on `main`). State the expected base SHA in the dispatch prompt and tell the agent to verify it (`git log --oneline -5`; confirm a key file/symbol exists) before coding.
 
 > Real incident (pre-v2.1.208 / local-HEAD-fallback behavior): a DEBUG test-hook subagent was dispatched right after a fix merged to `main`, but the dispatching HEAD was a pre-merge commit. The worktree branched from the stale base, so the new code referenced an `init` parameter and a file that only existed post-merge → 2 compile errors that the agent's own package build hadn't surfaced. Cost a full cherry-pick-onto-correct-base + rebuild cycle.
 
@@ -138,7 +140,7 @@ Options:
 
 ## Pre-flight discipline this skill adds
 
-A Leader's pre-dispatch pre-flight typically includes "kill orphan procs", "rebase WIP onto main", and "mise trust" — this skill adds the conflict-detection step before those. For why `mise trust` is required before `mise install`/`mise exec` take effect in a fresh worktree or CI checkout, see `mise-tool-management`.
+A Leader's pre-dispatch pre-flight typically includes "kill orphan procs", "rebase WIP onto main", and "mise trust" — this skill adds the conflict-detection step before those. For why `mise trust` is required before `mise install`/`mise exec` take effect in a fresh worktree or CI checkout, see `apple-dev-skills:mise-tool-management`.
 
 ## False-positive handling
 
@@ -147,14 +149,14 @@ If `git worktree list` shows stale entries (worktree dir gone but git registrati
 ## Example application
 
 ```
-Leader is about to dispatch: "Senior Developer for error funnel refactor — files: AppComposition/Live.swift, AppUI/Root/RootViewModel.swift, Tests/RootViewModelTests.swift"
+Leader is about to dispatch: "Developer for error funnel refactor — files: Sources/App/Composition/Live.swift, Sources/App/Root/RootViewModel.swift, Tests/RootViewModelTests.swift"
 
 `git worktree list` shows in-flight subagent `agent-abc123` editing:
-  M Sources/AppUI/Components/MonetizationStateController.swift
+  M Sources/App/Components/BannerController.swift
 
-Intersection: NONE (different AppUI subdir).
+Intersection: Module overlap (same `Sources/App/`, different files) → WARN.
 
-Verdict: dispatch safely. Note in prompt: "in-flight subagent on MonetizationStateController — do not touch that file."
+Verdict: dispatch with `isolation: "worktree"`. Note in prompt: "in-flight subagent on BannerController.swift — do not touch that file; module Sources/App/ is shared."
 ```
 
 ## Related skills

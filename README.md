@@ -21,7 +21,7 @@ Inside a Claude Code session, run:
 
 ```
 /plugin marketplace add wei18/apple-dev-skills
-/plugin install apple-dev-skills@apple-dev-skills          # 27 Apple/Swift skills
+/plugin install apple-dev-skills@apple-dev-skills          # 26 Apple/Swift skills
 /plugin install collaboration-skills@apple-dev-skills      # 12 agent-collaboration skills
 ```
 
@@ -54,12 +54,12 @@ what is installed and which plugin each skill came from.
 
 Full index in the tables below.
 
-### apple-dev-skills (27) — Apple/Swift
+### apple-dev-skills (26) — Apple/Swift
 
 | Skill | One-liner |
 |---|---|
 | `swift6-concurrency` | Swift 6 language mode + complete concurrency checking; Sendable by default |
-| `apple-platform-targets` | Default iOS 18 / macOS 15, Xcode 16+; bump to 26 only for latest-OS-only APIs |
+| `apple-platform-targets` | Default iOS 26 / macOS 26, Xcode 26.x; drop to 18 / 15 only when an older user base requires it |
 | `swiftpm-modularization` | Single Package, multi-target, thin App, DI composition root, one-to-one tests |
 | `swift-testing-baseline` | swift-testing + pointfreeco snapshot; protocol fakes; strict/tolerant snapshot gate |
 | `xcode-cloud-single-track-ci` | Single-track Xcode Cloud; PR / Main / Release / Periodic; pre-merge PR CI |
@@ -67,7 +67,7 @@ Full index in the tables below.
 | `mise-tool-management` | Pin CLI tool versions (swiftlint, xcbeautify…) with mise, so local dev and CI use the exact same ones |
 | `oslog-logger-defaults` | Default logging setup: Apple's own `os.Logger`, no third-party library, log values private unless you opt in |
 | `apple-three-piece-analytics` | App Store Connect (ASC) Analytics + MetricKit + Game Center; no third-party tracking; PrivacyInfo mandatory |
-| `telemetry-facade-pattern` | One logging call, routed to OSLog / MetricKit / Game Center — swap where events go without touching call sites |
+| `telemetry-facade-pattern` | One `observe(event)` call fanned out to OSLog / tracking / Game Center sinks, with MetricKit payloads fed in as events — swap sinks without touching call sites |
 | `ai-translated-localization` | Default 7 locales; AI translation flow; `Localizable.xcstrings`; completeness gates |
 | `ios-accessibility-engineering` | VoiceOver / Dynamic Type / touch-target / Reduce Motion for SwiftUI & UIKit; WCAG 2.2 |
 | `swift-dependency-injection` | Make services swappable for tests — protocol injection + a composition root (environment vs constructor, `@TaskLocal`, Sendable) |
@@ -80,7 +80,6 @@ Full index in the tables below.
 | `asc-api-automation` | ES256 JWT from the `.p8` + curl against the ASC REST API — TestFlight, metadata, submission, reports; no fastlane |
 | `swiftui-interaction-footguns` | Known SwiftUI interaction bugs that slip past pure-code review |
 | `swiftui-navigation-architecture` | Typed-route navigation for SwiftUI — one `@Observable` router, `NavigationStack`, deep links, macOS fallbacks handled |
-| `app-icon-rasterize` | Rasterize a 1024 SVG icon to asset-catalog PNG via `qlmanage` — no Homebrew |
 | `ios-design-mockup` | Single-file HTML iOS design mockup from a spec — iPhone frames + tokens |
 | `interactive-simulator-ux-audit` | Drive a booted Simulator with `idb` (tap/describe/screenshot) to catch nav/modal/safe-area bugs snapshots can't |
 | `host-driven-xcuitest-e2e` | Launch-the-app XCUITest E2E via Tuist — dedicated scheme wiring + macOS window-frame click driving |
@@ -111,13 +110,13 @@ non-duplicate plugins are listed, and only for genuine gaps. That check happens 
 listing time, not on every upstream commit, so an external's scope and licence can drift
 afterwards (`caveman` already has). Externals are broad **reference** — "here's the API,
 here's how to build X." First-party skills are narrower: one opinionated default per topic
-(iOS 18 as the floor, one Package, swift-testing + snapshot, OSLog only, known runtime bugs
+(iOS 26 as the floor, one Package, swift-testing + snapshot, OSLog only, known runtime bugs
 to avoid). Where a topic overlaps, the two aren't duplicates — they answer at a different
 level of detail.
 
 | Plugin | Author | Covers |
 |---|---|---|
-| [`apple-skills`](https://github.com/Prisma-Labs-Dev/apple-skills) | Prisma Labs (vabole), MIT | Broad Apple frameworks — SwiftUI, SwiftData, App Intents, WidgetKit, StoreKit, HealthKit … |
+| [`apple-skills`](https://github.com/Prisma-Labs-Dev/apple-skills) | Prisma Labs (vabole), MIT | Broad Apple frameworks — SwiftUI, SwiftData, App Intents, WidgetKit, StoreKit, HealthKit …, and a SwiftUI performance audit guide (code-first, view-update causes) that complements `ios-performance-engineering`'s Instruments/MetricKit measurement |
 | [`swiftui-expert`](https://github.com/AvdLee/SwiftUI-Agent-Skill) | Antoine van der Lee (MIT) | SwiftUI patterns, Swift Charts, Liquid Glass, Instruments toolchain |
 | [`swiftui-pro`](https://github.com/twostraws/SwiftUI-Agent-Skill) | Paul Hudson (MIT) | SwiftUI pitfalls, deprecated-API watchlist, iOS 26 / Liquid Glass |
 | [`caveman`](https://github.com/JuliusBrussee/caveman) | JuliusBrussee (MIT) | Ultra-compressed communication mode — cuts ~75% of tokens (general agent behavior) |

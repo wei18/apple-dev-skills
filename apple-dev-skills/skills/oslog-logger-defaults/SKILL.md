@@ -1,6 +1,6 @@
 ---
 name: oslog-logger-defaults
-description: Default logging stack for Apple-platform Swift Apps — Apple's built-in `os.Logger` (no third-party), subsystem = bundle ID, category = module name, all string interpolation defaults to `.private` with explicit `.public` opt-in. Invoke when choosing a logging library, writing the first Logger declaration, deciding privacy interpolation, or when asked "OSLog vs SwiftLog vs CocoaLumberjack, which one".
+description: Default logging stack for Apple-platform Swift Apps — Apple's built-in `os.Logger` (no third-party), subsystem = bundle ID, category = module name, dynamic string / object interpolation defaults to `.private` (numeric and Boolean values default to `.public`), with explicit overrides where needed. Invoke when choosing a logging library, writing the first Logger declaration, deciding privacy interpolation, or when asked "OSLog vs SwiftLog vs CocoaLumberjack, which one".
 ---
 
 # OSLog / `os.Logger` Defaults
@@ -18,7 +18,7 @@ description: Default logging stack for Apple-platform Swift Apps — Apple's bui
 - Naming conventions:
   - `subsystem` = bundle ID (e.g. `com.example.myapp`)
   - `category` = module name (aligned with the SwiftPM target name)
-- **Privacy defaults to `.private`**: all string interpolation is treated as private; `.public` must be marked explicitly.
+- **Privacy interpolation is type-dependent, not "all private"**: dynamic strings and complex objects default to `.private`; integer, floating-point, and Boolean values default to `.public`. Any identifying numeric value (player ID, user ID, serial number) must be marked `.private` explicitly.
 
 ```swift
 import os
@@ -27,22 +27,25 @@ extension Logger {
     static let engine = Logger(subsystem: "com.example.myapp", category: "Engine")
 }
 
-Logger.engine.info("user \(userId, privacy: .public) loaded puzzle \(puzzleId)")
-//                                    ^^^^^^^ explicit public; puzzleId defaults to private
+Logger.engine.info("user \(userId, privacy: .public) loaded puzzle \(puzzleId, privacy: .private)")
+//                                    ^^^^^^^ explicit public       ^^^^^^^ explicit private —
+//                                                                    identifying values need this
+//                                                                    even when the type (Int, Bool)
+//                                                                    would otherwise default public
 ```
 
 ## Rationale
 
 - Native integration with Console.app / Instruments / the unified logging system; zero dependencies.
 - Friendly to Swift 6 actor / Sendable.
-- Native privacy interpolation; `.private` content is automatically redacted in cross-device sysdiagnose.
+- Native privacy interpolation; `.private` values are redacted whenever no debugger is attached (see "What `.private` actually means" below).
 - No third-party SDK pulled in → no extra entries in `PrivacyInfo.xcprivacy`, consistent with the "no third-party tracking" stance.
 
 ### What `.private` actually means (easily misunderstood)
 
 - `.private` content is **redacted wherever no debugger is attached** — this includes a TestFlight user viewing their own Console.app, not only "in someone else's sysdiagnose after release."
 - **When the local Xcode debugger is attached to a running process, private values are still visible.**
-- **`OSLogStore` exception**: app code can open `OSLogStore` for its own process and read `.private` entries without a debugger. An in-app log viewer can therefore bypass redaction entirely — never log raw PII even under `.private`.
+- **`OSLogStore` does not bypass redaction**: in a TestFlight or production build, `OSLogStore` reading its own process still sees `<private>` in place of redacted values — only a process that Xcode itself launched gets unredacted output. `.private` is redaction, not encryption; never log raw PII even under `.private`.
 
 ## Deviation considerations
 

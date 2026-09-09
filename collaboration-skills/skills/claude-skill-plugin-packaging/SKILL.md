@@ -7,7 +7,7 @@ description: How to distribute Claude Code skills for reuse across repos and how
 
 ## Native mechanism
 
-[Plugins](https://code.claude.com/docs/en/plugins) and [plugin marketplaces](https://code.claude.com/docs/en/plugin-marketplaces) are Claude Code's own distribution mechanism — a marketplace repo with `.claude-plugin/marketplace.json` gives "centralized discovery, version tracking, automatic updates". What the official docs don't spell out is the depth-1 discovery trap and the three-model install tradeoff below — that's what this skill adds.
+[Plugins](https://code.claude.com/docs/en/plugins) and [plugin marketplaces](https://code.claude.com/docs/en/plugin-marketplaces) are Claude Code's own distribution mechanism — a marketplace repo with `.claude-plugin/marketplace.json` gives "centralized discovery, version tracking, automatic updates". What the official docs don't spell out in one place is the depth-1 discovery trap and the install-model tradeoffs below — that's what this skill adds.
 
 ## When to invoke
 
@@ -18,22 +18,29 @@ description: How to distribute Claude Code skills for reuse across repos and how
 - Aggregating *other people's* skill repos without copy-pasting.
 - User asks "how do I share/install skills", "why is my `.claude/skills/<lib>/...` not found".
 
-## The one rule that explains everything: discovery is depth-1
+## The one rule that explains everything: plain-skill discovery is depth-1 — unless the nested tree is itself a plugin
 
 Claude Code discovers **plain project skills only at depth 1**:
 `.claude/skills/<skill>/SKILL.md`. It does **not** recurse into subdirectories.
 
 Consequences (each has burned someone):
 - A **git submodule** of skills at `.claude/skills/<lib>/` puts SKILL.md at
-  `.claude/skills/<lib>/skills/<skill>/SKILL.md` (depth ≥ 2) → **NOT discovered**.
-- A bare folder of skills nested one level down → **NOT discovered**.
+  `.claude/skills/<lib>/skills/<skill>/SKILL.md` (depth ≥ 2) → **NOT discovered as a
+  plain skill**.
+- A bare folder of skills nested one level down → **NOT discovered as a plain skill**.
 - An in-repo submodule of a plugin you *also* installed via a marketplace is
-  **vestigial** — the marketplace-installed copy is what loads, the submodule does
-  nothing for discovery. (This is why a repo can carry `.claude/skills/superpowers`
-  yet superpowers actually loads from the plugin cache.)
+  **vestigial for that installed copy** — the marketplace-installed copy is what loads,
+  the submodule does nothing for discovery.
 
-So: **to share skills across repos, package them as a plugin and distribute via a
-marketplace.** A bare submodule alone never works.
+**But** a nested skill *tree* is still found if its root is itself a plugin (carries
+`.claude-plugin/plugin.json`) — it self-loads on the next session as `<lib>@skills-dir`,
+with no marketplace and no install step (project scope: after the workspace-trust
+dialog; must launch from the session's primary working directory, no walk-up to a
+parent project). This is `claude plugin init`'s documented default, not an
+experimental feature — see Model D below. It only fails to help when the repo you're
+vendoring is a *marketplace* (root has `marketplace.json` but no `plugin.json`) rather
+than a single plugin — which is this catalog's own shape, so a bare submodule of
+*this* repo still needs Model B1 or B2.
 
 ## Packaging: make your skills a plugin + marketplace
 
@@ -68,7 +75,15 @@ The **marketplace** `name` is the catalog identifier used in `/plugin install pl
 ```
 `"source": "./"` = the plugin is at the marketplace repo root.
 
-## Installing (consuming) into a project — three models
+## Installing (consuming) into a project — pick a model
+
+| Model | Pinned? | Per-repo commit? | Install step? | Use when |
+|---|---|---|---|---|
+| A. Global marketplace | No (latest) | No | `/plugin install` once, globally | Personal use across many repos |
+| B1. Marketplace `github`+`ref` | Yes (git ref) | Yes (`settings.json`) | None for this plugin; **external-source plugins still need `claude plugin install` per collaborator (≥v2.1.195)** | Team default — no submodule needed |
+| B2. Vendored submodule + `directory` source | Yes (commit SHA) | Yes | None | SHA-level pin, or fully offline vendoring |
+| D. Submodule of a single-plugin repo | Yes (commit SHA) | No (self-loads) | None, after trust dialog | The repo you vendor already ships `plugin.json` at its root |
+| C. npm (flat, non-plugin) | Depends on registry | No | `npx skills add` | One skill set, no aggregation needed |
 
 ### A. Global marketplace (simplest, latest)
 ```
@@ -77,10 +92,30 @@ The **marketplace** `name` is the catalog identifier used in `/plugin install pl
 ```
 Loads globally (every project), namespaced. Not pinned per repo.
 
-### B. Vendored submodule + project-scope committed settings (pinned, git-tracked, "comes with the project")
+### B1. Marketplace `ref` pin, no submodule (recommended default for a team)
 
-This is the recipe when a specific repo must depend on a **pinned version**,
-reproducibly, with **no manual install** for collaborators.
+Commit to the project's `.claude/settings.json`:
+```json
+{
+  "extraKnownMarketplaces": {
+    "your-skills": {
+      "source": { "source": "github", "repo": "owner/your-skills-repo", "ref": "v0.1.0" }
+    }
+  },
+  "enabledPlugins": { "your-skills@your-skills": true }
+}
+```
+No submodule, no vendoring — Claude Code resolves the pinned `ref` on trust. **Caveat
+(since v2.1.195)**: auto-install-on-trust applies to plugins declared via a relative/
+`directory` source; a plugin whose source is *external* (`github`, `npm`, `url`,
+`git-subdir`) — like this one — is *enabled* in settings but each collaborator still has
+to run the `claude plugin install` command Claude Code prints on first load. `github` /
+`git-subdir` / `url` sources take `ref` but not `sha`; for an exact-commit pin use B2.
+
+### B2. Vendored submodule + project-scope committed settings (SHA-level pin, offline-capable)
+
+Use this when a repo must depend on an exact **commit SHA**, or must work without
+network access to the plugin's origin — B1 only pins a `ref`, not a `sha`.
 
 1. Vendor + pin:
    ```
@@ -100,16 +135,40 @@ reproducibly, with **no manual install** for collaborators.
    }
    ```
    Replace `<plugin-name>` with the `name` from the plugin's `plugin.json` and `<marketplace-name>` with the `name` from the marketplace's `marketplace.json`. In the single-repo model these happen to be the same string (e.g. `"your-skills@your-skills": true`), but they are conceptually distinct — the plugin namespace and the catalog identifier.
-   - The marketplace `source` for a local dir is an **object** `{"source":"directory","path":"./relative"}` — a **relative** path (resolves against the repo's main checkout). A relative path only resolves because the submodule is itself a git repo.
+   - The marketplace `source` for a local dir is an **object** `{"source":"directory","path":"./relative"}` — a **relative** path. Relative plugin sources resolve for marketplaces added from a git source *or* a local directory; they fail only when the marketplace was added by a direct URL to `marketplace.json`. A `directory` source path resolves against the *containing* repo's main checkout — including from inside a worktree of it — regardless of whether the target itself is a git repo. The docs label `directory` sources "for development only"; prefer B1 for a team default and reserve B2 for the SHA-pin/offline case.
 3. On `git clone --recurse-submodules` + workspace-trust, Claude Code
    auto-registers the marketplace and enables the plugin. Skills load as
-   `your-skills:<skill>`. **No `/plugin install` step.**
+   `your-skills:<skill>`. **No `/plugin install` step** for this relative/`directory`-sourced
+   plugin — but see B1's v2.1.195 caveat if this marketplace also aggregates externally-sourced
+   plugins.
 
 Why both pieces: the **submodule** pins the exact version (a commit SHA); the
 **committed settings.json** is what actually makes Claude Code load it. Either alone
 is insufficient (submodule-only = not discovered; settings-only = nothing to point at).
 
-### C. npm — a packaging path some skill sets use (`npx …`); out of scope here.
+### D. Submodule of a single-plugin repo (self-loading, no settings.json needed)
+
+If the repo you're vendoring has `.claude-plugin/plugin.json` at its **root** (not just
+a `marketplace.json`), a plain submodule under `.claude/skills/` or `~/.claude/skills/`
+is enough:
+```
+git submodule add https://github.com/owner/single-plugin-repo.git .claude/skills/their-plugin
+cd .claude/skills/their-plugin && git checkout v0.1.0 && cd -
+```
+On the next session (after the project-scope trust dialog), it self-loads as
+`their-plugin@skills-dir` — no marketplace, no install step, no settings.json edit.
+Caveats: only resolves when Claude Code is launched from the session's primary working
+directory (no walk-up), and code-running components (hooks, MCP servers) inside a
+skills-dir plugin are restricted. **This repo's own root has only `marketplace.json`,
+not `plugin.json`, so a bare submodule of *this* repo does not self-load this way — use
+B1 or B2.**
+
+### C. npm (flat, non-plugin install)
+
+`npx skills add` installs skills flatly — see README §C and `scripts/install-flat.sh`.
+It never reads `marketplace.json`, so any aggregated externals (the `github` /
+`git-subdir` entries below) are skipped. Use it for a single skill set with no
+aggregation needs, not for this catalog's full plugin set.
 
 ## Aggregating other skill repos (don't reinvent)
 
@@ -125,24 +184,42 @@ each with its own source:
 ]
 ```
 Accepted plugin sources: relative `"./path"` (within the marketplace repo, must
-start with `./`), `github` (`repo`,`ref?`,`sha?`), `url` (git URL), `git-subdir`
-(`url`,`path`), `npm` (`package`,`version?`). Use a submodule only when you need to
-**vendor + pin** another repo's content into yours.
+start with `./`; bare names are allowed under `metadata.pluginRoot`, ≥2.1.239),
+`github` (`repo`,`ref?`,`sha?`), `url` (git URL, `ref?`,`sha?`), `git-subdir`
+(`url`,`path`,`ref?`,`sha?`), `npm` (`package`,`version?`,`registry?`), `archive`
+(`url`,`sha256?`, ≥2.1.224), `command` (`command`,`timeout?`,`mode?`, ≥2.1.229). Use a
+submodule only when you need to **vendor + pin** another repo's content into yours
+(Model B2 or D above).
 
 ## Gotchas (verified)
 
-- **Bare submodule of skills ≠ discovered** (depth-1 rule). Always pair with a plugin manifest + marketplace registration.
-- **`@skills-dir` auto-load** (a plugin folder under `.claude/skills/` loading without registration) is documented but not reliably in use — don't depend on it; register a marketplace.
-- **`git commit -a` skips new files** — `plugin.json`/`marketplace.json` are new; `-a` will silently omit them. Use explicit `git add` and verify with `git show --stat`.
-- **Marketplace state is per-user** (`~/.claude/plugins/known_marketplaces.json`), but the **committed project `.claude/settings.json` declaration** is what makes it reproducible for everyone on trust.
-- **Token cost**: every enabled skill's description is always-on context. ~25 skills ≈ a few thousand tokens per session. Keep the set curated.
-- **Relative marketplace paths** only resolve when the marketplace is a git repo (a submodule qualifies); a direct-URL marketplace can't resolve relative plugin sources.
+- **Bare submodule of a multi-plugin repo (root has only `marketplace.json`) ≠ discovered.**
+  Pair it with the `extraKnownMarketplaces` + `enabledPlugins` settings (Model B2) — or,
+  if the submodule's own root has `plugin.json` instead, it self-loads on its own (Model D).
+- **`git commit -a` skips new files** — `plugin.json`/`marketplace.json` are new; `-a` will silently omit them. Use explicit `git add` and verify with `git show --stat --summary` (plain `--stat` doesn't print the `create mode` lines new files need).
+- **Marketplace state is per-user** (`~/.claude/plugins/known_marketplaces.json`), but the **committed project `.claude/settings.json` declaration** is what makes it reproducible for everyone on trust. Marketplace names are checked against a reserved list (`claude-code-marketplace`, `anthropic-marketplace`, `agent-skills`, …) on every load — a name collision silently stops that marketplace from loading.
+- **Token cost**: every enabled skill's description is always-on context — see
+  `skill-authoring-patterns` §listing budget for the exact mechanism. `/doctor` and
+  `/skill-doctor` show the actual per-session cost; `skillOverrides: "name-only"` can demote
+  a low-priority plugin to save budget.
+- **Relative marketplace paths resolve for both git-based and local-directory marketplaces**
+  — they fail only when the marketplace was added by a direct URL to `marketplace.json`. A
+  `directory` source resolves against the *containing* repo's main checkout (including from
+  a worktree of it), independent of whether the target path is itself a git repo.
+- **A skill/plugin `name` containing "claude"** loads fine in Claude Code — this skill's own
+  name is proof, and `claude-hud`/`claude-mem` ship the same way — but is rejected by the
+  platform Agent Skills spec's reserved-word rule. This only matters if the skill is ever
+  uploaded to claude.ai, the Skills API, or packaged with `package_skill.py`; the Claude Code
+  plugin path this skill describes is unaffected.
 
 ## Verification
 
 - `/reload-plugins` then check the skills list shows `your-skills:<skill>` entries.
-- `claude plugin details your-skills@your-skills` lists the bundled skills + scope.
-- For model B: `git ls-files .claude/settings.json` (it's committed) and the submodule
+- `claude plugin details your-skills@your-skills` lists the bundled skills, agents, and
+  token cost — not scope. **Scope** (`user` / `project`) comes from `claude plugin list`;
+  a project-scope plugin only resolves from inside that project, so running either command
+  from elsewhere returns `Plugin "…" not found`.
+- For model B2: `git ls-files .claude/settings.json` (it's committed) and the submodule
   gitlink point at the intended version.
 
 ## Related skills

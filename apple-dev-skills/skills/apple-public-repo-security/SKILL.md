@@ -24,7 +24,7 @@ description: Security baseline for public iOS / macOS repos — secret classific
 
 | Secret | Purpose | Storage |
 |---|---|---|
-| CloudKit server-to-server key (Key ID + PEM) | Backend API | Xcode Cloud Env Vars (Secret); locally in `~/.config/<project>/` (chmod 600) or Keychain |
+| CloudKit server-to-server key (Key ID + PEM) | Backend API | Xcode Cloud Env Vars (Secret); locally in `secrets/` (chmod 600, gitignored) or Keychain |
 | App Store Connect API Key (`.p8` + Key ID + Issuer ID) | TestFlight / submission automation | Xcode Cloud Env Vars (Secret) |
 | APNs Auth Key (`.p8` + Key ID + Team ID) | Push notifications | Xcode Cloud Env Vars (Secret) |
 | Signing certificate + private key (`.p12`) | Code signing | Xcode Cloud automatic signing, hosted by Apple |
@@ -37,7 +37,7 @@ description: Security baseline for public iOS / macOS repos — secret classific
 - Real player aliases / displayNames / playerIDs (except after hashing)
 - Apple Developer Team ID / DUNS / address (if they appear in entitlements / profile metadata)
 - Build logs containing secrets (redact before viewing)
-- Developers' local `.config/<project>/` real files
+- Developers' local `secrets/` real files
 - Personal notes / drafts (like `NOTES.md.private`)
 
 ### Starter `.gitignore`
@@ -68,9 +68,10 @@ xcuserdata/
 *.private.md
 NOTES.md.private
 
-# Local development secrets directory (chmod 600 PEMs / API keys live here)
-.config/
-!.config/example/         # If a public example directory exists, allow listing it
+# Local development secrets directory is `secrets/` (chmod 600 PEMs / API keys
+# live here; already ignored above via `secrets/`). Allow-list examples with a
+# nested `secrets/.gitignore` (`* / !*.example / !README.md`) instead of a
+# second top-level rule — see `build-time-secret-injection`.
 ```
 
 ### Three lines of defence
@@ -79,7 +80,7 @@ NOTES.md.private
 |---|---|---|
 | 1. Local pre-commit | `lefthook` + `gitleaks` (via `mise`) | Catches staged diffs; can be bypassed with `--no-verify` |
 | 2. CI post-clone | Xcode Cloud `ci_post_clone.sh` runs `gitleaks` | Catches at PR time; fails the build; earliest stage is cheapest |
-| 3. GitHub Secret Scanning Alerts | GitHub platform (free on public repos) | Passive detection; Apple-issued secret patterns auto-revoke via partner program |
+| 3. GitHub Secret Scanning Alerts | GitHub platform (free on public repos) | Passive detection; alerts a common private-key / generic API-key pattern but does **not** auto-revoke it — Apple is not in GitHub's secret-scanning partner program, so any Apple-issued key (CloudKit, ASC, APNs) still needs a manual rotation |
 
 `lefthook.yml` example:
 
@@ -88,14 +89,19 @@ pre-commit:
   parallel: true
   commands:
     gitleaks:
-      run: mise exec gitleaks -- git --pre-commit --staged --redact --verbose
+      run: mise exec -- gitleaks git --pre-commit --staged --redact --verbose
 ```
 
-`ci_post_clone.sh` example:
+`ci_post_clone.sh` example — Xcode Cloud has no mise preinstalled (see
+`xcode-cloud-single-track-ci`), so this goes through the committed `bin/mise`
+wrapper, and scans the checked-out working directory rather than the staged
+diff (a fresh clone has nothing staged, so `--staged` would scan zero lines
+and leave this line of defence empty):
 
 ```bash
-mise install
-mise exec gitleaks -- git --pre-commit --staged --redact
+./bin/mise trust
+./bin/mise install
+./bin/mise exec -- gitleaks dir . --redact --verbose
 if [ $? -ne 0 ]; then
   echo "gitleaks detected potential secrets — failing build"
   exit 1
@@ -104,7 +110,7 @@ fi
 
 ### Leak SOP (rotate before cleaning history)
 
-1. **Rotate first** (rotation is the real stop-bleed; after a force push, GitHub reflog / forks may still reach the secret for up to 90 days, and **any fork retains it forever**):
+1. **Rotate first** (rotation is the real stop-bleed; after a force push, GitHub reflog / forks may still reach the secret until GitHub Support runs garbage collection on the repository (GitHub documents no time window), and **any fork retains it forever**):
    - CloudKit Dashboard: rotate the server-to-server key
    - Rotate the ASC API key
    - Rotate the APNs key
@@ -117,7 +123,7 @@ fi
 ### Setup templates (shipped in the repo)
 
 - `.env.example`: list all env var keys with placeholder values
-- `.config/<project>/example/README.md`: explain the local PEM directory layout (**do not include a `.pem.example` real file** — gitleaks's built-in `private-key` rule fires on the header alone; if you must include a real example, explicitly allowlist it in `.gitleaks.toml`)
+- `secrets/example/README.md`: explain the local PEM directory layout (**do not include a `.pem.example` real file** — gitleaks's built-in `private-key` rule needs the full header + ≥64-character body + footer to fire, so a placeholder with only the header text won't trip it and isn't a safe substitute for keeping the real key out; if you must include a real example, explicitly allowlist it in `.gitleaks.toml`)
 - `docs/setup.md`: first-clone steps for new developers
 
 ### Public commitment on Apple upstream channels
@@ -129,7 +135,8 @@ The App's commitment to users (aligned with `PrivacyInfo.xcprivacy`):
 - **The App does not upload events to "our" servers** (CloudKit / Game Center are provided by Apple)
 
 Legitimate Apple upstream channels (users can disable in Settings):
-- MetricKit `MXMetricPayload` → ASC Power & Performance (*Settings → Privacy → Analytics & Improvements*)
+- MetricKit `MXMetricPayload` / `MXDiagnosticPayload` — delivered **to the App itself**, not to Apple; this is in-app telemetry, not an upload channel
+- ASC Power & Performance (*Settings → Privacy → Analytics & Improvements*, user opt-in device analytics) — a separate channel Apple collects independently of MetricKit
 - Game Center scores / achievements (*Settings → Game Center*)
 - ASC crash reports / TestFlight beta crashes (when the user enables Share Analytics)
 - sysdiagnose (when the user actively shares via Feedback Assistant; OSLog `.private` is redacted here)
@@ -147,7 +154,7 @@ Every PR review additionally checks:
 
 - Three lines of defence are standard defence-in-depth, with complementary interception stages.
 - The rotate-first SOP reflects the reality that "git history is permanently reachable in forks" — cleaning history is **not** stopping the bleed.
-- Apple-issued secrets go through GitHub's partner program for auto-revocation; the third line is a free, must-enable layer.
+- GitHub's secret-scanning partner program auto-revokes tokens for its listed partners, but Apple is not one of them; the third line still catches a leaked Apple-issued key via GitHub's generic pattern alerts, it just doesn't revoke it for you — it's a free, must-enable layer regardless.
 
 ## Deviation considerations
 

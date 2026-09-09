@@ -1,6 +1,6 @@
 ---
 name: agent-impl-notes-log
-description: Maintain a running `meetings/{date}_{topic}.impl-notes.md` *during* subagent task execution to capture in-flight design decisions, intentional deviations from spec, considered alternatives, and open questions for Leader/User. Distinct from the post-hoc phase meeting log; this file is updated incrementally as decisions are made. Invoke when ambiguity is encountered mid-task, or when about to deviate from spec.
+description: "Maintain a running `meetings/{date}_{topic}.impl-notes.md` *during* subagent task execution to capture in-flight design decisions, intentional deviations from spec, considered alternatives, and open questions for Leader/User. Distinct from the post-hoc phase meeting log; this file is updated incrementally as decisions are made. Invoke at the start of any non-trivial subagent dispatch (M- or L-size: touches ≥2 files, adds new behavior, or gets a spec before code), when ambiguity is encountered mid-task, or when about to deviate from spec."
 ---
 
 # Agent Implementation Notes — Running Log
@@ -8,10 +8,6 @@ description: Maintain a running `meetings/{date}_{topic}.impl-notes.md` *during*
 ## Purpose
 
 The phase meeting log (`meetings/{date}_{topic}.md`) is summative — written after work completes. By that point, dozens of micro-decisions made mid-flight are already lost to the commit diff. An impl-notes log fills that gap: a **concurrent record** of decisions, deviations, tradeoffs, and unresolved questions, written as they happen.
-
-The user explicitly asked for this:
-
-> 在你進行工作的同時，維護一個名為 implementation-notes.md 的持續更新檔案，記錄任何我應該知道的，關於實作如何偏離或詮釋規格的事項。
 
 ## When to invoke
 
@@ -21,7 +17,7 @@ Subagent MUST invoke this skill at the start of any dispatch matching ANY of:
 - Implements behavior whose spec has known ambiguity (e.g., `// UNCONFIRMED` markers, "Unconfirmed ?" prerequisites).
 - Introduces a new dependency, target, or module.
 - Refactors existing code beyond a one-line fix.
-- Any task with a `PROPOSAL_DRAFT` step in the AI Collaboration Mode workflow.
+- Any M- or L-size task under `ai-collaboration-mode` (touches ≥2 files, adds new behavior, or gets a spec/plan before code).
 
 Subagent MAY skip this skill for trivial one-line fixes, pure typo corrections, or documentation copy edits.
 
@@ -86,7 +82,7 @@ _Things you want Leader / User to confirm. Be specific. Block on these before fi
 
 When Leader dispatches a subagent matching the invoke criteria, the dispatch prompt MUST include:
 
-> Create `meetings/{date}_{topic}.impl-notes.md` at the start of your work using the `agent-impl-notes-log` skill format. Update it incrementally — design decisions, deviations, tradeoffs, open questions. Mark `Status: COMPLETE` before final report. Include the file path in your report.
+> Create `meetings/{date}_{topic}.impl-notes.md` at the start of your work using the `collaboration-skills:agent-impl-notes-log` skill format (or have it preloaded via the agent definition's `skills:` field). Update it incrementally — design decisions, deviations, tradeoffs, open questions. Mark `Status: COMPLETE` before final report. Include the file path in your report.
 
 Subagent's final report MUST link the impl-notes file. Leader reads it before merging the work to verify decisions match Leader's intent.
 

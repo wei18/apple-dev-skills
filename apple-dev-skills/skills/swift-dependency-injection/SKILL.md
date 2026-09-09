@@ -13,6 +13,10 @@ description: Testable seam design via protocol injection, SwiftUI environment, a
 - Reviewing code that reaches out to global state, `URLSession.shared`, `Date()`, or `UUID()`.
 - Choosing between constructor injection and SwiftUI environment injection.
 
+## Scope
+
+Owns how a seam is shaped and injected (protocol / struct witness / environment / task-local) and how a fake is written. Does NOT own the test framework, snapshot tooling, or where shared fake *types* live → `swift-testing-baseline` (`<Project>KitTesting`).
+
 ## Core principle: one composition root
 
 All concrete implementations are wired in a single place — typically `makeApp(...)` or a `DependencyContainer` struct built in the `@main` entry point. Every layer below receives its dependencies through initialiser parameters, not by reaching up to a global. This makes the entire wiring visible in one screen of code and means tests can substitute any dependency without touching production paths.
@@ -49,15 +53,10 @@ Either is fine. Pick the one that reads naturally; don't mix both styles for the
 SwiftUI's `@Environment` and `EnvironmentValues` let you propagate dependencies down a view tree without threading them through every intermediate View:
 
 ```swift
-// Define a key
-struct StorageKey: EnvironmentKey {
-    static let defaultValue: any StorageProtocol = NoopStorage()
-}
+// Define a key — `@Entry` (Xcode 16+, back-deploys to iOS 13) generates
+// the EnvironmentKey and the get/set accessor for you.
 extension EnvironmentValues {
-    var storage: any StorageProtocol {
-        get { self[StorageKey.self] }
-        set { self[StorageKey.self] = newValue }
-    }
+    @Entry var storage: any StorageProtocol = NoopStorage()
 }
 
 // Inject at the root
@@ -84,8 +83,11 @@ DetailView()
 Prefer **fakes** (lightweight in-memory implementations) and **stubs** (hardcoded return values) over mock frameworks. Mocks couple tests to implementation details (call order, argument matching); fakes couple tests only to the contract.
 
 ```swift
-struct FakeStorage: StorageProtocol {
-    var items: [Item] = []
+// `save`/`loadAll` are `async throws`, so `actor` is the natural fit —
+// a `struct` fake would need a mutating `save`, which the protocol's
+// non-mutating `async throws` signature does not allow (it won't compile).
+actor FakeStorage: StorageProtocol {
+    private var items: [Item] = []
     func save(_ item: Item) async throws { items.append(item) }
     func loadAll() async throws -> [Item] { items }
 }
@@ -97,7 +99,8 @@ struct FakeStorage: StorageProtocol {
 // Production
 let clock: any Clock<Duration> = ContinuousClock()
 
-// Test
+// Test — `TestClock` is from pointfreeco/swift-clocks (add the package),
+// not the standard library.
 let clock = TestClock<Duration>()  // advance manually
 await clock.advance(by: .seconds(5))
 ```
@@ -130,6 +133,7 @@ Avoid `@TaskLocal` for dependencies that should be visible in the public interfa
 
 ## Swift 6 concurrency rules for dependencies
 
+- Xcode 26's new-project template defaults to `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor` (SE-0466). Under that default: (1) every unannotated in-house type and protocol is implicitly `@MainActor`, so a view-model-shaped seam no longer needs `Sendable` on its own account; (2) a seam meant to be used from a background actor (`StorageProtocol`, `AnalyticsClient`) must be declared `nonisolated` explicitly, and only then does it keep the `async` + `Sendable` rules below; (3) if the SwiftPM target doesn't opt into this default (existing targets default to `nonisolated`), the rules below apply as written.
 - Any type passed across actor boundaries — including a dependency — must conform to `Sendable`. When the implementation is an actor wrapping a non-`Sendable` framework type it doesn't own (`AVAssetTrack`, `VNRequest`), the fix is at the boundary, not on the protocol: return a `Sendable` value type instead of the framework object, or `@preconcurrency import` the framework. Do not drop the protocol's `Sendable` requirement — it does not silence the diagnostic (see `swift6-concurrency`).
 - Protocol requirements that are called from concurrent contexts must be `async` (or the protocol itself must be `@MainActor`-isolated).
 - Closures stored in a struct client must be `@Sendable`:
@@ -145,8 +149,8 @@ struct AnalyticsClient: Sendable {
 
 ## Library options
 
-- **`pointfreeco/swift-dependencies`** (MIT) — implements the struct-witness / environment / `@TaskLocal` pattern described above with a macro-driven `@Dependency` property wrapper. Provides `withDependencies { ... }` for scoped test overrides. Worth adopting when the team wants a shared convention rather than hand-rolling keys.
-- **Factory** (MIT, by Michael Long) — registration-based container closer to traditional IoC. Useful when the codebase already organises dependencies as registered services rather than value-type structs.
+- **`pointfreeco/swift-dependencies`** (MIT, currently 1.17.x) — implements the struct-witness / environment / `@TaskLocal` pattern described above. `@Dependency` is a regular property wrapper, not a macro; the macro is `@DependencyClient` / `@DependencyEndpoint` from the `DependenciesMacros` target and generates `unimplemented` defaults for a struct client. Provides `withDependencies { ... }` for scoped test overrides. Worth adopting when the team wants a shared convention rather than hand-rolling keys.
+- **`hmlongco/Factory`** (MIT, by Michael Long, currently 3.x) — registration-based container closer to traditional IoC. Factory 3 ships its API under the `FactoryKit` module (`import FactoryKit`, not `import Factory`). Useful when the codebase already organises dependencies as registered services rather than value-type structs. Its README notes that the `@Injected` property-wrapper family is currently unusable from a `nonisolated` service class under a global `MainActor` default (Swift 6.2); use the `dependency(\.key)` function call instead in that case.
 
 Both are valid; they solve the same problem with different ergonomics. Evaluate against the existing codebase shape before adding a new dependency.
 
@@ -163,4 +167,4 @@ Both are valid; they solve the same problem with different ergonomics. Evaluate 
 
 - `swiftpm-modularization`: put each seam (protocol + fake) in its own target so test targets can import the fake without importing the live implementation.
 - `swift6-concurrency`: `Sendable` requirements, `@preconcurrency`, and actor-isolated types that affect dependency design.
-- `swift-testing-baseline`: shared fake targets (`<Module>Testing`), protocol injection for CloudKit / Game Center, and why integration tests never touch real networks.
+- `swift-testing-baseline`: shared fake targets (`<Project>KitTesting`), protocol injection for CloudKit / Game Center, and why integration tests never touch real networks.

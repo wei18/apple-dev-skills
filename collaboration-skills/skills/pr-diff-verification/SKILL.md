@@ -1,6 +1,7 @@
 ---
 name: pr-diff-verification
-description: Use before pushing a branch or opening a PR to verify `git show --stat HEAD` matches what the commit message claims. Prevents the "commit log wrote but code didn't make it" class of accidents where the commit message describes changes that aren't in the diff (e.g. amend overwrote the previous commit's content, force-push lost commits, worktree wipe lost staged work). Invoke whenever Leader is about to `git push` a feature branch OR open a PR.
+description: Use before pushing a branch or opening a PR to verify `git show --stat --summary HEAD` matches what the commit message claims. Prevents the "commit log wrote but code didn't make it" class of accidents where the commit message describes changes that aren't in the diff (e.g. amend overwrote the previous commit's content, force-push lost commits, worktree wipe lost staged work). Invoke whenever Leader is about to `git push` a feature branch OR open a PR.
+allowed-tools: Bash(git show *) Bash(git diff *) Bash(git log *) Bash(git reflog *) Bash(git rev-parse *)
 ---
 
 # PR Diff Verification
@@ -21,25 +22,28 @@ Skip when: pushing a single trivial commit you authored line-by-line in the curr
 
 For the HEAD commit (or all commits on the branch since base), extract concrete claims:
 - "modifies X" → look for X in the diff
-- "adds Y" → look for `create mode 100644 Y/` in stat
-- "deletes Z" → look for `delete mode 100644 Z` in stat
-- "renames A → B" → look for `rename A => B` in stat
+- "adds Y" → look for `create mode 100644 Y` in the `--summary` output
+- "deletes Z" → look for `delete mode 100644 Z` in the `--summary` output
+- "renames A → B" → look for `rename dir/{A => B} (NN%)` in the `--summary` output
 - "fixes N+M lines" → diff total should be in that ballpark
 
 ### Step 2 — compare against actual diff
 
 ```bash
-git show --stat HEAD                    # for single commit
-git diff --stat origin/main..HEAD       # for branch cumulative
-git log --oneline origin/main..HEAD     # for commit count
+git show --stat --summary HEAD                    # for single commit
+git diff --stat --summary origin/main..HEAD       # for branch cumulative
+git log --oneline origin/main..HEAD               # for commit count
 ```
+
+Plain `--stat` only prints `path | N +-` per file; the `create mode` / `delete mode` /
+`rename A => B (NN%)` lines only appear with `--summary` added.
 
 For each concrete claim, grep the stat output. If the claim mentions a path that doesn't appear in the stat, that's a discrepancy — investigate before push.
 
 ### Step 3 — surface discrepancies
 
 If found:
-- Did `git amend` or rebase squash the wrong content?
+- Did `git commit --amend` or rebase squash the wrong content?
 - Did a worktree wipe lose commits before push?
 - Did a force-push from another branch overwrite this branch's commits (the "push wrong ref" footgun)?
 - Did the subagent return claim work that never got committed?
@@ -52,7 +56,7 @@ Discrepancy resolution options:
 
 ## When the rule fired in this project
 
-**"Commit log claims work, diff doesn't show it" (general pattern)**: this class of mistake recurs when (a) `git amend` after partial revert loses hunks but keeps the original message, (b) force-push from a stale branch overwrites newer commits, (c) subagent returns a structured "I committed X" report but the commits never made it to the branch ref due to worktree wipe before push. Each failure mode is caught by the same single check: `git show --stat HEAD` vs. the commit body.
+**"Commit log claims work, diff doesn't show it" (general pattern)**: this class of mistake recurs when (a) `git commit --amend` after partial revert loses hunks but keeps the original message, (b) force-push from a stale branch overwrites newer commits, (c) subagent returns a structured "I committed X" report but the commits never made it to the branch ref due to worktree wipe before push. Each failure mode is caught by the same single check: `git show --stat --summary HEAD` vs. the commit body.
 
 **Real-world example — wrong ref pushed**: a subagent reported "1 commit a547d70 with all the changes"; Leader pushed `worktree-agent-XXX:feat/feature-phase1` and discovered post-push that the wrong ref was pushed (the worktree-agent ref was at main SHA; the actual feature commits were on a different local branch). Required force-push recovery from reflog.
 
@@ -63,7 +67,7 @@ Discrepancy resolution options:
 
 ## Integration with commit discipline
 
-Commit-early discipline (commit before push, avoid large uncommitted batches) is covered by `github-contribution-workflow`. This skill is the POST-commit verification step — confirms the commits that survived actually contain what the message claims.
+This skill starts after commits exist; it does not prescribe commit granularity. It is the POST-commit verification step — confirms the commits that survived actually contain what the message claims.
 
 ## Heuristics for "what to check"
 

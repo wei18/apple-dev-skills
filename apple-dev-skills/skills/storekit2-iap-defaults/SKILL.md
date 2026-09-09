@@ -33,8 +33,11 @@ Owns: bridge/seam shape, entitlement-derivation rules, test strategy for
   `monetization-sdk-integration`.
 - What App Review requires of Restore Purchases / IAP pricing clarity (3.1.1)
   → `app-store-review-rejections`.
-- Creating the IAP product in App Store Connect — no REST resource covers
-  this; use the ASC web UI.
+- Creating the IAP product in App Store Connect — the ASC API 2.0 has
+  `POST /v2/inAppPurchases` plus `inAppPurchaseLocalizations`,
+  `inAppPurchasePriceSchedules`, and `inAppPurchaseSubmissions` for
+  automating this end-to-end → `asc-api-automation`; the web UI is the
+  manual alternative.
 - Getting the binary containing this code to TestFlight →
   `local-archive-export-upload`.
 

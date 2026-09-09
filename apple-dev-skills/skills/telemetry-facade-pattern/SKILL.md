@@ -19,7 +19,12 @@ description: Single `Telemetry` SwiftPM target with a fan-out facade — callers
 - Create one `Telemetry` target inside the SwiftPM Package.
 - It contains:
   - `TelemetryEvent` value type (enum / struct, `Sendable`)
-  - `TelemetrySink` protocol
+  - `TelemetrySink` protocol:
+    ```swift
+    public protocol TelemetrySink: Sendable {
+        func receive(_ event: TelemetryEvent) async
+    }
+    ```
   - The main facade — default to a `Telemetry` **actor**. Sink stateful subscriptions (e.g. `MetricKitSink` holding `MXMetricManagerSubscriber` reference identity) require an actor for clean lifecycle management. A `Sendable` struct facade is acceptable only when every sink is fully synchronous and stateless. The facade fans out to multiple sinks.
   - Default sinks (see below)
 
@@ -38,25 +43,25 @@ telemetry.observe(.puzzleCompleted(id: puzzleId, durationMs: 12_345))
 |---|---|---|
 | `OSLogSink` | All events | Human-readable debug messages |
 | `TrackingSink` (default `NoOpTrackingSink`) | Business events | v1 has no third-party tracking but the protocol is reserved; future swaps require zero call-site changes |
-| `MetricKitSink` | Subscribes via `MXMetricManager.shared.add(self)`; on receiving `MXMetricPayload`, broadcasts to other sinks | Performance / diagnostics persistence |
+| `MetricKitSink` | Subscribes via `MXMetricManager.shared.add(self)`; on receiving `MXMetricPayload`, broadcasts to other sinks | Performance / diagnostics persistence — `MXMetricManagerSubscriber` inherits `NSObjectProtocol`, so `MetricKitSink` must be an `NSObject` subclass, not a struct or actor. An `NSObject` subclass *can* conform to a `Sendable` sink protocol, but only while every stored property is immutable — a `var` there fails with "stored property … is mutable". Hold subscription state behind `@MainActor` or a `Mutex`, or mark the class `@unchecked Sendable` and synchronise it yourself |
 | `GameCenterSink` (games) | Completion / achievement events | Submit score / unlock achievement |
 
 ```swift
 public struct NoOpTrackingSink: TelemetrySink {
     public init() {}
-    public func receive(_ event: TelemetryEvent) { /* intentionally empty */ }
+    public func receive(_ event: TelemetryEvent) async { /* intentionally empty */ }
 }
 ```
 
 ### Composition root wiring
 
 - The App target's DI composition root injects sinks into the facade.
-- Sinks are **independent**; one sink's failure does not affect the others.
+- Sinks are **failure-isolated** (one sink throwing or timing out must not stop the others) but **not order-free**: the facade forwards in array order, and a sink that reads state another sink writes must come after it (see trap 2).
 
 #### Wiring traps (hard-won — real project lessons)
 
 A sink that *exists as a type* is worth **zero** until it is in the **live** sinks
-array. Four traps, in the order they bit:
+array. Five traps, in the order they bit:
 
 1. **Existing-but-unwired = dead code.** Real-world example: a `GameCenterSink`/`AchievementEvaluator`
    were fully written but never added to the live `Telemetry` sinks list
@@ -81,9 +86,11 @@ array. Four traps, in the order they bit:
    (persistence, GameCenter) that themselves need `Telemetry`, you cannot build
    it at Telemetry-construction time. Wire a `DeferredSink` placeholder into the
    facade at startup, then `setDownstream([real sinks])` once (sync, from the
-   `@MainActor` composition root) after all deps are assembled. `final class
-   @unchecked Sendable` + `NSLock` (not an actor) keeps `setDownstream`
-   synchronous; `receive` snapshots state under the lock before any `await`.
+   `@MainActor` composition root) after all deps are assembled. A `final class
+   … : Sendable` (not an actor, and not `@unchecked`) backed by
+   `Synchronization.Mutex<[any TelemetrySink]>` (iOS 18+ / macOS 15+) keeps
+   `setDownstream` synchronous via `downstream.withLock { $0 = sinks }`;
+   `receive` snapshots the sinks under `withLock` before any `await`.
 5. **The sink firing ≠ the terminal call working.** Tracing "wire 2 things"
    uncovered a third gap: the GameKit terminal (`submitScore`/`reportAchievement`)
    was a stub that no-op'd / threw. **Trace to the actual platform call**
@@ -100,7 +107,7 @@ array. Four traps, in the order they bit:
 ## Deviation considerations
 
 - **Minimal App, OSLog only**: you can skip the `Telemetry` target and use `Logger` directly. But **if you anticipate adding tracking / metrics later**, building the facade up front pays off.
-- **Need inter-sink dependencies** (e.g. `MetricKitSink` payloads must go through `TrackingSink` first): handle routing inside the facade; call sites still unchanged.
+- **Need *routing* between sinks** (e.g. a MetricKit payload re-emitted into `TrackingSink`): handle routing inside the facade; call sites still unchanged.
 - **Cross-platform** (Android / Linux): facade interface stays platform-neutral; sink implementations are per-platform.
 
 ## Verification checklist

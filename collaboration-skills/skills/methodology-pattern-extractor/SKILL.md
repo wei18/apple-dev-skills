@@ -1,6 +1,9 @@
 ---
 name: methodology-pattern-extractor
 description: Read accumulated meeting logs and session JSONL files, extract collaboration patterns that have repeated ≥ 3 times, and append them to `docs/methodology.md` §Patterns. Each entry captures trigger / action / outcome / next-time adjustment. Invoke when the user asks "update methodology", "extract patterns from this session", "consolidate recurring collaboration patterns", or after every 5+ meeting logs accumulate.
+context: fork
+agent: general-purpose
+argument-hint: "[topic]"
 ---
 
 # Methodology Pattern Extractor
@@ -28,7 +31,7 @@ Items with fewer than 3 sightings can go into methodology.md §Backlog as "candi
 
 ## Output format
 
-One entry per pattern, four lines:
+One entry per pattern, five lines:
 
 ```markdown
 ### <Pattern name>
@@ -37,7 +40,7 @@ One entry per pattern, four lines:
 - **Action**: <the observed response action>
 - **Outcome**: <the resulting outcome>
 - **Next-time adjust**: <what you'd improve next time, may be empty>
-- **Sightings**: <meeting log dates ×N, comma-separated>
+- **Sightings**: <one date per meeting log, comma-separated — ≥ 3 different logs, not ≥ 3 mentions in one log>
 ```
 
 Example:
@@ -49,7 +52,7 @@ Example:
 - **Action**: Leader advances one section at a time, waits for OK before moving on
 - **Outcome**: Avoids the high cost of "whole-doc rejection and rewrite"
 - **Next-time adjust**: Before dispatching a sub-agent, confirm all prerequisites for the section are Resolved
-- **Sightings**: 2026-05-15 ×3
+- **Sightings**: 2026-05-15, 2026-05-22, 2026-06-03
 ```
 
 ## Procedure

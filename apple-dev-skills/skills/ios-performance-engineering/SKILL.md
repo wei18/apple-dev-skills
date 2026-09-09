@@ -26,7 +26,7 @@ Never guess at a performance problem; profile first. Instruments ships with Xcod
 
 **Hangs instrument** (Xcode 14+) — captures main-thread spins longer than a configurable threshold (default 250 ms). Apple classifies blocks 250–500 ms as micro-hangs and ≥500 ms as full hangs. Pairs with the **App Launch** template for pre-first-frame blocking. The system also generates `MXHangDiagnostic` on-device (see MetricKit below).
 
-**Hitches** — a hitch occurs when a frame takes longer than one vsync interval to deliver, causing a visual stutter. On 60 Hz displays the budget is ~16.67 ms; on ProMotion (120 Hz) it halves to ~8.33 ms. Use the **Core Animation** instrument to see committed frames and dropped frames. The `hitch rate` (ms of hitch per second of scrolling) is the standard metric: <5 ms/s is good; 5–10 ms/s is concerning (user notices interruptions); >10 ms/s is critical (greatly impacts UX) — per WWDC 2020 session 10077.
+**Hitches** — a hitch occurs when a frame takes longer than one vsync interval to deliver, causing a visual stutter. On 60 Hz displays the budget is ~16.67 ms; on ProMotion (120 Hz) it halves to ~8.33 ms. Use the **Animation Hitches** instrument template (Hitches, Display, and Core Animation Commits tracks — the standalone "Core Animation" template no longer exists) to see committed frames and dropped frames. The `hitch rate` (ms of hitch per second of scrolling) is the standard metric: <5 ms/s is good; 5–10 ms/s is concerning (user notices interruptions); >10 ms/s is critical (greatly impacts UX) — per WWDC 2020 session 10077.
 
 ### `os_signpost` — annotate your own intervals
 
@@ -53,18 +53,16 @@ signposter.endInterval("TileRender", state)
 ### `xctrace` — Instruments from CI
 
 ```bash
-xctrace record \
-  --template "Time Profiler" \
-  --launch -- /path/to/MyApp.app \
-  --output trace.xctrace \
-  --time-limit 30s
+xctrace record --template 'Time Profiler' --output trace.trace --time-limit 30s --launch -- /path/App.app
 ```
+
+`--launch -- command` must come last: everything after `--` is passed through to the launched process, so `--output` / `--time-limit` have to precede it or they get swallowed as app launch arguments instead of being read by `xctrace` itself.
 
 `xctrace` can drive any built-in or custom Instruments template headlessly and export the trace as a `.xctrace` bundle. Post-process with `xctrace export` to pull out human-readable XML. Wire this into a CI step on a dedicated Mac runner to catch regressions before they reach users.
 
 ## Hangs and hitches
 
-The system classifies a main-thread block of **250 ms or more** as a hang and surfaces it in the Organizer → Hang Reports (Xcode 14+) and via MetricKit's `MXHangDiagnosticPayload`. The scroll hitch budget depends on display refresh rate (see above).
+The system classifies a main-thread block of **250 ms or more** as a hang and surfaces it in the Organizer → Hang Reports (Xcode 14+) and via MetricKit's `MXDiagnosticPayload.hangDiagnostics` (an array of `MXHangDiagnostic` — there is no `MXHangDiagnosticPayload` type). The scroll hitch budget depends on display refresh rate (see above).
 
 **Moving work off `@MainActor`:**
 
@@ -99,7 +97,7 @@ Common traps: eager `CKContainer.default()` on the main thread (hangs until enti
 
 ## Memory
 
-**Footprint vs leaks**: Instruments Allocations shows the heap; use `vmmap` or the Memory Debugger in Xcode to see the full virtual memory map (dirty pages, compressed pages, mapped files). The OS terminates apps that exceed their footprint budget silently — `JETSAM_REASON_HIGH_WATER_MARK` in the crash log. Reduce by:
+**Footprint vs leaks**: Instruments Allocations shows the heap; use `vmmap` or the Memory Debugger in Xcode to see the full virtual memory map (dirty pages, compressed pages, mapped files). The OS terminates apps that exceed their footprint budget silently — a JetsamEvent log entry whose reason reads `per-process-limit` (or `highwater`). Reduce by:
 
 - **Image downsampling**: never decode a 4K image to display it at 100 pt. Use `ImageIO` with `kCGImageSourceThumbnailMaxPixelSize` or `UIGraphicsImageRenderer` to decode at display resolution.
 
@@ -132,11 +130,11 @@ Large binaries increase download time and App Store review scrutiny. Primary lev
 - **`-Osize`** (`SWIFT_OPTIMIZATION_LEVEL = -Osize`): optimises for binary size rather than speed. Typically 5–15% smaller than `-O` with negligible runtime impact for most app code.
 - **Asset catalog / app thinning**: use asset catalog image sets with `@1x`/`@2x`/`@3x` variants and device-specific slices. The App Store strips variants irrelevant to the downloading device. Avoid embedding full-resolution assets in the bundle for cases where a downsampled or streamed version suffices.
 - **Link Map + Organizer**: use the **Link Map** (Build Settings: Write Link Map File = YES) and the Xcode Organizer's App Size report to identify which symbols contribute most to the binary. Tools such as Bloaty or the `nm` / `size` commands can post-process the link map to locate unexpectedly large third-party frameworks or generated code.
-- Avoid shipping unused localisation bundles from third-party SDKs: set `SWIFT_PACKAGE_RESOURCE_BUNDLE_DEDUPLICATE = YES` and review resource bundle sizes after each SDK update.
+- Avoid shipping unused localisation bundles from third-party SDKs: review resource bundle sizes with the Xcode Organizer's App Size report after each SDK update, and trim unused files at the source by tightening each SwiftPM target's `resources:` rule.
 
 ## MetricKit — field performance telemetry
 
-MetricKit delivers on-device aggregated performance metrics to your app once per day (and immediately for diagnostic payloads on device disconnect from Xcode):
+MetricKit delivers on-device aggregated performance metrics to your app once per day (diagnostic payloads are delivered immediately, with no disconnect-from-Xcode condition, since iOS 15 / macOS 12):
 
 ```swift
 import MetricKit
@@ -168,10 +166,10 @@ MetricKit data reflects **real user conditions** (actual device, network, batter
 
 | Class | What it measures |
 |---|---|
-| `MXCPUMetrics` | Cumulative CPU time (user + system) |
-| `MXMemoryMetrics` | Peak and average memory, average suspended memory |
+| `MXCPUMetric` | Cumulative CPU time (user + system) |
+| `MXMemoryMetric` | Peak and average memory, average suspended memory |
 | `MXDisplayMetric` | Average pixel luminance (not hitch rate — use `MXAnimationMetric` — `scrollHitchTimeRatio`: ratio of hitch time while scrolling (field-measured)) |
-| `MXDiskIOMetrics` | Cumulative logical write bytes |
+| `MXDiskIOMetric` | Cumulative logical write bytes |
 | `MXHangDiagnostic` | Call tree for a main-thread hang > 250 ms |
 | `MXCrashDiagnostic` | Crash reason + call tree |
 | `MXCPUExceptionDiagnostic` | CPU runaway above system threshold |
@@ -193,7 +191,7 @@ func testScrollPerformance() {
 }
 ```
 
-`measure {}` runs the block 5 times (by default) and records the mean. On first run, set the baseline via the inline editor in Xcode. Subsequent runs fail if the result exceeds `baseline * (1 + maxStandardDeviations)` — configurable per metric. Commit baselines in `.xcbaseline` files alongside the test file.
+`measure {}` runs the block 5 times (by default) and records the mean. On first run, set the baseline via the inline editor in Xcode. Subsequent runs fail on either of two independent thresholds, both configurable per metric: **Max % Relative Standard Deviation** (default 10%) and **Max % Deviation** from the baseline average (default 10%) — exceeding either one fails the test; it is not a single product formula. Commit baselines in `.xcbaseline` files alongside the test file.
 
 For server-side CI (where a physical display is unavailable), use `XCTCPUMetric` and `XCTMemoryMetric` in unit tests that exercise logic without UIKit rendering. UI performance metrics require a simulator or device with an active display session.
 
@@ -206,13 +204,14 @@ For server-side CI (where a physical display is unavailable), use `XCTCPUMetric`
 - `os_signpost` intervals added around any operation expected to take > 16 ms.
 - `MXMetricManagerSubscriber` registered in the composition root; payloads forwarded to the telemetry sink.
 - `XCTMetric` baseline committed for the primary performance-sensitive test; CI fails on regression.
-- No synchronous network or file I/O on the main thread (audited via Thread Sanitizer and code review).
+- No synchronous network or file I/O on the main thread (audited via the Hangs instrument, Main Thread Checker, and `os_signpost` around suspect call sites — Thread Sanitizer only detects data races and will not flag this).
 - Image assets decoded at display resolution, not source resolution.
 - Binary size measured with `-Osize` before each major release; asset catalog slices verified.
 
 ## Related skills
 
 - `telemetry-facade-pattern`: wire `MetricKitSink` as one sink in the fan-out facade; keep `MXMetricManagerSubscriber` registration out of `AppDelegate`.
-- `apple-three-piece-analytics`: MetricKit covers system-level performance telemetry; the three-piece stack covers user behaviour and business events — they are complementary, not overlapping.
+- `apple-three-piece-analytics`: decides *which* Apple-only sources (ASC Analytics / MetricKit / Game Center) to rely on and whether a third-party SDK is justified; this skill owns *reading and acting on* MetricKit payloads for performance diagnosis.
 - `swift6-concurrency`: moving work off `@MainActor` correctly requires understanding actor isolation, `Task.detached`, and `Sendable` constraints — the primary tool for eliminating main-thread hangs.
-- `swiftui-expert` (aggregated external): for the **SwiftUI body-re-render** slice specifically, it ships an Instruments `.trace` analysis toolchain — prefer it for that profiling. This skill owns the broader surface (Time Profiler / Allocations / hangs / launch / memory / binary size / MetricKit / XCTMetric).
+- `swiftui-expert:swiftui-expert-skill` (aggregated external): for the **SwiftUI body-re-render** slice specifically, it ships an Instruments `.trace` analysis toolchain — prefer it for that profiling. This skill owns the broader surface (Time Profiler / Allocations / hangs / launch / memory / binary size / MetricKit / XCTMetric).
+- `apple-skills:guide-swiftui-performance-audit` (aggregated external): code-first SwiftUI review (view-update causes, layout thrash) with user-run Instruments; this skill owns measurement (Instruments/xctrace/MetricKit/XCTMetric) and the non-SwiftUI surface (launch, memory, binary size).

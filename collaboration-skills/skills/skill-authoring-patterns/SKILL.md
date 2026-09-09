@@ -23,6 +23,21 @@ This skill owns the *catalog-specific* and *Apple/Swift-specific* authoring conv
 
 The `description` is the only part of a skill that stays in the model's context by default (the body loads when the skill is invoked, and the description is length-capped). So spend its words on *routing*, not summary.
 
+**Where this differs from `superpowers:writing-skills`**: that skill's description rule says
+to write ONLY the trigger ("Use when…"), never what the skill does, aiming for under 500
+characters. Its evidence is real but narrower than the rule it's stated as: an agent that
+reads a description *summarizing a workflow's steps* will follow the description instead of
+the body (this catalog's own gate encodes the same boundary as the "description may summarize
+workflow" MINOR). The official Claude Code and Agent Skills docs, by contrast, specify
+`description` as covering both *what* the skill does and *when* to use it. This catalog
+follows the official contract: one verb-anchored **capability** sentence (the result, not the
+steps) + trigger scenarios + a negative boundary when needed. A capability statement ("Resolve
+Swift 6 concurrency errors…") is not a workflow summary, so writing one doesn't reproduce the
+failure mode superpowers is guarding against — it still never enumerates workflow steps or
+numeric thresholds in the description. This catalog's `DESC_MAX` (800 chars) is also
+independent of superpowers' <500-char target; both are stricter than the official 1,536-char
+listing cap for unrelated reasons.
+
 - **Verb-anchored to observable intent:** "Resolve Swift 6 concurrency errors…", "Audit SwiftUI runtime performance…".
 - **Embed the framework symbols / APIs that should trigger it** — `Sendable`, `@MainActor`, `MetricKit`, `AccessibilityFocusState`. This is the highest-leverage delta for *framework* skills: an agent routing on "I'm getting a Sendable error" only lands here if `Sendable` is in the description.
 - **Chain trigger scenarios** as a short list ("Use when … ; when … ; when …").
@@ -42,18 +57,23 @@ GOOD: description: VoiceOver / Dynamic Type / touch-target implementation for Sw
 
 Claude Code loads a listing of every skill's name + `description` into context on every session so the model knows what's available; the listing's character budget scales at **1% of the model's context window** (raise it with the `skillListingBudgetFraction` setting or the `SLASH_COMMAND_TOOL_CHAR_BUDGET` env var). Each entry's own `description` (+ `when_to_use`, if present — see below) is separately capped at **1,536 characters** regardless of that budget (`skillListingMaxDescChars`). When the total listing overflows the budget, Claude Code truncates descriptions **starting with the skills you invoke least** — your most-used skills keep their full text, your least-used ones lose theirs first. ([Claude Code docs, Skills](https://code.claude.com/docs/en/skills))
 
-The practical implication for this catalog: the scarce resource is not "can my one `description` fit" — this catalog already runs `DESC_MAX = 800` in `scripts/check-consistency.py`, deliberately tighter than the official 1,536-char cap, precisely because 39 skills' descriptions compete for one shared budget every session. Every new skill's `description` is a permanent tax on that shared budget, paid on every session regardless of whether the skill ever fires. So before adding a skill, ask **"is this trigger phrase worth permanently occupying part of every session's listing budget?"** — not just "does this description fit under 800 chars".
+The practical implication for this catalog: the scarce resource is not "can my one `description` fit" — this catalog already runs `DESC_MAX = 800` in `scripts/check-consistency.py`, deliberately tighter than the official 1,536-char cap (and also under the 1,024-char hard limit the platform Agent Skills spec enforces for claude.ai / Skills API uploads), precisely because 38 skills' descriptions compete for one shared budget every session. Every new skill's `description` is a permanent tax on that shared budget, paid on every session regardless of whether the skill ever fires. So before adding a skill, ask **"is this trigger phrase worth permanently occupying part of every session's listing budget?"** — not just "does this description fit under 800 chars".
 
-`when_to_use` is a real frontmatter field (appended to `description` in the listing and counted toward the same 1,536-char cap) meant for trigger phrases / example requests. None of this catalog's 39 skills currently use it (`grep -rl when_to_use **/SKILL.md` → 0 hits) — this catalog folds trigger phrasing directly into `description` instead (see the router form above). That's a deliberate, not accidental, choice: keeping trigger wording in one field is simpler to audit against `DESC_MAX` than splitting it across two fields that share a cap.
+`when_to_use` is a real frontmatter field (appended to `description` in the listing and counted toward the same 1,536-char cap) meant for trigger phrases / example requests. None of this catalog's 38 skills declares `when_to_use` in frontmatter (`grep -l '^when_to_use:' **/SKILL.md` → 0 hits; a plain `grep -rl when_to_use` also matches this paragraph's own mention of the field name, so target the frontmatter line specifically) — this catalog folds trigger phrasing directly into `description` instead (see the router form above). That's a deliberate, not accidental, choice: keeping trigger wording in one field is simpler to audit against `DESC_MAX` than splitting it across two fields that share a cap.
 
 ## Section conventions we standardize
 
-Order the middle by the topic's pedagogy, but keep these conventions:
+Order the middle by the topic's pedagogy, but keep these conventions. All four bookends below
+are required for **new** skills; none of them are retrofitted onto pre-existing skills — the
+gaps in the "today" column are historical debt, not evidence the convention is optional:
 
-- **`## Rationale`** — *why* this default was chosen. Unique to this catalog; keep it.
-- **`## Deviation considerations`** — *when to override* the default, and the cost. Also ours; keep it. (Example: "Drop to iOS 17 when targeting education devices — you lose full Observation behaviour." This heading is the catalog-wide form — most first-party skills use it.)
-- **`## Common Mistakes`** — concrete, anti-pattern-named items ("Using `DateFormatter()` in `body`"), as many as are real — do not pad to a number. *For new skills*; most pre-existing skills express this as inline anti-pattern sections instead and are not retrofitted.
-- **`## Review Checklist`** — a `- [ ]` list at the **end**, runnable top-to-bottom. *For new skills*; older skills use a prose `## Verification checklist` and are not retrofitted.
+| Heading | Purpose | Retrofit status | Today (of 38 skills) |
+|---|---|---|---|
+| `## Rationale` | *why* this default was chosen. Unique to this catalog. | Not retrofitted | 20/38 |
+| `## Deviation considerations` | *when to override* the default, and the cost (e.g. "Drop to iOS 18 when an existing user base still runs it — every Liquid Glass API then needs an availability guard, and the pre-26 chrome must be snapshot-tested separately"). Also ours. | Not retrofitted | 22/38 |
+| `## Common Mistakes` | concrete, anti-pattern-named items ("Using `DateFormatter()` in `body`"), as many as are real — do not pad to a number. | Not retrofitted; older skills express this as inline anti-pattern sections instead. | 10/38 |
+| `## Review Checklist` | a `- [ ]` list at the **end**, runnable top-to-bottom. | Not retrofitted; older skills use a prose `## Verification checklist` instead. | 25/38 (incl. the older prose form) |
+
 - **`## Related skills`** — siblings by name.
 
 Use a **scope-boundary** line in the body wherever a sibling is close ("owns X; does NOT own Y → route to `<sibling>`") — this is what stops two framework skills both claiming the same request.
@@ -90,8 +110,8 @@ Keep `SKILL.md` scannable: decision logic, short paired WRONG/RIGHT snippets (on
 
 ## Naming & granularity
 
-- `name` is kebab-case; **our consistency gate requires `name` to equal the directory** (run `mise run check`) for clean cross-references and tooling. (Note: that's *our* rule — Claude Code itself derives the command from the directory and treats `name` as a label.)
-- **One surface area per skill.** Where Apple ships a Kit, take the Kit name (`widgetkit`, `storekit`). For cross-cutting topics use a descriptive compound at the right altitude — `swift-concurrency`, not the too-broad `swiftui` nor the too-narrow `swiftui-observable`.
+- `name` is kebab-case; **our consistency gate requires `name` to equal the directory** (run `mise run check`) for clean cross-references and tooling. (Note: this is more than tooling hygiene — in a **plugin** skill, which is how every skill in this catalog ships, frontmatter `name` sets the *command's* last segment (`/plugin:name`), so a `name` ≠ directory mismatch silently renames the command a user types. Only for a personal/project skill does Claude Code derive the command from the directory and treat `name` as a mere label. Our gate keeps both paths identical.)
+- **One surface area per skill.** First-party skills in this catalog use a "topic + stance" compound name — `storekit2-iap-defaults`, `swift6-concurrency`, `swiftui-navigation-architecture`, `cloudkit-schema-source-of-truth` — rather than the bare Kit name. Bare Kit names (`widgetkit`, `storekit`, `swift-concurrency`) are already taken by the aggregated `apple-skills` plugin, so the compound name is also what keeps the two catalogs from routing to the same command. For cross-cutting topics use a descriptive compound at the right altitude — `swiftui-navigation-architecture`, not the too-broad `swiftui` nor the too-narrow `swiftui-observable`.
 
 ## Reviewing a skill (CR)
 
@@ -115,13 +135,13 @@ When you CR a skill or a batch, apply the evidence-based, multi-lens doctrine (i
 
 ## Review Checklist
 
-- [ ] (General skill discipline checked against `superpowers:writing-skills` first.)
+- [ ] (General discipline per `superpowers:writing-skills`, **except** its description rule — see §Description as a precision router.)
 - [ ] `name` equals the directory; `mise run check` passes.
 - [ ] `description` is router form: verb-anchored, embeds the triggering framework APIs, lists trigger scenarios; a negative boundary if it could over-fire.
 - [ ] A scope-boundary line names what the skill does NOT own and routes to the sibling.
 - [ ] Choices the agent must make are in a table/triage, not prose.
 - [ ] Deep material is in `references/*.md` with an in-body pointer; `SKILL.md` stays scannable.
-- [ ] `Rationale` + `Deviation` present; code uses current APIs with version gates marked inline.
+- [ ] (New skills) `Rationale` + `Deviation` present; code uses current APIs with version gates marked inline.
 - [ ] `Common Mistakes` are concrete and anti-pattern-named; no padding.
 - [ ] No project-specific workaround dressed up as general guidance.
 - [ ] Every falsifiable API/version claim spot-checked against an authoritative source (cite it).

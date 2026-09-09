@@ -52,9 +52,12 @@ These are the canonical iOS values. Drop them into the HTML as CSS variables and
   /* ===== Typography ===== */
   /* size / line-height / weight */
   --font-large-title:     34px / 41px / 700;
-  --font-title-1:         28px / 34px / 700;
-  --font-title-2:         22px / 28px / 700;
-  --font-title-3:         20px / 25px / 600;
+  --font-title-1:            28px / 34px / 400;  /* HIG default weight is Regular */
+  --font-title-1-emphasized: 28px / 34px / 700;
+  --font-title-2:            22px / 28px / 400;  /* HIG default weight is Regular */
+  --font-title-2-emphasized: 22px / 28px / 700;
+  --font-title-3:            20px / 25px / 400;  /* HIG default weight is Regular */
+  --font-title-3-emphasized: 20px / 25px / 600;
   --font-headline:        17px / 22px / 600;
   --font-body:            17px / 22px / 400;
   --font-body-emphasized: 17px / 22px / 600;
@@ -109,9 +112,9 @@ These are the canonical iOS values. Drop them into the HTML as CSS variables and
 <section>
   <h3>Typography</h3>
   <div class="type-sample" style="font-size:34px;line-height:41px;font-weight:700">Large Title — 34/41 Bold</div>
-  <div class="type-sample" style="font-size:28px;line-height:34px;font-weight:700">Title 1 — 28/34 Bold</div>
-  <div class="type-sample" style="font-size:22px;line-height:28px;font-weight:700">Title 2 — 22/28 Bold</div>
-  <div class="type-sample" style="font-size:20px;line-height:25px;font-weight:600">Title 3 — 20/25 Semibold</div>
+  <div class="type-sample" style="font-size:28px;line-height:34px;font-weight:400">Title 1 — 28/34 Regular (Bold when emphasized)</div>
+  <div class="type-sample" style="font-size:22px;line-height:28px;font-weight:400">Title 2 — 22/28 Regular (Bold when emphasized)</div>
+  <div class="type-sample" style="font-size:20px;line-height:25px;font-weight:400">Title 3 — 20/25 Regular (Semibold when emphasized)</div>
   <div class="type-sample" style="font-size:17px;line-height:22px;font-weight:600">Headline — 17/22 Semibold</div>
   <div class="type-sample" style="font-size:17px;line-height:22px;font-weight:400">Body — 17/22 Regular</div>
   <div class="type-sample" style="font-size:16px;line-height:21px;font-weight:400">Callout — 16/21 Regular</div>
@@ -173,13 +176,14 @@ These are the canonical iOS values. Drop them into the HTML as CSS variables and
 ">Delete</button>
 ```
 
-## NavBar
+## NavBar (iOS 26 Liquid Glass)
 
 ```html
 <!-- Large title style -->
 <div style="
   padding: 8px 16px 16px;
-  background: var(--color-bg);
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: blur(20px) saturate(1.4);
 ">
   <div style="font-size: 34px; font-weight: 700;">Title</div>
 </div>
@@ -191,7 +195,8 @@ These are the canonical iOS values. Drop them into the HTML as CSS variables and
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   padding: 0 16px;
-  background: var(--color-bg);
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: blur(20px) saturate(1.4);
   border-bottom: 0.5px solid var(--color-separator);
 ">
   <span style="color: var(--color-tint); font-size: 17px;">‹ Back</span>
@@ -200,19 +205,27 @@ These are the canonical iOS values. Drop them into the HTML as CSS variables and
 </div>
 ```
 
-## TabBar
+Liquid Glass toolbars are translucent and blur/saturate whatever scrolls beneath them — they are
+not an opaque white bar. Keep the `border-bottom` hairline; it is still how Liquid Glass separates
+chrome from content.
+
+## TabBar (iOS 26 Liquid Glass — floating, not edge-to-edge)
+
+iOS 26 tab bars are a **floating glass capsule inset from the screen edges**, not a full-width bar
+sitting flush on the home-indicator safe area. Draw it as its own rounded, shadowed element with
+margin on all three open sides:
 
 ```html
 <div style="
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 83px;            /* 49pt + 34pt home indicator safe area */
-  padding-bottom: 34px;
-  background: rgba(255,255,255,0.95);
-  backdrop-filter: blur(20px);
-  border-top: 0.5px solid var(--color-separator);
+  left: 16px;
+  right: 16px;
+  bottom: 16px;             /* floats above the home indicator, doesn't sit on it */
+  height: 56px;
+  border-radius: 28px;      /* capsule: half of height */
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(24px) saturate(1.6);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
   display: flex;
 ">
   <div class="tab-item active">...</div>
@@ -226,7 +239,6 @@ These are the canonical iOS values. Drop them into the HTML as CSS variables and
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding-top: 6px;
   color: var(--color-system-gray);
   font-size: 10px;
 }
@@ -234,6 +246,9 @@ These are the canonical iOS values. Drop them into the HTML as CSS variables and
 .tab-item svg { width: 25px; height: 25px; margin-bottom: 3px; }
 </style>
 ```
+
+A tab bar that minimizes on scroll (`.tabBarMinimizeBehavior`) can be shown as a second, smaller
+frame in the flow (a compact pill) rather than animated — this is a static mockup.
 
 ## List row (grouped style)
 

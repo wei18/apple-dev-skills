@@ -22,7 +22,7 @@ Claude Codeのsession内で実行します。
 
 ```
 /plugin marketplace add wei18/apple-dev-skills
-/plugin install apple-dev-skills@apple-dev-skills          # 27 Apple/Swift skills
+/plugin install apple-dev-skills@apple-dev-skills          # 26 Apple/Swift skills
 /plugin install collaboration-skills@apple-dev-skills      # 12 agent-collaboration skills
 ```
 
@@ -58,12 +58,12 @@ Claude Codeのsession内で実行します。
 
 完全な索引は以下の表を参照してください。
 
-### apple-dev-skills（27）—— Apple/Swift
+### apple-dev-skills（26）—— Apple/Swift
 
 | Skill | 一言でいうと |
 |---|---|
 | `swift6-concurrency` | Swift 6言語モード + 完全なconcurrencyチェック；デフォルトでSendable |
-| `apple-platform-targets` | デフォルトはiOS 18 / macOS 15、Xcode 16+；latest-OS-only APIのためだけに26へ引き上げる |
+| `apple-platform-targets` | デフォルトはiOS 26 / macOS 26、Xcode 26.x；既存ユーザーが旧バージョンの場合のみ18 / 15へ下げる |
 | `swiftpm-modularization` | 単一Package、マルチtarget、薄いApp、DI composition root、テストは1対1 |
 | `swift-testing-baseline` | swift-testing + pointfreeco snapshot；protocol fake；厳格/寛容なsnapshotゲート |
 | `xcode-cloud-single-track-ci` | シングルトラックのXcode Cloud；PR / Main / Release / Periodic；merge前のPR CI |
@@ -71,7 +71,7 @@ Claude Codeのsession内で実行します。
 | `mise-tool-management` | miseでCLIツールのバージョンを固定（swiftlint、xcbeautify…）——ローカル開発とCIで同じバージョンを使う |
 | `oslog-logger-defaults` | デフォルトのlogging設定：Apple純正の`os.Logger`、サードパーティ不使用、opt-inしない限りログ値はprivate |
 | `apple-three-piece-analytics` | App Store Connect (ASC) Analytics + MetricKit + Game Center；サードパーティトラッキング不使用；PrivacyInfoは必須 |
-| `telemetry-facade-pattern` | logging呼び出しは1つ、OSLog / MetricKit / Game Centerへルーティング——呼び出し側を変えずに送り先を差し替えられる |
+| `telemetry-facade-pattern` | `observe(event)` 呼び出し1つをOSLog / tracking / Game Centerの各sinkへファンアウト。MetricKitのpayloadは逆にイベントとして流し込む——呼び出し側を変えずにsinkを差し替えられる |
 | `ai-translated-localization` | デフォルトで7言語；AI翻訳フロー；`Localizable.xcstrings`；網羅性ゲート |
 | `ios-accessibility-engineering` | SwiftUIとUIKitにおけるVoiceOver / Dynamic Type / タップ領域 / Reduce Motion；WCAG 2.2 |
 | `swift-dependency-injection` | テストのためにサービスを差し替え可能にする——protocol注入 + composition root（environment vs constructor、`@TaskLocal`、Sendable） |
@@ -84,7 +84,6 @@ Claude Codeのsession内で実行します。
 | `asc-api-automation` | `.p8`からES256 JWTを生成 + curlでASC REST APIを叩く——TestFlight、metadata、審査提出、レポート；fastlane不使用 |
 | `swiftui-interaction-footguns` | 純粋なコードレビューでは見逃されがちな既知のSwiftUIインタラクションバグ |
 | `swiftui-navigation-architecture` | SwiftUI向けの型付きルートナビゲーション——`@Observable`router一つ、`NavigationStack`、ディープリンク、macOSフォールバックも対応済み |
-| `app-icon-rasterize` | `qlmanage`で1024のSVGアイコンをasset catalog用PNGにラスタライズ——Homebrew不要 |
 | `ios-design-mockup` | specから単一HTMLファイルのiOSデザインモックアップを生成——iPhoneフレーム + トークン |
 | `interactive-simulator-ux-audit` | `idb`（tap/describe/screenshot）で起動中のSimulatorを操作し、スナップショットでは見つからないナビゲーション／モーダル／safe-areaのバグを検出 |
 | `host-driven-xcuitest-e2e` | Tuist経由でアプリを起動しXCUITest E2Eを実行——専用scheme配線 + macOSウィンドウ座標でのクリック操作 |
@@ -116,13 +115,13 @@ Claude Codeのsession内で実行します。
 再審査するわけではないため、外部プラグインの範囲やライセンスは掲載後に変わることがあります
 （`caveman`はすでに変わっています）。外部プラグインは幅広い**リファレンス**です——「これが
 APIです、Xはこう作ります」。ファーストパーティのスキルはより狭く、トピックごとに立場のある
-デフォルト値が一つだけあります（iOS 18を下限に、単一Package、swift-testing + snapshot、
+デフォルト値が一つだけあります（iOS 26を下限に、単一Package、swift-testing + snapshot、
 OSLogのみ、避けるべき既知の実行時バグ）。トピックが重なる箇所でも、両者は重複ではなく、
 答える詳細度のレベルが違うだけです。
 
 | Plugin | Author | Covers |
 |---|---|---|
-| [`apple-skills`](https://github.com/Prisma-Labs-Dev/apple-skills) | Prisma Labs (vabole), MIT | 幅広いAppleフレームワーク——SwiftUI、SwiftData、App Intents、WidgetKit、StoreKit、HealthKit… |
+| [`apple-skills`](https://github.com/Prisma-Labs-Dev/apple-skills) | Prisma Labs (vabole), MIT | 幅広いAppleフレームワーク——SwiftUI、SwiftData、App Intents、WidgetKit、StoreKit、HealthKit……に加え、SwiftUIパフォーマンス監査ガイド（コードファースト、view-update要因）も収録。`ios-performance-engineering` のInstruments / MetricKit計測と相補的 |
 | [`swiftui-expert`](https://github.com/AvdLee/SwiftUI-Agent-Skill) | Antoine van der Lee (MIT) | SwiftUIパターン、Swift Charts、Liquid Glass、Instrumentsツールチェーン |
 | [`swiftui-pro`](https://github.com/twostraws/SwiftUI-Agent-Skill) | Paul Hudson (MIT) | SwiftUIの落とし穴、非推奨APIのウォッチリスト、iOS 26 / Liquid Glass |
 | [`caveman`](https://github.com/JuliusBrussee/caveman) | JuliusBrussee (MIT) | 超圧縮されたコミュニケーションモード——トークンを約75%削減（汎用的なagentの振る舞い） |
@@ -206,4 +205,4 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 `docs/superpowers/`にありました——現在は廃止され、git履歴として保存されています。
 `git log -- docs/`で見つけることができます。MIT——[LICENSE](LICENSE)を参照してください。
 
-<!-- src-sha: 7c20ff7b825eb59f0a020ab728e0b736f548e845 -->
+<!-- src-sha: 6ca9308d6d090b68a617b53e6b76ea1b37790148 -->

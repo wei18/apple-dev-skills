@@ -2,8 +2,12 @@
 "aqua:evilmartians/lefthook" = "1"
 
 [tasks.check]
-description = "SSOT consistency gate (two plugins, catalog, counts, zh-Hant freshness)"
-run = "python3 scripts/check-consistency.py"
+description = "SSOT consistency gate + SKILL.md format gate (two plugins, catalog, counts, zh-Hant freshness, frontmatter/format BLOCKERs)"
+run = ["python3 scripts/check-consistency.py", "python3 scripts/check-skills.py ."]
+
+[tasks.check-skills]
+description = "SKILL.md frontmatter/format gate only (official Agent Skills rules + catalog conventions); fails on any BLOCKER"
+run = "python3 scripts/check-skills.py ."
 
 [tasks.readme-zh]
 description = "Regenerate README.zh-Hant.md from README.md (needs claude on PATH)"

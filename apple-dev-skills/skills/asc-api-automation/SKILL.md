@@ -18,7 +18,7 @@ This catalog's default way to drive App Store Connect from scripts and CI: an Ap
 
 Owns: token minting, curl conventions, and the endpoint cookbook below. Does NOT own:
 
-- **Building / uploading the binary** — there is no REST endpoint for `.ipa` upload; builds arrive in ASC via Xcode Cloud (→ `xcode-cloud-single-track-ci`), Xcode Organizer, or Transporter. This skill picks up *after* the build exists in ASC.
+- **Building / uploading the binary** — there is no REST endpoint for `.ipa` upload; builds arrive in ASC via Xcode Cloud (→ `xcode-cloud-single-track-ci`), a local `xcodebuild -exportArchive` / `xcrun altool` run (→ `local-archive-export-upload`), Xcode Organizer, or Transporter. This skill picks up *after* the build exists in ASC.
 - **`.p8` key storage & leak prevention** → `build-time-secret-injection` (Layer 2 `secrets/.env`) + `apple-public-repo-security` (rotate-first SOP).
 - **What metadata will pass review** → `app-store-review-rejections`; this skill is *how* to submit, not *what*.
 
@@ -114,7 +114,7 @@ The `POST reviewSubmissions` → `POST reviewSubmissionItems` → `PATCH submitt
 
 - **App pricing must be set first.** Apple's ASC Help confirms pricing has to be configured before submission (*Set a price* / *Overview of submitting for review*, help.apple.com/app-store-connect). A pricing write endpoint does exist — `POST /v1/appPriceSchedules` ("Add a Scheduled Price Change to an App") — but it doesn't help until the Paid Apps Agreement is accepted, which is web-UI-only (see "Steps with no ASC API at all" below). Observed in practice (exact error-code string not found in Apple's published API reference): a `POST reviewSubmissions` on an app with no price configured fails with a pricing-state error. Set the price once — via the API or the web UI — before automating the rest.
 - **An empty `copyright` attribute blocks submission.** Apple's error-code family for a missing required attribute is documented on the developer forums as `ENTITY_ERROR.ATTRIBUTE.REQUIRED` for other required fields (e.g. `companyName`); the same shape is observed in practice for a blank `copyright` on the app/version resource — not confirmed against Apple's official attribute reference, so treat the exact code as observed-in-practice, not documented fact. Fix: always send a non-empty `copyright` string.
-- **A leftover non-`COMPLETE` `reviewSubmissions` blocks a new `POST`, and there is no DELETE.** Apple's API reference publishes `DELETE /v1/appStoreVersionSubmissions/{id}` only for the deprecated pre-2022 model; the current `reviewSubmissions` resource has no DELETE operation. To clear a stuck submission, `PATCH /v1/reviewSubmissions/<id>` with `attributes.state: "CANCELING"` — `CANCELING` is a documented `ReviewSubmission.Attributes.state` enum value (alongside `READY_FOR_REVIEW`, `WAITING_FOR_REVIEW`, `IN_REVIEW`, `UNRESOLVED_ISSUES`, `COMPLETING`, `COMPLETE`). During `WAITING_FOR_REVIEW`, canceling returns the version to an editable state (observed as `DEVELOPER_REJECTED`, a documented `AppVersionState` value) without leaving an Apple rejection record — this is the withdrawal recipe when a submission needs correcting before Apple starts review.
+- **A leftover non-`COMPLETE` `reviewSubmissions` blocks a new `POST`, and there is no DELETE.** Apple's API reference publishes `DELETE /v1/appStoreVersionSubmissions/{id}` only for the deprecated pre-2022 model; the current `reviewSubmissions` resource has no DELETE operation. To clear a stuck submission, `PATCH /v1/reviewSubmissions/<id>` with `{"data":{"type":"reviewSubmissions","id":"<id>","attributes":{"canceled":true}}}` — `state` is a read-only response attribute (`ReviewSubmissionUpdateRequest.Data.Attributes` accepts only `canceled` / `submitted` / `platform`); after the PATCH the `state` transitions to `CANCELING`, one of the documented `ReviewSubmission.Attributes.state` values (alongside `READY_FOR_REVIEW`, `WAITING_FOR_REVIEW`, `IN_REVIEW`, `UNRESOLVED_ISSUES`, `COMPLETING`, `COMPLETE`). During `WAITING_FOR_REVIEW`, canceling returns the version to an editable state (observed as `DEVELOPER_REJECTED`, a documented `AppVersionState` value) without leaving an Apple rejection record — this is the withdrawal recipe when a submission needs correcting before Apple starts review.
 
 ## Steps with no ASC API at all — must be clicked by a human
 
@@ -168,7 +168,7 @@ budget a manual, one-time (or rarely-repeated) click in the ASC web UI.
 1. **`iss` set to Team ID** — ASC API wants the **Issuer ID** (UUID); Team ID belongs to other Apple JWTs (e.g. APNs). Symptom: 401 `NOT_AUTHORIZED` with a well-formed token.
 2. **`exp` more than 20 minutes ahead** — token rejected outright; also watch local clock skew on `iat`.
 3. **openssl-signed tokens failing** — `openssl dgst` emits a DER-encoded signature; JWT ES256 requires the raw 64-byte r‖s form. CryptoKit's `rawRepresentation` is already correct.
-4. **Uploading the binary via REST** — no such endpoint exists; route builds through Xcode Cloud / Organizer / Transporter.
+4. **Uploading the binary via REST** — no such endpoint exists; route builds through Xcode Cloud, `local-archive-export-upload`, Organizer, or Transporter.
 5. **Ignoring pagination** — the default page size silently truncates; always `limit=200` + follow `links.next`.
 6. **Parsing `salesReports` as JSON** — it's a gzipped TSV file.
 7. **Tight-polling build processing or analytics** without reading `X-Rate-Limit` — 429 locks out every consumer of the key.
@@ -190,6 +190,7 @@ budget a manual, one-time (or rarely-repeated) click in the ASC web UI.
 ## Related skills
 
 - `xcode-cloud-single-track-ci` — build & upload side; this skill starts after the build exists in ASC
+- `local-archive-export-upload` — the local `xcodebuild -exportArchive` / `altool` upload path; this skill starts after the build exists in ASC
 - `build-time-secret-injection` — where `ASC_KEY_ID` / `ASC_ISSUER_ID` / the `.p8` live (Layer 2 `secrets/.env`)
 - `apple-public-repo-security` — `.p8` leak prevention and the rotate-first SOP
 - `app-store-review-rejections` — *what* to submit so review passes; this skill is *how* to submit

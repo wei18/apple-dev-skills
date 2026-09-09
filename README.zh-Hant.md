@@ -18,7 +18,7 @@ apple-dev-skills 是一個 **marketplace**，服務對象是正在把一個點�
 
 ```
 /plugin marketplace add wei18/apple-dev-skills
-/plugin install apple-dev-skills@apple-dev-skills          # 27 Apple/Swift skills
+/plugin install apple-dev-skills@apple-dev-skills          # 26 Apple/Swift skills
 /plugin install collaboration-skills@apple-dev-skills      # 12 agent-collaboration skills
 ```
 
@@ -51,12 +51,12 @@ apple-dev-skills 是一個 **marketplace**，服務對象是正在把一個點�
 
 完整索引見下方表格。
 
-### apple-dev-skills（27）—— Apple/Swift
+### apple-dev-skills（26）—— Apple/Swift
 
 | Skill | 一句話說明 |
 |---|---|
 | `swift6-concurrency` | Swift 6 語言模式 + 完整 concurrency 檢查；預設 Sendable |
-| `apple-platform-targets` | 預設 iOS 18 / macOS 15、Xcode 16+；只有為了 latest-OS-only API 才升到 26 |
+| `apple-platform-targets` | 預設 iOS 26 / macOS 26、Xcode 26.x；只有既有使用者仍在舊版時才降到 18 / 15 |
 | `swiftpm-modularization` | 單一 Package、多 target、薄 App、DI composition root、測試一對一 |
 | `swift-testing-baseline` | swift-testing + pointfreeco snapshot；protocol fake；嚴格/寬鬆 snapshot 把關 |
 | `xcode-cloud-single-track-ci` | 單軌 Xcode Cloud；PR / Main / Release / Periodic；merge 前的 PR CI |
@@ -64,7 +64,7 @@ apple-dev-skills 是一個 **marketplace**，服務對象是正在把一個點�
 | `mise-tool-management` | 用 mise 釘住 CLI 工具版本（swiftlint、xcbeautify…），讓本機開發與 CI 用同一個版本 |
 | `oslog-logger-defaults` | 預設的 logging 設定：Apple 自家 `os.Logger`，不用第三方函式庫，log 值預設 private，除非你自己 opt-in |
 | `apple-three-piece-analytics` | App Store Connect (ASC) Analytics + MetricKit + Game Center；不用第三方追蹤；PrivacyInfo 必備 |
-| `telemetry-facade-pattern` | 一次 logging 呼叫，路由到 OSLog / MetricKit / Game Center —— 換目的地不必動呼叫端 |
+| `telemetry-facade-pattern` | 一次 `observe(event)` 呼叫扇出到 OSLog / tracking / Game Center 等 sink，MetricKit payload 反向作為事件餵入 —— 換 sink 不必動呼叫端 |
 | `ai-translated-localization` | 預設 7 個語系；AI 翻譯流程；`Localizable.xcstrings`；完整度把關 |
 | `ios-accessibility-engineering` | SwiftUI 與 UIKit 的 VoiceOver / Dynamic Type / 觸控目標 / Reduce Motion；WCAG 2.2 |
 | `swift-dependency-injection` | 讓服務可以為了測試替換 —— protocol 注入 + composition root（environment vs constructor、`@TaskLocal`、Sendable） |
@@ -77,7 +77,6 @@ apple-dev-skills 是一個 **marketplace**，服務對象是正在把一個點�
 | `asc-api-automation` | 用 `.p8` 產 ES256 JWT + curl 打 ASC REST API —— TestFlight、metadata、送審、報表；不用 fastlane |
 | `swiftui-interaction-footguns` | 純程式碼審查抓不到的已知 SwiftUI 互動 bug |
 | `swiftui-navigation-architecture` | SwiftUI 的型別化路由導航 —— 一個 `@Observable` router、`NavigationStack`、deep link、處理好 macOS 退路 |
-| `app-icon-rasterize` | 以 `qlmanage` 把 1024 SVG 圖示點陣化成 asset catalog PNG —— 免 Homebrew |
 | `ios-design-mockup` | 從 spec 產出單檔 HTML iOS 設計 mockup —— iPhone 外框 + tokens |
 | `interactive-simulator-ux-audit` | 用 `idb`（tap/describe/screenshot）驅動已開機的 Simulator，抓 snapshot 抓不到的導航／modal／safe-area bug |
 | `host-driven-xcuitest-e2e` | 透過 Tuist 啟動 App 跑 XCUITest E2E —— 專用 scheme 接線 + macOS 視窗座標點擊驅動 |
@@ -106,13 +105,13 @@ apple-dev-skills 是一個 **marketplace**，服務對象是正在把一個點�
 **彙整而非佔為己有**：只列出 MIT 相容、不重複的 plugin，且只為真正的空缺而收 —— 這道檢查發生
 在收錄當下，不是每次上游 commit 都重審，因此外部 plugin 的範圍與授權在收錄後仍可能變動
 （`caveman` 就已經變過）。外部 plugin 是廣度型的**參考資料** —— 「這是 API，這是怎麼做 X 的
-方法」。第一方技能比較窄：每個主題一個帶立場的預設值（iOS 18 是底線、單一 Package、
+方法」。第一方技能比較窄：每個主題一個帶立場的預設值（iOS 26 是底線、單一 Package、
 swift-testing + snapshot、只用 OSLog、已知的執行期 bug 要避開）。主題重疊處，兩者不是重複，
 而是回答的細節層級不同。
 
 | Plugin | 作者 | 涵蓋範圍 |
 |---|---|---|
-| [`apple-skills`](https://github.com/Prisma-Labs-Dev/apple-skills) | Prisma Labs (vabole), MIT | 廣泛的 Apple 框架 —— SwiftUI、SwiftData、App Intents、WidgetKit、StoreKit、HealthKit… |
+| [`apple-skills`](https://github.com/Prisma-Labs-Dev/apple-skills) | Prisma Labs (vabole), MIT | 廣泛的 Apple 框架 —— SwiftUI、SwiftData、App Intents、WidgetKit、StoreKit、HealthKit……以及一份 SwiftUI 效能稽核指南（程式碼優先、view-update 成因），與 `ios-performance-engineering` 的 Instruments / MetricKit 量測互補 |
 | [`swiftui-expert`](https://github.com/AvdLee/SwiftUI-Agent-Skill) | Antoine van der Lee (MIT) | SwiftUI 模式、Swift Charts、Liquid Glass、Instruments 工具鏈 |
 | [`swiftui-pro`](https://github.com/twostraws/SwiftUI-Agent-Skill) | Paul Hudson (MIT) | SwiftUI 陷阱、deprecated API 觀察清單、iOS 26 / Liquid Glass |
 | [`caveman`](https://github.com/JuliusBrussee/caveman) | JuliusBrussee (MIT) | 極度壓縮的溝通模式 —— 省下約 75% token（通用 agent 行為） |
@@ -186,4 +185,4 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 此處僅以引用方式呈現。催生本 repo 雙 plugin 結構的設計 spec 與計畫原本放在 `docs/superpowers/`
 —— 已退役、改由 git 歷史保存；用 `git log -- docs/` 可以找回。MIT —— 見 [LICENSE](LICENSE)。
 
-<!-- src-sha: 7c20ff7b825eb59f0a020ab728e0b736f548e845 -->
+<!-- src-sha: 6ca9308d6d090b68a617b53e6b76ea1b37790148 -->
