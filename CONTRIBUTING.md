@@ -12,7 +12,11 @@ mise install && lefthook install
 
 ## Tasks (always via mise — never call the scripts directly)
 
-- `mise run check` — SSOT consistency gate (run before every PR; CI runs the same).
+- `mise run check` — SSOT consistency gate (run before every PR; CI runs the same). Also runs
+  `mise run check-skills` (`scripts/check-skills.py`), which checks every `SKILL.md` against the
+  official Agent Skills / Claude Code frontmatter rules (`name`/`description` limits, known
+  frontmatter keys, `context: fork` requiring `agent:`) plus this catalog's own conventions
+  (section matrix, `references/` pointers, cross-plugin refs); fails the gate on any BLOCKER.
 - `mise run readme-zh` — regenerate `README.zh-Hant.md` (Catalog heading `## 目錄`) from
   `README.md` (needs `claude` on PATH; auto-fires in pre-commit when `README.md` changes).
 - `mise run readme-zh-hans` — same, for `README.zh-Hans.md` (Catalog heading `## 目录`).
