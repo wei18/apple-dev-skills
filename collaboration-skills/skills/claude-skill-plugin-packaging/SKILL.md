@@ -133,7 +133,7 @@ start with `./`), `github` (`repo`,`ref?`,`sha?`), `url` (git URL), `git-subdir`
 
 - **Bare submodule of skills ≠ discovered** (depth-1 rule). Always pair with a plugin manifest + marketplace registration.
 - **`@skills-dir` auto-load** (a plugin folder under `.claude/skills/` loading without registration) is documented but not reliably in use — don't depend on it; register a marketplace.
-- **`git commit -a` skips new files** — `plugin.json`/`marketplace.json` are new; `-a` will silently omit them. Use explicit `git add` and verify with `git show --stat`.
+- **`git commit -a` skips new files** — `plugin.json`/`marketplace.json` are new; `-a` will silently omit them. Use explicit `git add` and verify with `git show --stat --summary` (plain `--stat` doesn't print the `create mode` lines new files need).
 - **Marketplace state is per-user** (`~/.claude/plugins/known_marketplaces.json`), but the **committed project `.claude/settings.json` declaration** is what makes it reproducible for everyone on trust.
 - **Token cost**: every enabled skill's description is always-on context. ~25 skills ≈ a few thousand tokens per session. Keep the set curated.
 - **Relative marketplace paths** only resolve when the marketplace is a git repo (a submodule qualifies); a direct-URL marketplace can't resolve relative plugin sources.
