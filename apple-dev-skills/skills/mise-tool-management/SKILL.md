@@ -40,7 +40,8 @@ xcbeautify = "1"
 # `swift = "system"` entry: mise deprecated @system tool versions
 # ("use MISE_DISABLE_TOOLS instead"; set that env var if you need to
 # suppress a swift entry inherited from a parent .mise.toml).
-# Xcode version can also be managed via a mise plugin if you need to lock it
+# Xcode is NOT pinned here; the toolchain SSOT is README / foundations.md +
+# the Xcode Cloud workflow setting. A mise Xcode plugin is optional.
 ```
 
 ## Deviation considerations

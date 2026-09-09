@@ -85,13 +85,13 @@ This gives the user a checklist for review and a clear handoff if they want to i
 
 These come from Apple's Human Interface Guidelines. The design must look unmistakably iOS, not generic web.
 
-- **Device frame**: iPhone 14 Pro / 15 Pro proportions — 393 × 852 pt, 47.33pt corner radius
+- **Device frame**: iPhone 17 Pro proportions — 402 × 874 pt, 47.33pt corner radius
 - **Always draw**: Dynamic Island (pill shape, centered, ~125 × 37 pt), status bar (time, signal, wifi, battery), home indicator (bottom)
 - **Default to Light Mode** unless the spec calls for dark
 - **Font**: SF Pro via system stack `-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, sans-serif`
-- **Standard iOS chrome**:
-  - NavBar: 44pt tall, large title style (34pt bold) or inline title (17pt semibold)
-  - TabBar: 49pt tall + safe area
+- **Standard iOS chrome (iOS 26 Liquid Glass)**:
+  - NavBar: 44pt tall, large title style (34pt bold) or inline title (17pt semibold), glass (translucent + blurred) background
+  - TabBar: floating Liquid Glass capsule inset from the bottom edge, not an edge-to-edge opaque bar — see `references/design-tokens.md`
   - List rows: minimum 44pt tall, separator inset 16pt from left
   - Touch targets: never smaller than 44 × 44 pt
 - **Colors**: use semantic system colors (label, secondaryLabel, systemBackground, systemGroupedBackground, separator, tintColor). See `references/design-tokens.md`.

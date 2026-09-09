@@ -89,7 +89,7 @@ pixels (above) is the only viable content gate.
 
 ### CI environment lock
 
-- CI locks the Xcode version to match the local `.mise.toml`.
+- CI's Xcode version matches the toolchain recorded in README / `foundations.md` (enforced by the Xcode Cloud workflow setting — `xcode-cloud-single-track-ci`).
 - When bumping Xcode, open a dedicated PR to refresh snapshot baselines.
 - swift-testing parallelism is on by default; shared fakes need the `.serialized` trait to avoid races.
 
@@ -123,5 +123,5 @@ pixels (above) is the only viable content gate.
 
 - `swiftpm-modularization`: one-to-one test target layout and shared `<Project>KitTesting`.
 - `xcode-cloud-single-track-ci`: CI Xcode lock and when PR CI runs tests.
-- `mise-tool-management`: Xcode version managed by mise.
+- `mise-tool-management`: CLI tools the test run shells out to (xcbeautify …) are pinned via mise; Xcode itself is not.
 - `cloudkit-schema-source-of-truth`: this skill's "unentitled runner" section is the seam that keeps live CloudKit/Game Center access — and the schema SSOT concerns it gates — out of the unentitled SwiftPM test run; use its test-doubles instead of a live container.

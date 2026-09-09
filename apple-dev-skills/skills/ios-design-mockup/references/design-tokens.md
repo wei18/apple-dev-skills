@@ -176,13 +176,14 @@ These are the canonical iOS values. Drop them into the HTML as CSS variables and
 ">Delete</button>
 ```
 
-## NavBar
+## NavBar (iOS 26 Liquid Glass)
 
 ```html
 <!-- Large title style -->
 <div style="
   padding: 8px 16px 16px;
-  background: var(--color-bg);
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: blur(20px) saturate(1.4);
 ">
   <div style="font-size: 34px; font-weight: 700;">Title</div>
 </div>
@@ -194,7 +195,8 @@ These are the canonical iOS values. Drop them into the HTML as CSS variables and
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   padding: 0 16px;
-  background: var(--color-bg);
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: blur(20px) saturate(1.4);
   border-bottom: 0.5px solid var(--color-separator);
 ">
   <span style="color: var(--color-tint); font-size: 17px;">‹ Back</span>
@@ -203,19 +205,27 @@ These are the canonical iOS values. Drop them into the HTML as CSS variables and
 </div>
 ```
 
-## TabBar
+Liquid Glass toolbars are translucent and blur/saturate whatever scrolls beneath them — they are
+not an opaque white bar. Keep the `border-bottom` hairline; it is still how Liquid Glass separates
+chrome from content.
+
+## TabBar (iOS 26 Liquid Glass — floating, not edge-to-edge)
+
+iOS 26 tab bars are a **floating glass capsule inset from the screen edges**, not a full-width bar
+sitting flush on the home-indicator safe area. Draw it as its own rounded, shadowed element with
+margin on all three open sides:
 
 ```html
 <div style="
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 83px;            /* 49pt + 34pt home indicator safe area */
-  padding-bottom: 34px;
-  background: rgba(255,255,255,0.95);
-  backdrop-filter: blur(20px);
-  border-top: 0.5px solid var(--color-separator);
+  left: 16px;
+  right: 16px;
+  bottom: 16px;             /* floats above the home indicator, doesn't sit on it */
+  height: 56px;
+  border-radius: 28px;      /* capsule: half of height */
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(24px) saturate(1.6);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
   display: flex;
 ">
   <div class="tab-item active">...</div>
@@ -229,7 +239,6 @@ These are the canonical iOS values. Drop them into the HTML as CSS variables and
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding-top: 6px;
   color: var(--color-system-gray);
   font-size: 10px;
 }
@@ -237,6 +246,9 @@ These are the canonical iOS values. Drop them into the HTML as CSS variables and
 .tab-item svg { width: 25px; height: 25px; margin-bottom: 3px; }
 </style>
 ```
+
+A tab bar that minimizes on scroll (`.tabBarMinimizeBehavior`) can be shown as a second, smaller
+frame in the flow (a compact pill) rather than animated — this is a static mockup.
 
 ## List row (grouped style)
 

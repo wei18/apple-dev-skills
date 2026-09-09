@@ -33,7 +33,7 @@ description: Default CI strategy for solo / small-team Apple-platform projects â
 
 ### Environment lock
 
-- Xcode version is locked to match `.mise.toml` on the local machine.
+- Xcode version in the workflow matches the README / `foundations.md` toolchain line.
 - When bumping Xcode, open a dedicated PR to refresh snapshot baselines.
 - **Xcode Cloud's build environment does not include mise** â€” Apple documents it as including only Homebrew among third-party tools. Commit a bootstrapped `bin/mise` wrapper (`mise generate bootstrap -l -w bin/mise`, from `mise-tool-management`) and call every tool inside `ci_scripts/` through it (`./bin/mise trust`, `./bin/mise install`, `./bin/mise exec -- <tool> <args>`) instead of a bare `mise` invocation, which fails with "command not found".
 - Test environment disables iCloud / Game Center sign-in; all tests go through protocol fakes.
@@ -91,7 +91,7 @@ When two PRs each pass pre-merge and merge back to back, **their combined result
 
 ## Verification checklist
 
-- The Xcode version in the Xcode Cloud workflow matches `.mise.toml`.
+- The Xcode version in the Xcode Cloud workflow matches the README / `foundations.md` toolchain line.
 - PR CI has "Merge with base branch before building" enabled.
 - `bin/mise` is committed; `ci_post_clone.sh` starts with `./bin/mise trust` then `./bin/mise install`, not a bare `mise` call.
 - Periodic workflow trigger time is explicit (UTC recommended).

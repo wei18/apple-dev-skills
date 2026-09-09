@@ -76,14 +76,14 @@ Each screen frame is a `.phone` element. Give it an `id` so arrows can reference
 
 ```css
 .phone {
-  width: 393px;
+  width: 402px;
   flex-shrink: 0;
 }
 
 .phone-shell {
   position: relative;
-  width: 393px;
-  height: 852px;
+  width: 402px;
+  height: 874px;
   background: white;
   border-radius: 47.33px;
   box-shadow:
@@ -221,11 +221,11 @@ Include this legend in the header strip so viewers can decode the arrows.
 
 ### Computing arrow coordinates
 
-If frames are in a flex row with `gap: 80px` and each frame is 393px wide starting at canvas padding 40px:
+If frames are in a flex row with `gap: 80px` and each frame is 402px wide starting at canvas padding 40px:
 
-- Frame N's left edge = `40 + N * (393 + 80)`
-- Frame N's right edge = frame N left + 393
-- Vertical center = frame top + 426 (half of 852)
+- Frame N's left edge = `40 + N * (402 + 80)`
+- Frame N's right edge = frame N left + 402
+- Vertical center = frame top + 437 (half of 874)
 
 For an arrow from frame N's right edge to frame N+1's left edge at the same vertical center, the path is a horizontal line or gentle S-curve. Use a cubic Bezier for visual softness:
 

@@ -66,12 +66,11 @@ and hit targets are cheaper to build in than to retrofit.
 
 ## Verification checklist when locking targets
 
-- `Package.swift` `platforms:` matches every App target's `IPHONEOS_DEPLOYMENT_TARGET` / `MACOSX_DEPLOYMENT_TARGET`.
-- Xcode version is locked via `.mise.toml` or the project README.
-- CI (e.g. Xcode Cloud) Xcode version matches the local lock.
+- `Package.swift` `platforms:` matches every App target's deployment target build setting.
+- The Xcode version is recorded in the README / `foundations.md` toolchain line and matches the Xcode Cloud workflow's Xcode setting (`.mise.toml` pins CLI tools, not Xcode — see `mise-tool-management`).
 
 ## Related skills
 
 - `swift6-concurrency`: language mode is independent of the deployment floor on Xcode 26; read it next in the kickoff order.
 - `xcode-cloud-single-track-ci`: CI Xcode version lock.
-- `mise-tool-management`: local Xcode-select / toolchain version management.
+- `mise-tool-management`: pins CLI tools, not Xcode itself.
