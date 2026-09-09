@@ -22,7 +22,7 @@ Claude Codeのsession内で実行します。
 
 ```
 /plugin marketplace add wei18/apple-dev-skills
-/plugin install apple-dev-skills@apple-dev-skills          # 27 Apple/Swift skills
+/plugin install apple-dev-skills@apple-dev-skills          # 26 Apple/Swift skills
 /plugin install collaboration-skills@apple-dev-skills      # 12 agent-collaboration skills
 ```
 
@@ -58,7 +58,7 @@ Claude Codeのsession内で実行します。
 
 完全な索引は以下の表を参照してください。
 
-### apple-dev-skills（27）—— Apple/Swift
+### apple-dev-skills（26）—— Apple/Swift
 
 | Skill | 一言でいうと |
 |---|---|
@@ -84,7 +84,6 @@ Claude Codeのsession内で実行します。
 | `asc-api-automation` | `.p8`からES256 JWTを生成 + curlでASC REST APIを叩く——TestFlight、metadata、審査提出、レポート；fastlane不使用 |
 | `swiftui-interaction-footguns` | 純粋なコードレビューでは見逃されがちな既知のSwiftUIインタラクションバグ |
 | `swiftui-navigation-architecture` | SwiftUI向けの型付きルートナビゲーション——`@Observable`router一つ、`NavigationStack`、ディープリンク、macOSフォールバックも対応済み |
-| `app-icon-rasterize` | `qlmanage`で1024のSVGアイコンをasset catalog用PNGにラスタライズ——Homebrew不要 |
 | `ios-design-mockup` | specから単一HTMLファイルのiOSデザインモックアップを生成——iPhoneフレーム + トークン |
 | `interactive-simulator-ux-audit` | `idb`（tap/describe/screenshot）で起動中のSimulatorを操作し、スナップショットでは見つからないナビゲーション／モーダル／safe-areaのバグを検出 |
 | `host-driven-xcuitest-e2e` | Tuist経由でアプリを起動しXCUITest E2Eを実行——専用scheme配線 + macOSウィンドウ座標でのクリック操作 |
@@ -206,4 +205,4 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 `docs/superpowers/`にありました——現在は廃止され、git履歴として保存されています。
 `git log -- docs/`で見つけることができます。MIT——[LICENSE](LICENSE)を参照してください。
 
-<!-- src-sha: 7c20ff7b825eb59f0a020ab728e0b736f548e845 -->
+<!-- src-sha: fb0802e41f1d1d9e3a38bb0d345214e088e5aede -->

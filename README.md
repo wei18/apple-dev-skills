@@ -21,7 +21,7 @@ Inside a Claude Code session, run:
 
 ```
 /plugin marketplace add wei18/apple-dev-skills
-/plugin install apple-dev-skills@apple-dev-skills          # 27 Apple/Swift skills
+/plugin install apple-dev-skills@apple-dev-skills          # 26 Apple/Swift skills
 /plugin install collaboration-skills@apple-dev-skills      # 12 agent-collaboration skills
 ```
 
@@ -54,7 +54,7 @@ what is installed and which plugin each skill came from.
 
 Full index in the tables below.
 
-### apple-dev-skills (27) — Apple/Swift
+### apple-dev-skills (26) — Apple/Swift
 
 | Skill | One-liner |
 |---|---|
@@ -80,7 +80,6 @@ Full index in the tables below.
 | `asc-api-automation` | ES256 JWT from the `.p8` + curl against the ASC REST API — TestFlight, metadata, submission, reports; no fastlane |
 | `swiftui-interaction-footguns` | Known SwiftUI interaction bugs that slip past pure-code review |
 | `swiftui-navigation-architecture` | Typed-route navigation for SwiftUI — one `@Observable` router, `NavigationStack`, deep links, macOS fallbacks handled |
-| `app-icon-rasterize` | Rasterize a 1024 SVG icon to asset-catalog PNG via `qlmanage` — no Homebrew |
 | `ios-design-mockup` | Single-file HTML iOS design mockup from a spec — iPhone frames + tokens |
 | `interactive-simulator-ux-audit` | Drive a booted Simulator with `idb` (tap/describe/screenshot) to catch nav/modal/safe-area bugs snapshots can't |
 | `host-driven-xcuitest-e2e` | Launch-the-app XCUITest E2E via Tuist — dedicated scheme wiring + macOS window-frame click driving |

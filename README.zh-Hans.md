@@ -18,7 +18,7 @@ apple-dev-skills 是一个 **marketplace**，服务对象是正在把一个点�
 
 ```
 /plugin marketplace add wei18/apple-dev-skills
-/plugin install apple-dev-skills@apple-dev-skills          # 27 Apple/Swift skills
+/plugin install apple-dev-skills@apple-dev-skills          # 26 Apple/Swift skills
 /plugin install collaboration-skills@apple-dev-skills      # 12 agent-collaboration skills
 ```
 
@@ -51,7 +51,7 @@ apple-dev-skills 是一个 **marketplace**，服务对象是正在把一个点�
 
 完整索引见下方表格。
 
-### apple-dev-skills（27）—— Apple/Swift
+### apple-dev-skills（26）—— Apple/Swift
 
 | Skill | 一句话说明 |
 |---|---|
@@ -77,7 +77,6 @@ apple-dev-skills 是一个 **marketplace**，服务对象是正在把一个点�
 | `asc-api-automation` | 用 `.p8` 生成 ES256 JWT + curl 打 ASC REST API —— TestFlight、metadata、送审、报表；不用 fastlane |
 | `swiftui-interaction-footguns` | 纯代码审查抓不到的已知 SwiftUI 互动 bug |
 | `swiftui-navigation-architecture` | SwiftUI 的类型化路由导航 —— 一个 `@Observable` router、`NavigationStack`、deep link、处理好 macOS 退路 |
-| `app-icon-rasterize` | 以 `qlmanage` 把 1024 SVG 图标栅格化成 asset catalog PNG —— 免 Homebrew |
 | `ios-design-mockup` | 从 spec 生成单文件 HTML iOS 设计 mockup —— iPhone 外框 + tokens |
 | `interactive-simulator-ux-audit` | 用 `idb`（tap/describe/screenshot）驱动已启动的 Simulator，抓 snapshot 抓不到的导航／modal／safe-area bug |
 | `host-driven-xcuitest-e2e` | 通过 Tuist 启动 App 跑 XCUITest E2E —— 专用 scheme 接线 + macOS 窗口坐标点击驱动 |
@@ -186,4 +185,4 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 此处仅以引用方式呈现。催生本 repo 双 plugin 结构的设计 spec 与计划原本放在 `docs/superpowers/`
 —— 已退役、改由 git 历史保存；用 `git log -- docs/` 可以找回。MIT —— 见 [LICENSE](LICENSE)。
 
-<!-- src-sha: 7c20ff7b825eb59f0a020ab728e0b736f548e845 -->
+<!-- src-sha: fb0802e41f1d1d9e3a38bb0d345214e088e5aede -->
