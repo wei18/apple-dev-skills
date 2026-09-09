@@ -17,7 +17,7 @@ description: Read a Claude Code session JSONL log and produce a clean timeline-s
 ### Locating the session file
 
 - Default location: `~/.claude/projects/<encoded-project-path>/<sessionId>.jsonl`
-- `<encoded-project-path>`: replace `/` in the absolute path with `-`, e.g. `/Users/alice/GitHub/MyOrg/my-project` → `-Users-alice-GitHub-MyOrg-my-project`.
+- `<encoded-project-path>`: replace every `/` and `.` in the absolute path with `-`, e.g. `/Users/alice/GitHub/MyOrg/my-project` → `-Users-alice-GitHub-MyOrg-my-project`, and `/Users/alice/.claude-mem/observer-sessions` → `-Users-alice--claude-mem-observer-sessions`.
 - `<sessionId>`: a UUID-like string, either supplied by the user or inferred from the most recent mtime in the directory.
 - If the user doesn't supply one, list the files in the directory, sort by mtime, and confirm the latest one.
 
@@ -27,12 +27,11 @@ One JSON event per line; common `type` fields:
 
 | type | Content |
 |---|---|
-| `user` | User prompt (incl. system reminders) |
+| `user` | User prompt, **or** a tool-execution result — a tool result is a `user` line whose `message.content[]` contains a `{type: "tool_result", …}` block and carries a top-level `toolUseResult` field. Filter these out before summarising; they are not human input. |
 | `assistant` | Assistant response (incl. tool_use blocks) |
-| `tool_result` | Tool execution result |
-| `summary` | Session summary (if any) |
+| `system`, `attachment`, `file-history-snapshot`, … | Harness metadata (queue state, mode, cost, permission state); skip anything that is not `user`/`assistant`. There is no top-level `tool_result` or `summary` type. |
 
-Key fields: `timestamp`, `message.content`, `message.role`, `uuid`, `parentUuid`.
+Key fields: `timestamp`, `message.content`, `message.role`, `uuid`, `parentUuid`. Sub-agent transcripts live in a separate file, `<sessionId>/subagents/agent-*.jsonl`, not inline in the main log.
 
 ## Output
 
@@ -78,7 +77,7 @@ Mode: <e.g. AI Collaboration Mode (Leader/Developer)>
 ## Verification checklist
 
 - Filename format `YYYY-MM-DD_<topic-kebab>.md`, date in local timezone.
-- Contains the five main sections: Goal / Decisions / Rejected alternatives / Hand-offs / Open questions / Next session.
+- Contains the six main sections: Goal / Decisions / Rejected alternatives / Hand-offs / Open questions / Next session.
 - Entries are summaries, never verbatim copies.
 - No secrets / tokens / PII.
 - If the session spans multiple days, add a phase tag to the topic (e.g. `kickoff` / `spec-phase` / `cr-round1`).
@@ -87,7 +86,7 @@ Mode: <e.g. AI Collaboration Mode (Leader/Developer)>
 
 - **Session is too short (< 5 meaningful turns)**: a standalone log isn't necessarily warranted; append as an addendum to the previous log.
 - **Session was highly divergent**: split into multiple topic-specific logs for the same day, named `{date}_{topic-a}.md` / `{date}_{topic-b}.md`.
-- **Sub-agent internal exchanges**: usually not included in the meeting log; only record the main agent's dispatch + summary of the returned result.
+- **Sub-agent internal exchanges**: usually not included in the meeting log; only record the main agent's dispatch + summary of the returned result. They live in `<sessionId>/subagents/agent-*.jsonl`, not the main session file, so this needs no filtering step of its own.
 
 ## Related skills
 

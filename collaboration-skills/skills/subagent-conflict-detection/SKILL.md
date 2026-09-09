@@ -65,9 +65,10 @@ decided by `worktree.baseRef`:
   remote** (typically `origin/main`), not your local HEAD. Any commit you haven't pushed yet
   is invisible to the worktree. If the dispatched work depends on your in-progress local
   branch, push first, or set `worktree.baseRef: "head"` in settings.
-- **`"head"`** — branches from your local HEAD, dirty state included. Dispatching right after
-  a merge without syncing HEAD first branches from the pre-merge base (see the incident
-  below). Confirm with `git log --oneline -3` before dispatching.
+- **`"head"`** — branches from your local HEAD **commit**; uncommitted working-tree edits are
+  NOT carried over — commit first (gitignored files can be copied via `.worktreeinclude`).
+  Dispatching right after a merge without syncing HEAD first branches from the pre-merge base
+  (see the incident below). Confirm with `git log --oneline -3` before dispatching.
 
 Two fallbacks worth knowing: with no remote configured, or when `origin/HEAD` isn't cached
 locally and can't be fetched, `"fresh"` falls back to your current local HEAD. And **before

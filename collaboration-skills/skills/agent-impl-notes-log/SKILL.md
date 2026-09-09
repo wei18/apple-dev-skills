@@ -9,10 +9,6 @@ description: Maintain a running `meetings/{date}_{topic}.impl-notes.md` *during*
 
 The phase meeting log (`meetings/{date}_{topic}.md`) is summative — written after work completes. By that point, dozens of micro-decisions made mid-flight are already lost to the commit diff. An impl-notes log fills that gap: a **concurrent record** of decisions, deviations, tradeoffs, and unresolved questions, written as they happen.
 
-The user explicitly asked for this:
-
-> 在你進行工作的同時，維護一個名為 implementation-notes.md 的持續更新檔案，記錄任何我應該知道的，關於實作如何偏離或詮釋規格的事項。
-
 ## When to invoke
 
 Subagent MUST invoke this skill at the start of any dispatch matching ANY of:
@@ -21,7 +17,7 @@ Subagent MUST invoke this skill at the start of any dispatch matching ANY of:
 - Implements behavior whose spec has known ambiguity (e.g., `// UNCONFIRMED` markers, "Unconfirmed ?" prerequisites).
 - Introduces a new dependency, target, or module.
 - Refactors existing code beyond a one-line fix.
-- Any task with a `PROPOSAL_DRAFT` step in the AI Collaboration Mode workflow.
+- Any M- or L-size task under `ai-collaboration-mode` (touches ≥2 files, adds new behavior, or gets a spec/plan before code).
 
 Subagent MAY skip this skill for trivial one-line fixes, pure typo corrections, or documentation copy edits.
 

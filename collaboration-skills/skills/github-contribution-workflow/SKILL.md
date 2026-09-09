@@ -48,11 +48,11 @@ Claude Code's [Hooks](https://code.claude.com/docs/en/hooks) can intercept and b
 
 ## Conventions
 
-- **Branch names** use Conventional prefixes: `feat/ fix/ chore/ docs/ ci/ refactor/ test/`.
+- **Branch names** use Conventional-Commits-style type prefixes (house convention, not a named spec): `feat/ fix/ chore/ docs/ ci/ refactor/ test/`.
 - **PR titles** follow Conventional Commits (some repos enforce this with a CI gate — e.g. a "Validate PR title" check; a non-conforming title fails the PR).
 - **Commit trailer**: end commit messages with the agreed `Co-Authored-By:` trailer. **PR body**: end with the 🤖 footer.
 - **Merge**: `--squash --delete-branch`. **Never merge unless `mergeStateStatus` is `CLEAN`** — `gh pr checks` itself never prints `CLEAN`; that's a `gh pr view --json mergeStateStatus` value, not a `gh pr checks` state. Use `gh pr checks <n> --watch` to wait for checks (exit `0` = all pass, exit `8` = still pending, any other non-zero = a check failed). `BLOCKED` covers more than pending checks — it also covers a failed required check, a missing review, or an unresolved conversation — so don't poll it indefinitely assuming it will clear on its own; also watch for `UNSTABLE` (a non-required check failing) and `BEHIND` (branch needs updating against base).
-- **Secrets**: `gh secret set <NAME>` **without `--body`** — the interactive prompt keeps the value out of shell history. Never `gh secret set X --body "$TOKEN"`. Verify presence (not value) with `gh secret list`.
+- **Secrets**: `gh secret set <NAME>` **without `--body`** — a literal `--body "$TOKEN"` exposes the value in process args (`ps`) and in this harness's Bash-tool transcript, and if typed literally (not as `$TOKEN`) also lands in shell history. Use the interactive prompt or `gh secret set NAME < file`. Verify presence (not value) with `gh secret list`.
 - **Submodule pin bump**: set the gitlink surgically with
   `git update-index --cacheinfo 160000,<commit-sha>,<submodule-path>` — no submodule checkout needed (works in a fresh worktree). Confirm the target SHA is pushed/tag-reachable on the submodule's remote first (`git ls-remote --tags <url> <tag>`).
 - **`--no-verify`**: allowed ONLY for a commit with **no code and no secrets** (a submodule-pin bump, a `.gitmodules`/config-only change) when the repo's pre-commit gate is heavy and times out. `git commit --no-verify` skips both the pre-commit **and** commit-msg hooks (a commitlint-style message check is bypassed too — double-check the message format by hand); `git push --no-verify` separately skips pre-push. Never use either for code or content commits — those must pass the hooks.
@@ -68,7 +68,7 @@ protection) are owned by `apple-dev-skills:apple-public-repo-security`** — set
 ## Common Mistakes
 
 1. **Merging on a non-CLEAN `mergeStateStatus`** — assuming `BLOCKED` only ever means pending checks and polling it forever, or force-merging past a real red check. Use `gh pr checks <n> --watch` plus `mergeStateStatus`; merge only on `CLEAN`.
-2. **`gh secret set --body "$TOKEN"`** — leaks the token into shell history. Use the interactive prompt.
+2. **`gh secret set --body "$TOKEN"`** — exposes the value in process args and the tool transcript (and, if typed literally, shell history too). Use the interactive prompt or `gh secret set NAME < file`.
 3. **Non-Conventional PR title** — fails a repo's title-lint gate; the PR can't merge.
 4. **Editing a shared repo / submodule in place** — two writers clobber each other; use a worktree + PR.
 5. **`--no-verify` on a code/content commit** — bypasses the gate that protects the repo. Reserve it for no-code/no-secret commits only.
