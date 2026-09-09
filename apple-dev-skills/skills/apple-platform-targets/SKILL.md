@@ -1,6 +1,6 @@
 ---
 name: apple-platform-targets
-description: Default minimum deployment targets for Apple-platform Swift Apps and how to deviate up or down. Default is iOS 18 / macOS 15 with Xcode 16+ (first toolchain to formally support Swift 6 language mode). Invoke when starting a new Apple-platform project, writing Package.swift `platforms:` list, deciding whether to adopt Liquid Glass / latest-OS-only APIs, or when asked "what should the minimum iOS / macOS version be?".
+description: 'Default minimum deployment target for Apple-platform Swift Apps — iOS 26 / macOS 26 on the Xcode 26 toolchain (Swift 6 language mode) — and how to deviate down (iOS 18 / 17) or up. Use when starting a new Apple-platform project, writing the Package.swift `platforms:` list, deciding whether an API newer than the floor is worth bumping for or a client requirement forces dropping below it, or when asked "what should the minimum iOS / macOS version be". Entry point of the bootstrap chain; does NOT own language mode → swift6-concurrency, or module layout → swiftpm-modularization.'
 ---
 
 # Apple Platform Deployment Targets
@@ -9,7 +9,7 @@ description: Default minimum deployment targets for Apple-platform Swift Apps an
 
 - Starting a new iOS / macOS App and setting the minimum deployment version.
 - Writing the `platforms:` block in `Package.swift`.
-- Deciding whether to adopt latest-OS-only APIs (Liquid Glass `.glassEffect()`, new Observation, new SwiftData behaviour, etc.).
+- Deciding whether an API newer than the floor (next major) is worth bumping for, or whether a client / user-base requirement forces dropping below the floor.
 - User asks about minimum iOS / macOS version or whether to support the previous major version.
 
 ## Kickoff order
@@ -31,31 +31,38 @@ and hit targets are cheaper to build in than to retrofit.
 
 ## Default decisions
 
-- **iOS 18 / macOS 15** as the default minimum.
-- Toolchain: **Xcode 16+** (the first version with formal Swift 6 language mode support).
-- Do not auto-bump with each Xcode major — bumping requires an explicit decision recorded in `foundations.md`.
-- Keep `Package.swift` `platforms:` **aligned** with the App target deployment target; no skew.
+- **iOS 26 / macOS 26** as the default minimum deployment target.
+- Toolchain: **Xcode 26.x** (Swift 6.2+ compiler). Language mode is decided in `swift6-concurrency`, not here — Xcode 26 builds Swift 6 mode for any floor, so the floor is a product decision, not a toolchain one.
+- Do not auto-bump with each Xcode major — bumping requires an explicit decision recorded in `foundations.md` (`collaboration-skills:spec-phase-orchestration` layout).
+- Keep `Package.swift` `platforms: [.iOS(.v26), .macOS(.v26)]` **aligned** with every App target's `IPHONEOS_DEPLOYMENT_TARGET` / `MACOSX_DEPLOYMENT_TARGET`; no skew. `.v26` requires `// swift-tools-version: 6.2` (6.0 / 6.1 report `'v26' is unavailable`).
 
 ## Rationale
 
-- iOS 18 / macOS 15 aligns with the Swift 6 toolchain, unlocking Observation / SwiftData improvements and async sequence enhancements.
-- Locking out auto-bumps prevents blindly chasing each Xcode major and losing users who haven't upgraded.
-- For solo / small projects the user base is small, so the compatibility tax is low compared to the stability benefit.
+- iOS 26 / macOS 26 is the first OS pair with Liquid Glass: on a 26 floor the system chrome (toolbars, tab bars, sheets, `.glassEffect()`) is one design language, with no `#available` fork and no legacy-look branch to test.
+- The floor no longer buys toolchain features — Xcode 26 compiles Swift 6 mode and the Swift 6.2 concurrency additions for older floors too. What a lower floor costs is a second UI generation to maintain; what it buys is users who haven't updated.
+- Solo / small projects have no installed base to protect, and Apple's adoption curve puts the current major on the large majority of active devices within months of release, so the compatibility tax is small.
+- Locking out auto-bumps prevents blindly chasing each Xcode major (the next is iOS 27 / macOS 27) and cutting off users mid-cycle.
 
 ## Deviation considerations
 
-### Bump up to iOS 26 / macOS 26 (or newer)
+### Drop down to iOS 18 / macOS 15
 
-- **Trigger**: adopting Liquid Glass (`.glassEffect()` is iOS 26+) or other latest-OS-only APIs.
-- **Conditions**: the project has no backward-compat baggage (brand new App, no existing user base); or it's a personal / showcase project willing to cut off older versions.
-- **Cost**: lose users on older OS; TestFlight beta testers must upgrade.
-- **How to record**: explicitly note "deviating from apple-platform-targets default" in `foundations.md` with a reason.
+- **Trigger**: an existing user base still on 18 / 15; a client or reviewer requires N-1 support; TestFlight testers who cannot upgrade.
+- **Cost**: every Liquid Glass API (`.glassEffect()`, `GlassEffectContainer`, `.tabBarMinimizeBehavior`) needs `#available(iOS 26, *)` guards, and the pre-26 look of toolbars / tab bars / sheets must be snapshot-tested separately; iOS 26-only Foundation and SwiftData additions are off-limits.
+- **How to record**: note "deviating from apple-platform-targets default" in `foundations.md` with the reason and the list of guarded APIs.
 
-### Drop down to iOS 17- / macOS 14-
+### Drop down to iOS 17 / macOS 14 or lower
 
-- **Trigger**: the App needs a large pool of older-device users (education, enterprise intranet, low-end markets).
-- **Cost**: lose full Observation behaviour, SwiftData fixes, parts of Swift 6 mode checking.
-- **Advice**: explicitly record which APIs are off-limits and which behaviours need polyfills.
+- **Trigger**: education, enterprise intranet, or low-end markets with a large older-device pool.
+- **Cost**: everything above, plus loss of full Observation behaviour, SwiftData fixes, and parts of Swift 6 mode checking.
+- **Advice**: record which APIs are off-limits and which behaviours need polyfills.
+
+### Bump up to iOS 27 / macOS 27 (or newer)
+
+- **Trigger**: an API that exists only in the newest major.
+- **Conditions**: brand-new App with no user base, or a personal / showcase project willing to cut off the previous major.
+- **Cost**: TestFlight testers and App Review devices must be on the newest major; the catalog's other skills are written against the 26 baseline.
+- **How to record**: same `foundations.md` note.
 
 ## Verification checklist when locking targets
 
@@ -65,6 +72,6 @@ and hit targets are cheaper to build in than to retrofit.
 
 ## Related skills
 
-- `swift6-concurrency`: Xcode 16+ / Swift 6 mode is coupled to this skill's version choice.
+- `swift6-concurrency`: language mode is independent of the deployment floor on Xcode 26; read it next in the kickoff order.
 - `xcode-cloud-single-track-ci`: CI Xcode version lock.
 - `mise-tool-management`: local Xcode-select / toolchain version management.

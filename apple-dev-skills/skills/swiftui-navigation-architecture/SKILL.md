@@ -1,11 +1,11 @@
 ---
 name: swiftui-navigation-architecture
-description: Default navigation shape for SwiftUI Apps (iOS 18 / macOS 15, Swift 6) — value-based `NavigationStack(path:)` over a typed `Route` enum, one `@Observable @MainActor` Router in `.environment`, `navigationDestination(for:)` at the stack root (never in a lazy container), per-transition presentation semantics (push / sheet / `fullScreenCover` / popover / alert / root-swap) incl. macOS behavior (no native `fullScreenCover` → push fallback, pop-to-landing), `item:`-driven modal optionals, `.onOpenURL` deep-link funnel, `NavigationSplitView`, per-tab paths, `Codable` restoration. Invoke when wiring an App's navigation, choosing sheet vs cover vs push, adding deep links / restoration, migrating off `NavigationView`, or asked "router / coordinator in SwiftUI". Bugs → swiftui-interaction-footguns.
+description: Default navigation shape for SwiftUI Apps (iOS 26 / macOS 26, Swift 6) — value-based `NavigationStack(path:)` over a typed `Route` enum, one `@Observable @MainActor` Router in `.environment`, `navigationDestination(for:)` at the stack root (never in a lazy container), per-transition presentation semantics (push / sheet / `fullScreenCover` / popover / alert / root-swap) incl. macOS behavior (no native `fullScreenCover` → push fallback, pop-to-landing), `item:`-driven modal optionals, `.onOpenURL` deep-link funnel, `NavigationSplitView`, per-tab paths, `Codable` restoration. Invoke when wiring an App's navigation, choosing sheet vs cover vs push, adding deep links / restoration, migrating off `NavigationView`, or asked "router / coordinator in SwiftUI". Bugs → swiftui-interaction-footguns.
 ---
 
 # SwiftUI Navigation Architecture
 
-The default navigation shape for Apps on this catalog's baseline (`apple-platform-targets`: iOS 18 / macOS 15, Swift 6 language mode): navigation state is **data** — a typed route enum in one observable router — so flows are unit-testable (assert on `[Route]`), deep-linkable (URL → routes is a pure function), and restorable (routes are `Codable`).
+The default navigation shape for Apps on this catalog's baseline (`apple-platform-targets`: iOS 26 / macOS 26, Swift 6 language mode): navigation state is **data** — a typed route enum in one observable router — so flows are unit-testable (assert on `[Route]`), deep-linkable (URL → routes is a pure function), and restorable (routes are `Codable`).
 
 ## When to invoke
 
@@ -154,7 +154,7 @@ Route both entry and exit through router methods (as above) so no view ever enco
 - **Heterogeneous route types across feature packages** that genuinely can't share one enum → `NavigationPath` + its `CodableRepresentation` for restoration; you give up exhaustive matching.
 - **A 2-screen utility** → a bare `NavigationStack` without router or path is fine; adopt the shape when the second entry point appears, not speculatively.
 - **UIKit-hosted hybrids** (heavy `UIViewController` interop) → keep coordination at the UIKit layer; don't force a SwiftUI router across the hosting bridge.
-- **iOS 17 floor** → the shape works unchanged (`@Observable`, `NavigationStack` both available); below that, `ObservableObject` replaces `@Observable`.
+- **iOS 18 / macOS 15 floor** (the catalog's `apple-platform-targets` drop-down default) → the shape works unchanged (`@Observable`, `NavigationStack` both available; only Liquid Glass presentation chrome is unavailable). Below iOS 17, `ObservableObject` replaces `@Observable`.
 - **Mac Catalyst** → `fullScreenCover` *is* available there; the push/sheet fallback is for native (AppKit-based) macOS targets.
 
 ## Common Mistakes
@@ -189,5 +189,5 @@ Route both entry and exit through router methods (as above) so no view ever enco
 
 - `swiftui-interaction-footguns` — known bugs in the nav components this skill wires together
 - `swift-dependency-injection` — how destination views get their services
-- `apple-platform-targets` — the iOS 18 / macOS 15 baseline this shape assumes
+- `apple-platform-targets` — the iOS 26 / macOS 26 baseline this shape assumes
 - `ios-accessibility-engineering` — accessibility of the navigation chrome

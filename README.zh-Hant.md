@@ -56,7 +56,7 @@ apple-dev-skills 是一個 **marketplace**，服務對象是正在把一個點�
 | Skill | 一句話說明 |
 |---|---|
 | `swift6-concurrency` | Swift 6 語言模式 + 完整 concurrency 檢查；預設 Sendable |
-| `apple-platform-targets` | 預設 iOS 18 / macOS 15、Xcode 16+；只有為了 latest-OS-only API 才升到 26 |
+| `apple-platform-targets` | 預設 iOS 26 / macOS 26、Xcode 26.x；只有既有使用者仍在舊版時才降到 18 / 15 |
 | `swiftpm-modularization` | 單一 Package、多 target、薄 App、DI composition root、測試一對一 |
 | `swift-testing-baseline` | swift-testing + pointfreeco snapshot；protocol fake；嚴格/寬鬆 snapshot 把關 |
 | `xcode-cloud-single-track-ci` | 單軌 Xcode Cloud；PR / Main / Release / Periodic；merge 前的 PR CI |
@@ -105,7 +105,7 @@ apple-dev-skills 是一個 **marketplace**，服務對象是正在把一個點�
 **彙整而非佔為己有**：只列出 MIT 相容、不重複的 plugin，且只為真正的空缺而收 —— 這道檢查發生
 在收錄當下，不是每次上游 commit 都重審，因此外部 plugin 的範圍與授權在收錄後仍可能變動
 （`caveman` 就已經變過）。外部 plugin 是廣度型的**參考資料** —— 「這是 API，這是怎麼做 X 的
-方法」。第一方技能比較窄：每個主題一個帶立場的預設值（iOS 18 是底線、單一 Package、
+方法」。第一方技能比較窄：每個主題一個帶立場的預設值（iOS 26 是底線、單一 Package、
 swift-testing + snapshot、只用 OSLog、已知的執行期 bug 要避開）。主題重疊處，兩者不是重複，
 而是回答的細節層級不同。
 
@@ -185,4 +185,4 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 此處僅以引用方式呈現。催生本 repo 雙 plugin 結構的設計 spec 與計畫原本放在 `docs/superpowers/`
 —— 已退役、改由 git 歷史保存；用 `git log -- docs/` 可以找回。MIT —— 見 [LICENSE](LICENSE)。
 
-<!-- src-sha: fb0802e41f1d1d9e3a38bb0d345214e088e5aede -->
+<!-- src-sha: 21b110d4b0af1826e2b40aed5e8c695d5e2a1cb2 -->

@@ -37,5 +37,5 @@ description: Default to Swift 6 language mode with complete concurrency checking
 
 ## Related skills
 
-- `apple-platform-targets`: Xcode 16+ is the first toolchain that formally supports Swift 6 language mode; consider this alongside deployment target decisions.
+- `apple-platform-targets`: the catalog toolchain is Xcode 26; Swift 6 language mode has been available since Xcode 16, so the language-mode choice does not constrain the deployment floor.
 - `swiftpm-modularization`: `swiftLanguageModes: [.v6]` sets the default for the whole package; individual targets can opt down with `swiftSettings: [.swiftLanguageMode(.v5)]` (available since swift-tools-version 6.0) — useful when migrating a legacy dependency without blocking the rest of the package.

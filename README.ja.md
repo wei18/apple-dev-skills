@@ -63,7 +63,7 @@ Claude Codeのsession内で実行します。
 | Skill | 一言でいうと |
 |---|---|
 | `swift6-concurrency` | Swift 6言語モード + 完全なconcurrencyチェック；デフォルトでSendable |
-| `apple-platform-targets` | デフォルトはiOS 18 / macOS 15、Xcode 16+；latest-OS-only APIのためだけに26へ引き上げる |
+| `apple-platform-targets` | デフォルトはiOS 26 / macOS 26、Xcode 26.x；既存ユーザーが旧バージョンの場合のみ18 / 15へ下げる |
 | `swiftpm-modularization` | 単一Package、マルチtarget、薄いApp、DI composition root、テストは1対1 |
 | `swift-testing-baseline` | swift-testing + pointfreeco snapshot；protocol fake；厳格/寛容なsnapshotゲート |
 | `xcode-cloud-single-track-ci` | シングルトラックのXcode Cloud；PR / Main / Release / Periodic；merge前のPR CI |
@@ -115,7 +115,7 @@ Claude Codeのsession内で実行します。
 再審査するわけではないため、外部プラグインの範囲やライセンスは掲載後に変わることがあります
 （`caveman`はすでに変わっています）。外部プラグインは幅広い**リファレンス**です——「これが
 APIです、Xはこう作ります」。ファーストパーティのスキルはより狭く、トピックごとに立場のある
-デフォルト値が一つだけあります（iOS 18を下限に、単一Package、swift-testing + snapshot、
+デフォルト値が一つだけあります（iOS 26を下限に、単一Package、swift-testing + snapshot、
 OSLogのみ、避けるべき既知の実行時バグ）。トピックが重なる箇所でも、両者は重複ではなく、
 答える詳細度のレベルが違うだけです。
 
@@ -205,4 +205,4 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 `docs/superpowers/`にありました——現在は廃止され、git履歴として保存されています。
 `git log -- docs/`で見つけることができます。MIT——[LICENSE](LICENSE)を参照してください。
 
-<!-- src-sha: fb0802e41f1d1d9e3a38bb0d345214e088e5aede -->
+<!-- src-sha: 21b110d4b0af1826e2b40aed5e8c695d5e2a1cb2 -->

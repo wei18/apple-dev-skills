@@ -59,7 +59,7 @@ Full index in the tables below.
 | Skill | One-liner |
 |---|---|
 | `swift6-concurrency` | Swift 6 language mode + complete concurrency checking; Sendable by default |
-| `apple-platform-targets` | Default iOS 18 / macOS 15, Xcode 16+; bump to 26 only for latest-OS-only APIs |
+| `apple-platform-targets` | Default iOS 26 / macOS 26, Xcode 26.x; drop to 18 / 15 only when an older user base requires it |
 | `swiftpm-modularization` | Single Package, multi-target, thin App, DI composition root, one-to-one tests |
 | `swift-testing-baseline` | swift-testing + pointfreeco snapshot; protocol fakes; strict/tolerant snapshot gate |
 | `xcode-cloud-single-track-ci` | Single-track Xcode Cloud; PR / Main / Release / Periodic; pre-merge PR CI |
@@ -110,7 +110,7 @@ non-duplicate plugins are listed, and only for genuine gaps. That check happens 
 listing time, not on every upstream commit, so an external's scope and licence can drift
 afterwards (`caveman` already has). Externals are broad **reference** — "here's the API,
 here's how to build X." First-party skills are narrower: one opinionated default per topic
-(iOS 18 as the floor, one Package, swift-testing + snapshot, OSLog only, known runtime bugs
+(iOS 26 as the floor, one Package, swift-testing + snapshot, OSLog only, known runtime bugs
 to avoid). Where a topic overlaps, the two aren't duplicates — they answer at a different
 level of detail.
 
