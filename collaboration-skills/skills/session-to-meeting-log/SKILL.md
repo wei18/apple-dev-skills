@@ -1,6 +1,9 @@
 ---
 name: session-to-meeting-log
 description: Read a Claude Code session JSONL log and produce a clean timeline-style meeting log at `meetings/{YYYY-MM-DD}_{topic}.md`. Invoke when the user asks "turn this session into a meeting log", "archive today's discussion", "extract a meeting record from jsonl", or when wrapping up a working session before context window rolls.
+context: fork
+agent: general-purpose
+argument-hint: "[session-id-or-path] [topic]"
 ---
 
 # Session → Meeting Log

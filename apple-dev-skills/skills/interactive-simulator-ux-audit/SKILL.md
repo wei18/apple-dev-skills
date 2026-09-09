@@ -1,6 +1,10 @@
 ---
 name: interactive-simulator-ux-audit
 description: Use when auditing an iOS/iPadOS app's live behavior in the Simulator — navigation, modals, back-stack, completion flows, safe-area/Dynamic-Island clipping, offline or signed-out states — bugs a fixed-size snapshot render structurally cannot show. Covers installing `idb` without Homebrew (direct GitHub release + an exec wrapper that preserves rpath), the describe-all → tap → screenshot drive loop, device-point vs screenshot-pixel coordinate spaces, and the "stale build" / "worktree launch crash" false-negative traps. Use when asked to "test the UI", "find UX problems", "drive the simulator", or verify an interactive flow end-to-end. Also covers sizing a parallel-simulator fleet — how many booted simulators fit in RAM when each agent drives its own.
+context: fork
+agent: general-purpose
+argument-hint: "[udid] [flow]"
+allowed-tools: Bash(idb *) Bash(xcrun simctl *) Read
 ---
 
 # Interactive Simulator UX Audit (idb-driven)
@@ -27,6 +31,26 @@ below. Does **not** own: scripted, CI-run UI tests that launch and assert withou
 watching → `host-driven-xcuitest-e2e`; static pixel-diff regression gates → `swift-testing-baseline`.
 Use this skill first to *find* a bug interactively; write a host-driven XCUITest afterward
 to *pin* the fix.
+
+## Inputs
+
+`context: fork` runs this skill in a subagent with **no access to the conversation
+history** — it can't infer anything from earlier turns, only from the invocation
+arguments and this file. When invoking (matches `argument-hint: "[udid] [flow]"`), supply:
+
+- **`udid`** — the target **booted** simulator's identifier (`idb list-targets`). One
+  fork drives exactly one simulator; never omit this and let the fork boot/pick one
+  implicitly — see "One booted simulator serializes all driving" under Gotchas, and
+  the fleet-sizing note under Preflight below for running several forks in parallel.
+- **`flow`** — what to audit: the screen/feature and the specific behavior in
+  question (e.g. "onboarding flow: verify the paywall's dismiss button returns to the
+  correct tab, not the root").
+- Anything else the fork can't discover on its own: which app/scheme is under test,
+  whether the build is already installed (skip "Build + install the app under test"
+  below if so), and any account/state precondition (e.g. "drive it signed out").
+
+Without these, the fork has no way to know which simulator to drive or what "done"
+looks like — it starts from this file alone.
 
 ## Prereq: install `idb` (one-time, not via Homebrew)
 

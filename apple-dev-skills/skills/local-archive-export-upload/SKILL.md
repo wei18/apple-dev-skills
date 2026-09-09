@@ -1,6 +1,7 @@
 ---
 name: local-archive-export-upload
 description: 'Local `xcodebuild archive` → export → upload path to TestFlight when Xcode Cloud is unavailable (quota exhausted, outage, not yet wired). Covers `-exportArchive -exportOptionsPlist` keys (`method`, `destination`, `teamID`, `signingStyle`, `uploadSymbols`), `-authenticationKeyPath` vs `-allowProvisioningUpdates` signing, `xcrun altool --upload-package`, and build-number coordination with Xcode Cloud''s counter. Invoke when asked "ship a build locally / export archive fails / TestFlight without Xcode Cloud". Fallback for `xcode-cloud-single-track-ci`; does NOT cover ASC API automation after upload.'
+allowed-tools: Bash(xcodebuild archive *) Bash(xcodebuild -exportArchive *)
 ---
 
 # Local Archive, Export, Upload
