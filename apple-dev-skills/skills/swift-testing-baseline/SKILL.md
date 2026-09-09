@@ -94,7 +94,7 @@ pixels (above) is the only viable content gate.
 
 - CI's Xcode version matches the toolchain recorded in README / `foundations.md` (enforced by the Xcode Cloud workflow setting — `xcode-cloud-single-track-ci`).
 - When bumping Xcode, open a dedicated PR to refresh snapshot baselines.
-- swift-testing parallelism is on by default; shared fakes need the `.serialized` trait to avoid races.
+- swift-testing parallelism is on by default; fakes that share a process-wide resource (files, UserDefaults, a singleton) need the `.serialized` trait to avoid races. Plain in-memory fakes should be constructed per test instead (see `swift-dependency-injection`).
 
 ## Rationale
 

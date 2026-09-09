@@ -7,10 +7,10 @@ description: Concrete VoiceOver / Dynamic Type / touch-target / Reduce Motion im
 
 ## When to invoke
 
-- Adding or modifying any user-facing View, screen, or interactive control.
+- Adding accessibility to a new or changed user-facing View (labels, Dynamic Type, hit targets).
 - Running a pre-submission accessibility audit against App Store Review guidelines.
 - User says "make this accessible", "check a11y", "VoiceOver doesn't read this", or "does this pass WCAG".
-- Reviewing a PR that introduces new SwiftUI `View` or UIKit `UIView` / `UIViewController` code.
+- Reviewing a PR for accessibility regressions.
 
 ## VoiceOver: labelling and semantics
 

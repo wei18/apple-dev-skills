@@ -28,7 +28,7 @@ description: Default modularization shape for Apple-platform Swift Apps — sing
   - Assets / Asset Catalog
   - A single DI composition root (wiring protocols to concrete implementations)
 - All views, logic, and Storage live in the Package.
-- The App target is **not tested** (it can't really be); all testable logic is in the Package.
+- The App target has no unit tests — keep it free of logic so nothing there needs one; end-to-end launch tests live in `host-driven-xcuitest-e2e`. All testable logic is in the Package.
 
 ### Dependencies flow upward, never downward
 

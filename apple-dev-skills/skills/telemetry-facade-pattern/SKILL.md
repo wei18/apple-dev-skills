@@ -51,7 +51,7 @@ public struct NoOpTrackingSink: TelemetrySink {
 ### Composition root wiring
 
 - The App target's DI composition root injects sinks into the facade.
-- Sinks are **independent**; one sink's failure does not affect the others.
+- Sinks are **failure-isolated** (one sink throwing or timing out must not stop the others) but **not order-free**: the facade forwards in array order, and a sink that reads state another sink writes must come after it (see trap 2).
 
 #### Wiring traps (hard-won — real project lessons)
 
@@ -102,7 +102,7 @@ array. Four traps, in the order they bit:
 ## Deviation considerations
 
 - **Minimal App, OSLog only**: you can skip the `Telemetry` target and use `Logger` directly. But **if you anticipate adding tracking / metrics later**, building the facade up front pays off.
-- **Need inter-sink dependencies** (e.g. `MetricKitSink` payloads must go through `TrackingSink` first): handle routing inside the facade; call sites still unchanged.
+- **Need *routing* between sinks** (e.g. a MetricKit payload re-emitted into `TrackingSink`): handle routing inside the facade; call sites still unchanged.
 - **Cross-platform** (Android / Linux): facade interface stays platform-neutral; sink implementations are per-platform.
 
 ## Verification checklist

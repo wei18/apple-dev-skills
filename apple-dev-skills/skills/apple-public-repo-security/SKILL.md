@@ -24,7 +24,7 @@ description: Security baseline for public iOS / macOS repos — secret classific
 
 | Secret | Purpose | Storage |
 |---|---|---|
-| CloudKit server-to-server key (Key ID + PEM) | Backend API | Xcode Cloud Env Vars (Secret); locally in `~/.config/<project>/` (chmod 600) or Keychain |
+| CloudKit server-to-server key (Key ID + PEM) | Backend API | Xcode Cloud Env Vars (Secret); locally in `secrets/` (chmod 600, gitignored) or Keychain |
 | App Store Connect API Key (`.p8` + Key ID + Issuer ID) | TestFlight / submission automation | Xcode Cloud Env Vars (Secret) |
 | APNs Auth Key (`.p8` + Key ID + Team ID) | Push notifications | Xcode Cloud Env Vars (Secret) |
 | Signing certificate + private key (`.p12`) | Code signing | Xcode Cloud automatic signing, hosted by Apple |
@@ -37,7 +37,7 @@ description: Security baseline for public iOS / macOS repos — secret classific
 - Real player aliases / displayNames / playerIDs (except after hashing)
 - Apple Developer Team ID / DUNS / address (if they appear in entitlements / profile metadata)
 - Build logs containing secrets (redact before viewing)
-- Developers' local `.config/<project>/` real files
+- Developers' local `secrets/` real files
 - Personal notes / drafts (like `NOTES.md.private`)
 
 ### Starter `.gitignore`
@@ -68,9 +68,10 @@ xcuserdata/
 *.private.md
 NOTES.md.private
 
-# Local development secrets directory (chmod 600 PEMs / API keys live here)
-.config/
-!.config/example/         # If a public example directory exists, allow listing it
+# Local development secrets directory is `secrets/` (chmod 600 PEMs / API keys
+# live here; already ignored above via `secrets/`). Allow-list examples with a
+# nested `secrets/.gitignore` (`* / !*.example / !README.md`) instead of a
+# second top-level rule — see `build-time-secret-injection`.
 ```
 
 ### Three lines of defence
@@ -122,7 +123,7 @@ fi
 ### Setup templates (shipped in the repo)
 
 - `.env.example`: list all env var keys with placeholder values
-- `.config/<project>/example/README.md`: explain the local PEM directory layout (**do not include a `.pem.example` real file** — gitleaks's built-in `private-key` rule needs the full header + ≥64-character body + footer to fire, so a placeholder with only the header text won't trip it and isn't a safe substitute for keeping the real key out; if you must include a real example, explicitly allowlist it in `.gitleaks.toml`)
+- `secrets/example/README.md`: explain the local PEM directory layout (**do not include a `.pem.example` real file** — gitleaks's built-in `private-key` rule needs the full header + ≥64-character body + footer to fire, so a placeholder with only the header text won't trip it and isn't a safe substitute for keeping the real key out; if you must include a real example, explicitly allowlist it in `.gitleaks.toml`)
 - `docs/setup.md`: first-clone steps for new developers
 
 ### Public commitment on Apple upstream channels

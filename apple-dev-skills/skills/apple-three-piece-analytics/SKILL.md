@@ -12,6 +12,10 @@ description: Default analytics stack for solo / small Apple-platform Apps — Ap
 - Writing `PrivacyInfo.xcprivacy`.
 - User asks "what metrics should I track", "what can I see without a third-party SDK".
 
+## Scope
+
+Owns the source-selection decision and its PrivacyInfo/ATT consequence. Does NOT own MetricKit wiring or payload interpretation → `ios-performance-engineering`; sink code → `telemetry-facade-pattern`; App Review privacy-label parity → `app-store-review-rejections`.
+
 ## Default decisions
 
 ### v1 uses the Apple three-piece set

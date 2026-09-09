@@ -13,6 +13,10 @@ description: Testable seam design via protocol injection, SwiftUI environment, a
 - Reviewing code that reaches out to global state, `URLSession.shared`, `Date()`, or `UUID()`.
 - Choosing between constructor injection and SwiftUI environment injection.
 
+## Scope
+
+Owns how a seam is shaped and injected (protocol / struct witness / environment / task-local) and how a fake is written. Does NOT own the test framework, snapshot tooling, or where shared fake *types* live → `swift-testing-baseline` (`<Project>KitTesting`).
+
 ## Core principle: one composition root
 
 All concrete implementations are wired in a single place — typically `makeApp(...)` or a `DependencyContainer` struct built in the `@main` entry point. Every layer below receives its dependencies through initialiser parameters, not by reaching up to a global. This makes the entire wiring visible in one screen of code and means tests can substitute any dependency without touching production paths.
@@ -163,4 +167,4 @@ Both are valid; they solve the same problem with different ergonomics. Evaluate 
 
 - `swiftpm-modularization`: put each seam (protocol + fake) in its own target so test targets can import the fake without importing the live implementation.
 - `swift6-concurrency`: `Sendable` requirements, `@preconcurrency`, and actor-isolated types that affect dependency design.
-- `swift-testing-baseline`: shared fake targets (`<Module>Testing`), protocol injection for CloudKit / Game Center, and why integration tests never touch real networks.
+- `swift-testing-baseline`: shared fake targets (`<Project>KitTesting`), protocol injection for CloudKit / Game Center, and why integration tests never touch real networks.
