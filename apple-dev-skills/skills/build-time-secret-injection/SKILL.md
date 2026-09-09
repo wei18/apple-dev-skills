@@ -150,7 +150,7 @@ A future PR should add a build-phase script that asserts no `$()` literals survi
    - Consumed by Xcode build / Info.plist / Bundle.main read → Layer 1 xcconfig
    - Consumed by `swift run` / CLI scripts / shell → Layer 2 `.env`
 2. Add KEY to appropriate `.example` file with sandbox/test default value
-3. Add inline comment in `.example` describing purpose + where to find the real one (cite project memory file by name, NEVER the literal value)
+3. Add inline comment in `.example` describing purpose + where to find the real one (name the out-of-repo vault entry — password manager / team vault — NEVER the literal value)
 4. If Layer 1: add `$(KEY)` substitution to `Info.plist`; add reading code via `Bundle.main` with guard (cover nil / empty / `$(...)` literal); add smoke test for key presence in source plist
 5. If Layer 1 CI path: extend `ci_post_clone.sh` to write the new KEY from XCC env var with `${VAR:?missing message}` fail-fast; if multi-app, branch on `$CI_XCODE_SCHEME`
 6. Run `grep -r "<real-prod-value>" .` (excluding gitignored dirs) — must return zero hits
@@ -170,19 +170,8 @@ A future PR should add a build-phase script that asserts no `$()` literals survi
 - [ ] XCC Workflow Environment Variables UI lists each KEY (per scheme if multi-app), marked Secret
 - [ ] `grep -r "<real-prod-value>" .` returns zero hits across all tracked files
 
-## Adjacent skills + memory
+## Related skills
 
 - **REQUIRED background**: `apple-public-repo-security` — broader secret-leak prevention (gitleaks, lefthook, GitHub Secret Scanning)
 - **SIBLING**: `monetization-sdk-integration` — invoke together when wiring AdMob; this skill is the secret-handling layer
 - **SIBLING**: `asc-api-automation` — ASC API key handling (the `.p8`) once the key leaves the build and drives the REST API
-- Project memory file documenting the secret-scrubbing incident — the incident that triggered this skill pattern
-- Project memory files for each credential set — real values held outside repo (cite by memory-file name, never paste inline)
-
-## AdMob env keys pattern
-
-`secrets/.env` carries per-app production pairs (e.g. `APP_A_ADMOB_APP_ID` /
-`APP_A_ADMOB_BANNER_UNIT_ID` and `APP_B_*` twins). Two consumers render
-`Tuist/AdMob.xcconfig` from them: XCC `ci_post_clone.sh` (from workflow
-Secret env vars) and any local upload task you run (from `secrets/.env`).
-Values live in secrets/.env (primary) + the XCC workflow config + the
-project-memory files as recovery backup — never in code, comments, or diffs.

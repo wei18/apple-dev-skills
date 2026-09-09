@@ -50,8 +50,8 @@ xcbeautify = "1"
 - **Tool not in mise registry / aqua / ubi**: prefer a non-Homebrew path first. For a Go
   CLI, `go install <module>@latest` (a Go toolchain can itself come from mise). Otherwise,
   download the tool's plain GitHub Releases tarball directly for your platform — same
-  install pattern as `idb` in `interactive-simulator-ux-audit`. Homebrew is a last resort,
-  and still needs the exception noted in the README either way.
+  install pattern as `idb` in `interactive-simulator-ux-audit`. Homebrew is a last resort;
+  if a project policy bans it, record the exception in *that project's* README.
 - **CI runner already has the target version preinstalled**: still run `mise install` to enforce parity; the extra overhead is small.
 - **macOS-only tools on a mixed-OS CI fleet** (Xcode-project generators, macOS
   artifact bundlers — e.g. `tuist`, `LicensePlist`): guard them with an `os`
@@ -69,7 +69,7 @@ xcbeautify = "1"
 - `.mise.toml` lives at the repo root, committed to git.
 - After local `mise install`, `mise exec -- <tool> --version` matches CI log.
 - CI scripts go through `mise exec`, never calling `/usr/local/bin/<tool>` or other preinstalled paths.
-- New-contributor setup guide (`docs/setup.md`) starts with "install mise → `mise install`".
+- The repo's contributor setup guide starts with 'install mise → `mise trust` → `mise install`'.
 
 ## Related skills
 

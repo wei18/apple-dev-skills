@@ -1,6 +1,6 @@
 ---
 name: monetization-sdk-integration
-description: Invoke when adding, upgrading, or auditing any third-party monetization SDK (AdMob, UMP, StoreKit wrappers, RevenueCat, ironSource, etc.). Also invoke when reviewing PR diffs that touch your monetization target's ad-bridge sources, or when anyone proposes `import GoogleMobileAds` outside the existing live-bridge file.
+description: Invoke when adding, upgrading, or auditing any third-party monetization SDK (AdMob, UMP, StoreKit wrappers, RevenueCat, ironSource, etc.). Also invoke when reviewing PR diffs that touch the monetization target's ad-bridge sources, or when anyone proposes `import GoogleMobileAds` outside the existing live-bridge file.
 ---
 
 # Monetization SDK Integration
@@ -9,11 +9,11 @@ description: Invoke when adding, upgrading, or auditing any third-party monetiza
 
 - Adding a new monetization SDK (AdMob, ATT, UMP, AdMob mediation networks, RevenueCat, etc.)
 - Upgrading existing AdMob / UMP versions (e.g. v11 → v13)
-- Auditing PR diff that touches your monetization target's ad-bridge sources (e.g. `Sources/<AdsBridge>/`)
+- Auditing PR diff that touches the monetization target's ad-bridge sources (e.g. `Sources/<AdsBridge>/`)
 - Cross-platform SDK questions (iOS only? macOS catalyst? watchOS?)
 - Anyone proposing "let's just `import GoogleMobileAds` over here too" — IMMEDIATE invoke
 
-Skip when: changing pure values / protocols inside your monetization core target (no third-party touch).
+Skip when: changing pure values / protocols inside the monetization core target (no third-party touch).
 
 ## The contract
 
@@ -23,7 +23,7 @@ Default rule: **no third-party SDKs** in the app. Apple-platform native APIs pre
 1. The capability genuinely requires the SDK (no Apple-native alternative); e.g. AdMob banner serving has no Apple-platform equivalent
 2. The SDK is shippable under the project's privacy regime (PrivacyInfo.xcprivacy supports its tracking domains)
 3. The SDK's import is isolated to a SINGLE source file behind a protocol seam (see §isolation contract below)
-4. The dep arrow is one-way (consumer → SDK; SDK does not call back into our code beyond delegate/callback bridges)
+4. The dep arrow is one-way (consumer → SDK; the SDK does not call back into the host app's code beyond delegate/callback bridges)
 5. iOS-only conditional compile gating (`canImport`) — macOS / Catalyst paths must build without the SDK
 
 If any of (1)-(5) fails: deny. Reject the SDK proposal; suggest Apple-native fallback or sit it out.
@@ -38,7 +38,7 @@ For every accepted SDK:
 - All other code uses `any <SdkName>Bridge` for DI. Test seam: `Fake<SdkName>Bridge` in the matching test target (e.g. `Tests/<AdsBridge>Tests/FakeAdMobBridge.swift`).
 
 Example for AdMob (currently shipped):
-- `Sources/<AdsBridge>/AdMobBridge.swift` — protocol (your monetization target's bridge protocol file)
+- `Sources/<AdsBridge>/AdMobBridge.swift` — protocol (the monetization target's bridge protocol file)
 - `Sources/<AdsBridge>/LiveAdMobBridge.swift` — sole `import GoogleMobileAds` site
 - `Tests/<AdsBridge>Tests/FakeAdMobBridge.swift` — test seam
 
@@ -46,8 +46,8 @@ Example for AdMob (currently shipped):
 
 Canonical regex (matches Swift 6 access-level imports too):
 ```bash
-# replace <SDKModule> / <your-sources-root> with your actual values
-rg '^(internal |private |public |@_implementationOnly |@preconcurrency )*import <SDKModule>' <your-sources-root>
+# replace <SDKModule> / <project-sources-root> with the project's actual values
+rg '^(internal |private |public |@_implementationOnly |@preconcurrency )*import <SDKModule>' <project-sources-root>
 ```
 
 Expected count: **1** (live bridge file).
@@ -55,8 +55,8 @@ Expected count: **1** (live bridge file).
 If > 1: the contract is broken. Either consolidate behind the existing bridge OR file an exception in `docs/foundations.md` documenting WHY a second import site is necessary (with prior reviewer sign-off).
 
 Documentation references:
-- Your project's `docs/foundations.md` — the contract text itself
-- Your project's plan / readiness doc — audit acceptance criteria and pre-submission audit step
+- The project's `docs/foundations.md` — the contract text itself
+- The project's plan / readiness doc — audit acceptance criteria and pre-submission audit step
 
 ### Conditional compile invariant
 
@@ -97,7 +97,7 @@ A test target for the bridge ships `Fake<SdkName>Bridge` (actor or class). All u
 - Audit broke briefly when migrator missed file boundary; recovered by re-running isolation audit
 
 ### Production ID swap safety
-- A Release build's `bannerAdUnitID` constant used `fatalError("REPLACE_BEFORE_RELEASE: …")` rather than a placeholder string — prevents accidental Release build silently serving test creatives against production app ID
+- A Release build's `bannerAdUnitID` constant first used `fatalError("REPLACE_BEFORE_RELEASE: …")` as a transitional guard; it has since been replaced by xcconfig injection (→ `build-time-secret-injection`), which is the standing solution — the `fatalError` form is not a long-term answer on its own
 - A paired-flip checklist ensures Info.plist `GADApplicationIdentifier` + bridge constant are always updated together
 
 ### Real banner landed + SDK-view-crossing seam
@@ -117,8 +117,8 @@ A test target for the bridge ships `Fake<SdkName>Bridge` (actor or class). All u
 - **"Just import it where you need it"** — NO. Single-file isolation is the contract; multiple imports = no audit signal, no clean removal path.
 - **"Skip the Fake for now, we'll add it later"** — NO. Unit tests must work from day one; integrating SDK without a test seam means every test becomes integration-test territory.
 - **"Macros + canImport are too verbose; let's drop conditional gating for v2"** — NO. macOS build will break the moment a maintainer runs `swift build` on a Mac, blocking PRs.
-- **"Production IDs in source for ease of swap"** — NO. Use `fatalError` guard or build-config injection; hard-coded prod IDs in DEBUG/Release pivot risk accidental Release ship with wrong combination.
-- **"PrivacyInfo.xcprivacy can wait until submission"** — NO. ASC will reject TestFlight + production builds without the manifest matching declared tracking. Update PrivacyInfo BEFORE adding the SDK.
+- **"Production IDs in source for ease of swap"** — NO. Use build-config injection (`build-time-secret-injection`); a `fatalError` guard is acceptable only as a transitional step before that lands.
+- **"PrivacyInfo.xcprivacy can wait until submission"** — NO. Upload-time checks only catch (a) undeclared required-reason API use and (b) a listed third-party SDK missing its manifest/signature — GoogleMobileAds and UserMessagingPlatform are not on that list, and nothing checks whether your tracking declaration matches. The real cost lands later: `NSPrivacyTrackingDomains` gaps break ad requests at runtime, and a mismatched privacy label is a 5.1.x rejection. Update PrivacyInfo BEFORE adding the SDK.
 
 ## Pre-integration checklist
 
@@ -141,9 +141,9 @@ If any field is "TBD" or "?", do NOT proceed — research first.
 
 ## Documentation pointers
 
-- Your project's `docs/foundations.md` — the no-3rd-party rule + break-glass exception + isolation contract text
-- Your project's design doc — monetization design intent
-- Your project's plan / readiness doc — AdMob impl phase, isolation acceptance criteria, pre-submission audit step
+- The project's `docs/foundations.md` — the no-3rd-party rule + break-glass exception + isolation contract text
+- The project's design doc — monetization design intent
+- The project's plan / readiness doc — AdMob impl phase, isolation acceptance criteria, pre-submission audit step
 - `Sources/<AdsBridge>/<SdkName>Bridge.swift` — protocol seam example
 - `Sources/<AdsBridge>/Live<SdkName>Bridge.swift` — single-import-site example
 - `<App>/Resources/PrivacyInfo.xcprivacy` — tracking domains declaration

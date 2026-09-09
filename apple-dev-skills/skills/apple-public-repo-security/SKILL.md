@@ -110,7 +110,7 @@ fi
 
 ### Leak SOP (rotate before cleaning history)
 
-1. **Rotate first** (rotation is the real stop-bleed; after a force push, GitHub reflog / forks may still reach the secret for up to 90 days, and **any fork retains it forever**):
+1. **Rotate first** (rotation is the real stop-bleed; after a force push, GitHub reflog / forks may still reach the secret until GitHub Support runs garbage collection on the repository (GitHub documents no time window), and **any fork retains it forever**):
    - CloudKit Dashboard: rotate the server-to-server key
    - Rotate the ASC API key
    - Rotate the APNs key
