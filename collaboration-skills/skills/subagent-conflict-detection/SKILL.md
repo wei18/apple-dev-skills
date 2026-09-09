@@ -36,7 +36,7 @@ For each worktree path, capture:
 ### Step 2 — enumerate the NEW dispatch's likely file scope
 
 Read the planned subagent's task prompt. Extract:
-- Explicit file paths it'll edit (usually under "Mission" / "Required reads to edit" sections)
+- Explicit file paths it'll edit (usually under the prompt's `## Task scope` and `## Inputs` sections — see `leader-developer-handoff-contract`)
 - Likely-touched files via the task domain (e.g. "Settings redesign" → `Sources/.../Settings/`)
 - Test files it'll add or modify
 
@@ -84,7 +84,7 @@ git log --oneline -3                     # does it include the commit/PR this wo
 git merge-base --is-ancestor <dep-sha> HEAD && echo "base OK" || echo "STALE BASE"
 ```
 
-If the work depends on a just-merged PR, sync first (`git checkout main && git fetch && git reset --hard origin/main` — `reset --hard` discards uncommitted local changes, so stash them first) THEN dispatch. `<dep-sha>` above is the commit your work depends on (e.g. the merged PR's commit on `main`). State the expected base SHA in the dispatch prompt and tell the agent to verify it (`git log --oneline -5`; confirm a key file/symbol exists) before coding.
+If the work depends on a just-merged PR, sync first (`git checkout main && git fetch && git reset --hard origin/main` — `reset --hard` discards uncommitted local changes, so commit them to a WIP commit or `git stash push -u -m <tag>` first — never a bare `git stash`/`pop` in a worktree session, since the stash stack is shared across worktrees) THEN dispatch. `<dep-sha>` above is the commit your work depends on (e.g. the merged PR's commit on `main`). State the expected base SHA in the dispatch prompt and tell the agent to verify it (`git log --oneline -5`; confirm a key file/symbol exists) before coding.
 
 > Real incident (pre-v2.1.208 / local-HEAD-fallback behavior): a DEBUG test-hook subagent was dispatched right after a fix merged to `main`, but the dispatching HEAD was a pre-merge commit. The worktree branched from the stale base, so the new code referenced an `init` parameter and a file that only existed post-merge → 2 compile errors that the agent's own package build hadn't surfaced. Cost a full cherry-pick-onto-correct-base + rebuild cycle.
 
@@ -148,14 +148,14 @@ If `git worktree list` shows stale entries (worktree dir gone but git registrati
 ## Example application
 
 ```
-Leader is about to dispatch: "Senior Developer for error funnel refactor — files: AppComposition/Live.swift, AppUI/Root/RootViewModel.swift, Tests/RootViewModelTests.swift"
+Leader is about to dispatch: "Developer for error funnel refactor — files: Sources/App/Composition/Live.swift, Sources/App/Root/RootViewModel.swift, Tests/RootViewModelTests.swift"
 
 `git worktree list` shows in-flight subagent `agent-abc123` editing:
-  M Sources/AppUI/Components/MonetizationStateController.swift
+  M Sources/App/Components/BannerController.swift
 
-Intersection: NONE (different AppUI subdir).
+Intersection: Module overlap (same `Sources/App/`, different files) → WARN.
 
-Verdict: dispatch safely. Note in prompt: "in-flight subagent on MonetizationStateController — do not touch that file."
+Verdict: dispatch with `isolation: "worktree"`. Note in prompt: "in-flight subagent on BannerController.swift — do not touch that file; module Sources/App/ is shared."
 ```
 
 ## Related skills

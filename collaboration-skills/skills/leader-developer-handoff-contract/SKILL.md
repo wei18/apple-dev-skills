@@ -7,7 +7,7 @@ description: When the main agent dispatches a sub-agent, the prompt MUST include
 
 ## Native mechanism
 
-Claude Code's [Subagents](https://code.claude.com/docs/en/subagents) feature already gives a dispatched agent "its own context window with a custom system prompt, specific tool access, and independent permissions" — but the platform doesn't require or shape what goes in the dispatch *prompt* itself. This skill is the discipline layer on top: the 5 elements a prompt must contain regardless of how well-configured the subagent's own definition is.
+Claude Code's [Subagents](https://code.claude.com/docs/en/subagents) feature already gives a dispatched agent "its own context window with a custom system prompt, specific tool access, and independent permissions" — but the platform doesn't require or shape what goes in the dispatch *prompt* itself. This skill is the discipline layer on top: the 6 elements a prompt must contain regardless of how well-configured the subagent's own definition is.
 
 ## When to invoke
 
@@ -15,17 +15,9 @@ Claude Code's [Subagents](https://code.claude.com/docs/en/subagents) feature alr
 - Writing the dispatch prompt.
 - User asks "what should the sub-agent dispatch include / which elements am I missing".
 
-## The 5 required elements
+## The 6 required elements
 
 Every dispatch prompt must contain:
-
-### 0. Tell the sub-agent to keep impl notes
-
-Non-trivial dispatches carry a sixth, standing instruction: the sub-agent opens its running
-impl-notes file at the *start* of the task, not when it first hits trouble. That file is where
-early assumptions and scope calls get recorded — exactly the ones that are invisible by the time
-a report is written. `agent-impl-notes-log` owns the file's format and routing; this contract is
-what makes it start on time, since that skill's own trigger fires on mid-task ambiguity.
 
 ### 1. Task scope with verifiable target
 
@@ -64,8 +56,17 @@ Pick one explicitly (or custom):
 
 - The conditions under which it counts as done.
 - For Developer: which tests must be green, which invariants must hold.
-- For Code Reviewer: review dimensions, forbidden tools (CLI), allowed tools (WebSearch).
+- For Code Reviewer: review dimensions; CLI is forbidden for probing API/runtime behavior (build, run, simctl, trial-and-error); read-only search (grep, rg, git log, git show) is allowed; allowed tools (WebSearch).
 - For drafting agent: section structure, required subsections, required decisions.
+
+### 6. Impl notes (non-trivial tasks)
+
+Required when the task touches ≥2 files or adds new behavior (see `ai-collaboration-mode`'s
+M/L sizing); optional for a trivial one-file fix. Tell the sub-agent to open its running
+impl-notes file at the *start* of the task, not when it first hits trouble — early assumptions
+and scope calls are exactly what's invisible by the time a report is written.
+`agent-impl-notes-log` owns the file's format and routing; this contract is what makes it start
+on time, since that skill's own trigger fires on mid-task ambiguity.
 
 ## Template
 
@@ -94,6 +95,9 @@ You are a <role> dispatched by the Leader.
 - <criterion 2>
 <...>
 
+## Impl notes (non-trivial tasks)
+Required if this task touches ≥2 files or adds new behavior: open `meetings/{date}_{topic}.impl-notes.md` at the start of the task (`collaboration-skills:agent-impl-notes-log`).
+
 ## Constraints (optional)
 - DO NOT <forbidden action>
 - DO use <required tool / approach>
@@ -116,7 +120,7 @@ You are a <role> dispatched by the Leader.
 - **Skills**: `collaboration-skills:subagent-review-cycles`
 - **Return**: BLOCKER / MAJOR / MINOR finding list; each item with section location + suggestion
 - **Verification**: covers 4 dimensions (correctness / consistency / completeness / efficiency); cites Apple docs instead of CLI experimentation
-- **Constraints**: DO NOT run CLI; DO use WebSearch
+- **Constraints**: CLI is forbidden for probing API/runtime behavior (build, run, simctl, trial-and-error); read-only search (grep, rg, git log, git show) is allowed; DO use WebSearch
 
 ## Anti-patterns
 
@@ -127,11 +131,12 @@ You are a <role> dispatched by the Leader.
 
 ## Verification checklist (for Leader before sending dispatch)
 
-- All 5 elements present (scope / inputs / skills / return format / verification).
+- All 6 elements present (scope / inputs / skills / return format / verification / impl-notes).
 - Scope corresponds to "one verifiable target", not "a basket of work".
 - Skill names spelled correctly, with plugin prefix.
 - Return format is one of the four explicit categories.
 - Verification conditions are mechanically checkable.
+- Impl-notes slot included when the task touches ≥2 files or adds new behavior.
 
 ## Related skills
 

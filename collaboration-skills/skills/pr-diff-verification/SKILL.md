@@ -66,7 +66,7 @@ Discrepancy resolution options:
 
 ## Integration with commit discipline
 
-Commit-early discipline (commit before push, avoid large uncommitted batches) is covered by `github-contribution-workflow`. This skill is the POST-commit verification step — confirms the commits that survived actually contain what the message claims.
+This skill starts after commits exist; it does not prescribe commit granularity. It is the POST-commit verification step — confirms the commits that survived actually contain what the message claims.
 
 ## Heuristics for "what to check"
 
