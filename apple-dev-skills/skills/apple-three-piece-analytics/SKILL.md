@@ -21,13 +21,13 @@ description: Default analytics stack for solo / small Apple-platform Apps — Ap
 | **App Store Connect Analytics** | Downloads, sessions, active devices, retention, sources, store conversion | App Store Connect web |
 | **MetricKit** (`MXMetricPayload`, `MXDiagnosticPayload`) | Performance & diagnostics: crash / hang / launch time / jank / energy / memory | The App receives them → persist to log / optionally upload later |
 
-> **macOS caveat**: MetricKit on macOS yields a reduced payload set compared to iOS (some payload types are iOS-only, e.g. `MXAppLaunchMetric`). For mac-heavy apps, lean more on App Store Connect Analytics + targeted `OSSignposter` traces.
+> **macOS caveat**: macOS 12–15 only send `MXDiagnosticPayload`; macOS 26 and later send a daily `MXMetricPayload` just like iOS. Only a deployment target below macOS 26 needs to fall back to App Store Connect Analytics + targeted `OSSignposter` traces.
 | **Game Center** (if it's a game) | Leaderboards / achievement completion / peer-player comparison | Game Center API / Game Center app |
 
 ### Privacy / Manifest
 
-- **`PrivacyInfo.xcprivacy` is a required deliverable** (hard App Store submission requirement).
-- Because no third-party SDK, no IDFA, no PII are collected, the manifest content is very minimal.
+- **`PrivacyInfo.xcprivacy` is a required deliverable** (hard App Store submission requirement since 2024-05-01 for any app using a required-reason API).
+- **No third-party SDK doesn't mean a minimal manifest.** The required-reason API rule applies to the App's own code, not just third-party SDKs: using `UserDefaults`, file-modification timestamps, system boot time, disk-space APIs, or active-keyboards APIs each requires a declared entry in `NSPrivacyAccessedAPITypes` (e.g. `UserDefaults` → reason `CA92.1`) or ASC upload is rejected (ITMS-91053). Almost every app uses `UserDefaults`, so the manifest needs at least that entry plus `NSPrivacyTracking: false`.
 - **No ATT prompt needed** (no IDFA use case).
 - CloudKit / Game Center's user-facing privacy notices are handled at the system layer by Apple; the App only needs to declare data usage in PrivacyInfo.
 
@@ -39,7 +39,7 @@ description: Default analytics stack for solo / small Apple-platform Apps — Ap
 ## Rationale
 
 - At solo / small-team scale, the three pieces cover most key questions (installs / retention / performance / crashes / player comparisons).
-- No third-party SDK → no ATT, no PrivacyInfo additions, small build size, and the privacy claim is verifiable by readers via grep on `import`.
+- No third-party SDK → no ATT, no extra tracking-domain disclosures, small build size, and the privacy claim is verifiable by readers via grep on `import`. (The required-reason API entries above are still needed — they come from the App's own code, not a third-party SDK.)
 - Positive for a public-repo showcase ("no third-party tracking" is a credible commitment).
 
 ## Deviation considerations

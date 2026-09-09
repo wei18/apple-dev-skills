@@ -38,7 +38,7 @@ telemetry.observe(.puzzleCompleted(id: puzzleId, durationMs: 12_345))
 |---|---|---|
 | `OSLogSink` | All events | Human-readable debug messages |
 | `TrackingSink` (default `NoOpTrackingSink`) | Business events | v1 has no third-party tracking but the protocol is reserved; future swaps require zero call-site changes |
-| `MetricKitSink` | Subscribes via `MXMetricManager.shared.add(self)`; on receiving `MXMetricPayload`, broadcasts to other sinks | Performance / diagnostics persistence |
+| `MetricKitSink` | Subscribes via `MXMetricManager.shared.add(self)`; on receiving `MXMetricPayload`, broadcasts to other sinks | Performance / diagnostics persistence — `MXMetricManagerSubscriber` inherits `NSObjectProtocol`, so `MetricKitSink` must be an `NSObject` subclass, not a struct or actor |
 | `GameCenterSink` (games) | Completion / achievement events | Submit score / unlock achievement |
 
 ```swift
@@ -81,9 +81,11 @@ array. Four traps, in the order they bit:
    (persistence, GameCenter) that themselves need `Telemetry`, you cannot build
    it at Telemetry-construction time. Wire a `DeferredSink` placeholder into the
    facade at startup, then `setDownstream([real sinks])` once (sync, from the
-   `@MainActor` composition root) after all deps are assembled. `final class
-   @unchecked Sendable` + `NSLock` (not an actor) keeps `setDownstream`
-   synchronous; `receive` snapshots state under the lock before any `await`.
+   `@MainActor` composition root) after all deps are assembled. A `final class
+   … : Sendable` (not an actor, and not `@unchecked`) backed by
+   `Synchronization.Mutex<[any TelemetrySink]>` (iOS 18+ / macOS 15+) keeps
+   `setDownstream` synchronous via `downstream.withLock { $0 = sinks }`;
+   `receive` snapshots the sinks under `withLock` before any `await`.
 5. **The sink firing ≠ the terminal call working.** Tracing "wire 2 things"
    uncovered a third gap: the GameKit terminal (`submitScore`/`reportAchievement`)
    was a stub that no-op'd / threw. **Trace to the actual platform call**

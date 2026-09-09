@@ -26,7 +26,7 @@ Never guess at a performance problem; profile first. Instruments ships with Xcod
 
 **Hangs instrument** (Xcode 14+) — captures main-thread spins longer than a configurable threshold (default 250 ms). Apple classifies blocks 250–500 ms as micro-hangs and ≥500 ms as full hangs. Pairs with the **App Launch** template for pre-first-frame blocking. The system also generates `MXHangDiagnostic` on-device (see MetricKit below).
 
-**Hitches** — a hitch occurs when a frame takes longer than one vsync interval to deliver, causing a visual stutter. On 60 Hz displays the budget is ~16.67 ms; on ProMotion (120 Hz) it halves to ~8.33 ms. Use the **Core Animation** instrument to see committed frames and dropped frames. The `hitch rate` (ms of hitch per second of scrolling) is the standard metric: <5 ms/s is good; 5–10 ms/s is concerning (user notices interruptions); >10 ms/s is critical (greatly impacts UX) — per WWDC 2020 session 10077.
+**Hitches** — a hitch occurs when a frame takes longer than one vsync interval to deliver, causing a visual stutter. On 60 Hz displays the budget is ~16.67 ms; on ProMotion (120 Hz) it halves to ~8.33 ms. Use the **Animation Hitches** instrument template (Hitches, Display, and Core Animation Commits tracks — the standalone "Core Animation" template no longer exists) to see committed frames and dropped frames. The `hitch rate` (ms of hitch per second of scrolling) is the standard metric: <5 ms/s is good; 5–10 ms/s is concerning (user notices interruptions); >10 ms/s is critical (greatly impacts UX) — per WWDC 2020 session 10077.
 
 ### `os_signpost` — annotate your own intervals
 
@@ -62,7 +62,7 @@ xctrace record --template 'Time Profiler' --output trace.trace --time-limit 30s 
 
 ## Hangs and hitches
 
-The system classifies a main-thread block of **250 ms or more** as a hang and surfaces it in the Organizer → Hang Reports (Xcode 14+) and via MetricKit's `MXHangDiagnosticPayload`. The scroll hitch budget depends on display refresh rate (see above).
+The system classifies a main-thread block of **250 ms or more** as a hang and surfaces it in the Organizer → Hang Reports (Xcode 14+) and via MetricKit's `MXDiagnosticPayload.hangDiagnostics` (an array of `MXHangDiagnostic` — there is no `MXHangDiagnosticPayload` type). The scroll hitch budget depends on display refresh rate (see above).
 
 **Moving work off `@MainActor`:**
 
@@ -130,7 +130,7 @@ Large binaries increase download time and App Store review scrutiny. Primary lev
 - **`-Osize`** (`SWIFT_OPTIMIZATION_LEVEL = -Osize`): optimises for binary size rather than speed. Typically 5–15% smaller than `-O` with negligible runtime impact for most app code.
 - **Asset catalog / app thinning**: use asset catalog image sets with `@1x`/`@2x`/`@3x` variants and device-specific slices. The App Store strips variants irrelevant to the downloading device. Avoid embedding full-resolution assets in the bundle for cases where a downsampled or streamed version suffices.
 - **Link Map + Organizer**: use the **Link Map** (Build Settings: Write Link Map File = YES) and the Xcode Organizer's App Size report to identify which symbols contribute most to the binary. Tools such as Bloaty or the `nm` / `size` commands can post-process the link map to locate unexpectedly large third-party frameworks or generated code.
-- Avoid shipping unused localisation bundles from third-party SDKs: set `SWIFT_PACKAGE_RESOURCE_BUNDLE_DEDUPLICATE = YES` and review resource bundle sizes after each SDK update.
+- Avoid shipping unused localisation bundles from third-party SDKs: review resource bundle sizes with the Xcode Organizer's App Size report after each SDK update, and trim unused files at the source by tightening each SwiftPM target's `resources:` rule.
 
 ## MetricKit — field performance telemetry
 
@@ -166,10 +166,10 @@ MetricKit data reflects **real user conditions** (actual device, network, batter
 
 | Class | What it measures |
 |---|---|
-| `MXCPUMetrics` | Cumulative CPU time (user + system) |
-| `MXMemoryMetrics` | Peak and average memory, average suspended memory |
+| `MXCPUMetric` | Cumulative CPU time (user + system) |
+| `MXMemoryMetric` | Peak and average memory, average suspended memory |
 | `MXDisplayMetric` | Average pixel luminance (not hitch rate — use `MXAnimationMetric` — `scrollHitchTimeRatio`: ratio of hitch time while scrolling (field-measured)) |
-| `MXDiskIOMetrics` | Cumulative logical write bytes |
+| `MXDiskIOMetric` | Cumulative logical write bytes |
 | `MXHangDiagnostic` | Call tree for a main-thread hang > 250 ms |
 | `MXCrashDiagnostic` | Crash reason + call tree |
 | `MXCPUExceptionDiagnostic` | CPU runaway above system threshold |

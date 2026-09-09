@@ -134,7 +134,8 @@ The App's commitment to users (aligned with `PrivacyInfo.xcprivacy`):
 - **The App does not upload events to "our" servers** (CloudKit / Game Center are provided by Apple)
 
 Legitimate Apple upstream channels (users can disable in Settings):
-- MetricKit `MXMetricPayload` → ASC Power & Performance (*Settings → Privacy → Analytics & Improvements*)
+- MetricKit `MXMetricPayload` / `MXDiagnosticPayload` — delivered **to the App itself**, not to Apple; this is in-app telemetry, not an upload channel
+- ASC Power & Performance (*Settings → Privacy → Analytics & Improvements*, user opt-in device analytics) — a separate channel Apple collects independently of MetricKit
 - Game Center scores / achievements (*Settings → Game Center*)
 - ASC crash reports / TestFlight beta crashes (when the user enables Share Analytics)
 - sysdiagnose (when the user actively shares via Feedback Assistant; OSLog `.private` is redacted here)
