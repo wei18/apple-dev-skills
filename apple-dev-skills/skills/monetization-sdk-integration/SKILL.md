@@ -118,7 +118,7 @@ A test target for the bridge ships `Fake<SdkName>Bridge` (actor or class). All u
 - **"Skip the Fake for now, we'll add it later"** — NO. Unit tests must work from day one; integrating SDK without a test seam means every test becomes integration-test territory.
 - **"Macros + canImport are too verbose; let's drop conditional gating for v2"** — NO. macOS build will break the moment a maintainer runs `swift build` on a Mac, blocking PRs.
 - **"Production IDs in source for ease of swap"** — NO. Use build-config injection (`build-time-secret-injection`); a `fatalError` guard is acceptable only as a transitional step before that lands.
-- **"PrivacyInfo.xcprivacy can wait until submission"** — NO. Upload-time checks only catch (a) undeclared required-reason API use and (b) a listed third-party SDK missing its manifest/signature — GoogleMobileAds and UserMessagingPlatform are not on that list, and nothing checks whether your tracking declaration matches. The real cost lands later: `NSPrivacyTrackingDomains` gaps break ad requests at runtime, and a mismatched privacy label is a 5.1.x rejection. Update PrivacyInfo BEFORE adding the SDK.
+- **"PrivacyInfo.xcprivacy can wait until submission"** — NO. Upload-time checks only catch (a) undeclared required-reason API use and (b) a listed third-party SDK missing its manifest/signature — GoogleMobileAds and UserMessagingPlatform are not on that list, and nothing checks whether the app's tracking declaration matches. The real cost lands later: `NSPrivacyTrackingDomains` gaps break ad requests at runtime, and a mismatched privacy label is a 5.1.x rejection. Update PrivacyInfo BEFORE adding the SDK.
 
 ## Pre-integration checklist
 

@@ -111,7 +111,7 @@ The substitution-resolution check must run against the **built bundle's** Info.p
 ```swift
 // ❌ WRONG — reads source plist, gets literal "$(ADMOB_BANNER_UNIT_ID)" — passes falsely
 // (ADMOB_BANNER_UNIT_ID is this project's own xcconfig key name, not one Google defines —
-// see the "AdMob env keys pattern" section below.)
+// see the multi-app xcconfig rendering above.)
 let plist = try PropertyListSerialization.propertyList(from: sourceData, ...)
 #expect((plist["ADMOB_BANNER_UNIT_ID"] as? String)?.isEmpty == false)  // passes for "$(...)" string
 
@@ -128,7 +128,7 @@ A future PR should add a build-phase script that asserts no `$()` literals survi
 
 ## Anti-patterns to refuse
 
-1. **Production IDs in code comments, docstrings, PR descriptions, commit messages, or `Info.plist <!-- -->` blocks.** Even when the value field uses a sandbox stand-in, the surrounding prose leaks production via git history. **Including the literal ID anywhere in tracked text — even prefixed by TODO / FIXME / "will-replace" — IS the leak.** Reference a project-memory or secrets file by name; never paste the value inline.
+1. **Production IDs in code comments, docstrings, PR descriptions, commit messages, or `Info.plist <!-- -->` blocks.** Even when the value field uses a sandbox stand-in, the surrounding prose leaks production via git history. **Including the literal ID anywhere in tracked text — even prefixed by TODO / FIXME / "will-replace" — IS the leak.** Reference the out-of-repo vault entry or the gitignored secrets file by name; never paste the value inline.
 
 2. **Hardcoded production IDs in `Live.swift` with intent to "swap before release"** without an enforcement mechanism. The interim `fatalError("REPLACE_BEFORE_RELEASE: ...")` pattern is acceptable as a TRANSITIONAL guard paired with xcconfig migration, but is forbidden as a long-term standalone solution. Once xcconfig is in place, replace with: Info.plist `$()` + runtime guard verifying `Bundle.main.object(forInfoDictionaryKey:)` returns non-empty AND non-`$(...)`.
 
@@ -154,7 +154,7 @@ A future PR should add a build-phase script that asserts no `$()` literals survi
 4. If Layer 1: add `$(KEY)` substitution to `Info.plist`; add reading code via `Bundle.main` with guard (cover nil / empty / `$(...)` literal); add smoke test for key presence in source plist
 5. If Layer 1 CI path: extend `ci_post_clone.sh` to write the new KEY from XCC env var with `${VAR:?missing message}` fail-fast; if multi-app, branch on `$CI_XCODE_SCHEME`
 6. Run `grep -r "<real-prod-value>" .` (excluding gitignored dirs) — must return zero hits
-7. Update memory `<domain>-credentials.md` to record real values + reference this skill by name
+7. Record the real values in the out-of-repo secret store (password manager / team vault) and note which entry holds them — never in a tracked file
 
 ## Verification checklist (audit existing implementations)
 

@@ -43,7 +43,7 @@ telemetry.observe(.puzzleCompleted(id: puzzleId, durationMs: 12_345))
 |---|---|---|
 | `OSLogSink` | All events | Human-readable debug messages |
 | `TrackingSink` (default `NoOpTrackingSink`) | Business events | v1 has no third-party tracking but the protocol is reserved; future swaps require zero call-site changes |
-| `MetricKitSink` | Subscribes via `MXMetricManager.shared.add(self)`; on receiving `MXMetricPayload`, broadcasts to other sinks | Performance / diagnostics persistence — `MXMetricManagerSubscriber` inherits `NSObjectProtocol`, so `MetricKitSink` must be an `NSObject` subclass, not a struct or actor |
+| `MetricKitSink` | Subscribes via `MXMetricManager.shared.add(self)`; on receiving `MXMetricPayload`, broadcasts to other sinks | Performance / diagnostics persistence — `MXMetricManagerSubscriber` inherits `NSObjectProtocol`, so `MetricKitSink` must be an `NSObject` subclass, not a struct or actor. An `NSObject` subclass *can* conform to a `Sendable` sink protocol, but only while every stored property is immutable — a `var` there fails with "stored property … is mutable". Hold subscription state behind `@MainActor` or a `Mutex`, or mark the class `@unchecked Sendable` and synchronise it yourself |
 | `GameCenterSink` (games) | Completion / achievement events | Submit score / unlock achievement |
 
 ```swift
