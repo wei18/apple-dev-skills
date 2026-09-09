@@ -109,7 +109,11 @@ for name, (plugin, d) in skills.items():
             if pl in PLUGINS and sk not in skills: add("BLOCKER", name, "broken plugin:skill ref", tok)
             if pl in PLUGINS and sk in skills and skills[sk][0] != pl: add("BLOCKER", name, "ref to wrong plugin", tok)
         elif tok in skills and tok != name:
-            if skills[tok][0] != plugin: add("MAJOR", name, "bare cross-plugin ref (dangling if other plugin not installed)", f"{tok} -> use {skills[tok][0]}:{tok}")
+            # A line listing three or more skill names is an enumeration
+            # (naming conventions, catalogues), not a cross-reference pointer.
+            line = next((l for l in body.splitlines() if f"`{tok}`" in l), "")
+            enumeration = sum(1 for s2 in skills if f"`{s2}`" in line) >= 3
+            if skills[tok][0] != plugin and not enumeration: add("MAJOR", name, "bare cross-plugin ref (dangling if other plugin not installed)", f"{tok} -> use {skills[tok][0]}:{tok}")
     # --- prose triggers that official `paths:` could replace
     m = PATHS_HINT.search(desc + "\n" + body[:1500])
     if m and "paths" not in fm: add("MINOR", name, "prose file-trigger; candidate for paths:", m.group(0))

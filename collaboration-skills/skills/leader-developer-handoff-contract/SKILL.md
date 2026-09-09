@@ -1,6 +1,6 @@
 ---
 name: leader-developer-handoff-contract
-description: When the main agent dispatches a sub-agent, the prompt MUST include 5 elements — (1) task scope with verifiable target, (2) files / docs the sub-agent should read, (3) explicit skill list to invoke, (4) expected return format (diff / markdown section / decision text), (5) verification criteria. Invoke when about to dispatch a sub-agent (Developer / Designer / Code Reviewer), writing the dispatch prompt, or when asked "what should the sub-agent prompt include".
+description: Shape the prompt a Leader sends when dispatching a sub-agent (Developer, Designer, Code Reviewer, drafting agent) so the result comes back verifiable and integrable. Use when about to call the Agent tool, writing or reviewing a dispatch prompt, deciding what a sub-agent must read or which skills it must invoke, or when asked "what should the sub-agent prompt include" / "which element am I missing". Does NOT own how many review rounds to run or how findings are adjudicated (subagent-review-cycles), nor the impl-notes file format (agent-impl-notes-log).
 ---
 
 # Leader → Developer Handoff Contract
