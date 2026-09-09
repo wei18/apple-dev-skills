@@ -19,7 +19,12 @@ description: Single `Telemetry` SwiftPM target with a fan-out facade — callers
 - Create one `Telemetry` target inside the SwiftPM Package.
 - It contains:
   - `TelemetryEvent` value type (enum / struct, `Sendable`)
-  - `TelemetrySink` protocol
+  - `TelemetrySink` protocol:
+    ```swift
+    public protocol TelemetrySink: Sendable {
+        func receive(_ event: TelemetryEvent) async
+    }
+    ```
   - The main facade — default to a `Telemetry` **actor**. Sink stateful subscriptions (e.g. `MetricKitSink` holding `MXMetricManagerSubscriber` reference identity) require an actor for clean lifecycle management. A `Sendable` struct facade is acceptable only when every sink is fully synchronous and stateless. The facade fans out to multiple sinks.
   - Default sinks (see below)
 
@@ -44,7 +49,7 @@ telemetry.observe(.puzzleCompleted(id: puzzleId, durationMs: 12_345))
 ```swift
 public struct NoOpTrackingSink: TelemetrySink {
     public init() {}
-    public func receive(_ event: TelemetryEvent) { /* intentionally empty */ }
+    public func receive(_ event: TelemetryEvent) async { /* intentionally empty */ }
 }
 ```
 
@@ -56,7 +61,7 @@ public struct NoOpTrackingSink: TelemetrySink {
 #### Wiring traps (hard-won — real project lessons)
 
 A sink that *exists as a type* is worth **zero** until it is in the **live** sinks
-array. Four traps, in the order they bit:
+array. Five traps, in the order they bit:
 
 1. **Existing-but-unwired = dead code.** Real-world example: a `GameCenterSink`/`AchievementEvaluator`
    were fully written but never added to the live `Telemetry` sinks list

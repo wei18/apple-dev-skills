@@ -54,7 +54,7 @@ and hit targets are cheaper to build in than to retrofit.
 ### Drop down to iOS 17 / macOS 14 or lower
 
 - **Trigger**: education, enterprise intranet, or low-end markets with a large older-device pool.
-- **Cost**: everything above, plus loss of full Observation behaviour, SwiftData fixes, and parts of Swift 6 mode checking.
+- **Cost**: everything above, plus the Swift 6 runtime-dependent features that need an iOS 18 runtime (full SE-0427 noncopyable-generics support) and iOS 18+ SwiftData fixes. Note what a lower floor does *not* cost: `@Observable` has been available since iOS 17.0, and Swift 6 language-mode checking is a compile-time toolchain feature independent of the deployment target.
 - **Advice**: record which APIs are off-limits and which behaviours need polyfills.
 
 ### Bump up to iOS 27 / macOS 27 (or newer)

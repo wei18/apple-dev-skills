@@ -97,7 +97,7 @@ Common traps: eager `CKContainer.default()` on the main thread (hangs until enti
 
 ## Memory
 
-**Footprint vs leaks**: Instruments Allocations shows the heap; use `vmmap` or the Memory Debugger in Xcode to see the full virtual memory map (dirty pages, compressed pages, mapped files). The OS terminates apps that exceed their footprint budget silently — `JETSAM_REASON_HIGH_WATER_MARK` in the crash log. Reduce by:
+**Footprint vs leaks**: Instruments Allocations shows the heap; use `vmmap` or the Memory Debugger in Xcode to see the full virtual memory map (dirty pages, compressed pages, mapped files). The OS terminates apps that exceed their footprint budget silently — a JetsamEvent log entry whose reason reads `per-process-limit` (or `highwater`). Reduce by:
 
 - **Image downsampling**: never decode a 4K image to display it at 100 pt. Use `ImageIO` with `kCGImageSourceThumbnailMaxPixelSize` or `UIGraphicsImageRenderer` to decode at display resolution.
 
@@ -134,7 +134,7 @@ Large binaries increase download time and App Store review scrutiny. Primary lev
 
 ## MetricKit — field performance telemetry
 
-MetricKit delivers on-device aggregated performance metrics to your app once per day (and immediately for diagnostic payloads on device disconnect from Xcode):
+MetricKit delivers on-device aggregated performance metrics to your app once per day (diagnostic payloads are delivered immediately, with no disconnect-from-Xcode condition, since iOS 15 / macOS 12):
 
 ```swift
 import MetricKit
@@ -191,7 +191,7 @@ func testScrollPerformance() {
 }
 ```
 
-`measure {}` runs the block 5 times (by default) and records the mean. On first run, set the baseline via the inline editor in Xcode. Subsequent runs fail if the result exceeds `baseline * (1 + maxStandardDeviations)` — configurable per metric. Commit baselines in `.xcbaseline` files alongside the test file.
+`measure {}` runs the block 5 times (by default) and records the mean. On first run, set the baseline via the inline editor in Xcode. Subsequent runs fail on either of two independent thresholds, both configurable per metric: **Max % Relative Standard Deviation** (default 10%) and **Max % Deviation** from the baseline average (default 10%) — exceeding either one fails the test; it is not a single product formula. Commit baselines in `.xcbaseline` files alongside the test file.
 
 For server-side CI (where a physical display is unavailable), use `XCTCPUMetric` and `XCTMemoryMetric` in unit tests that exercise logic without UIKit rendering. UI performance metrics require a simulator or device with an active display session.
 
@@ -204,7 +204,7 @@ For server-side CI (where a physical display is unavailable), use `XCTCPUMetric`
 - `os_signpost` intervals added around any operation expected to take > 16 ms.
 - `MXMetricManagerSubscriber` registered in the composition root; payloads forwarded to the telemetry sink.
 - `XCTMetric` baseline committed for the primary performance-sensitive test; CI fails on regression.
-- No synchronous network or file I/O on the main thread (audited via Thread Sanitizer and code review).
+- No synchronous network or file I/O on the main thread (audited via the Hangs instrument, Main Thread Checker, and `os_signpost` around suspect call sites — Thread Sanitizer only detects data races and will not flag this).
 - Image assets decoded at display resolution, not source resolution.
 - Binary size measured with `-Osize` before each major release; asset catalog slices verified.
 

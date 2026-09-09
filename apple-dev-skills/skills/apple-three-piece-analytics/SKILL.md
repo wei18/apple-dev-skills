@@ -24,9 +24,9 @@ Owns the source-selection decision and its PrivacyInfo/ATT consequence. Does NOT
 |---|---|---|
 | **App Store Connect Analytics** | Downloads, sessions, active devices, retention, sources, store conversion | App Store Connect web |
 | **MetricKit** (`MXMetricPayload`, `MXDiagnosticPayload`) | Performance & diagnostics: crash / hang / launch time / jank / energy / memory | The App receives them → persist to log / optionally upload later |
+| **Game Center** (if it's a game) | Leaderboards / achievement completion / peer-player comparison | Game Center API / Game Center app |
 
 > **macOS caveat**: macOS 12–15 only send `MXDiagnosticPayload`; macOS 26 and later send a daily `MXMetricPayload` just like iOS. Only a deployment target below macOS 26 needs to fall back to App Store Connect Analytics + targeted `OSSignposter` traces.
-| **Game Center** (if it's a game) | Leaderboards / achievement completion / peer-player comparison | Game Center API / Game Center app |
 
 ### Privacy / Manifest
 
@@ -51,7 +51,7 @@ Owns the source-selection decision and its PrivacyInfo/ATT consequence. Does NOT
 ### Adopt TelemetryDeck (privacy-friendly first)
 
 - **Trigger**: actually need the micro-behaviour stream of "which button, where do users get stuck".
-- **Priority**: TelemetryDeck > Firebase (the latter has heavier privacy burden, needs ATT, and many PrivacyInfo entries).
+- **Priority**: TelemetryDeck > Firebase — Firebase does not access the IDFA and does not require ATT, and has shipped its own `PrivacyInfo.xcprivacy` since 10.22.0 (2024-03); the reason to prefer TelemetryDeck is the smaller data-collection disclosure surface (tracking domains, more collected-data-type entries) and build size.
 - **How to integrate**: swap in the `TrackingSink` implementation via `telemetry-facade-pattern`; call sites change nothing.
 
 ### Adopt Sentry / Crashlytics
