@@ -49,6 +49,10 @@ Mode: <e.g. AI Collaboration Mode (Leader/Developer)>
 ## Goal
 <one-line statement of the session's goal>
 
+## Timeline (milestones only)
+- <milestone 1, e.g. "§How.3 round 1 accepted">
+- <milestone 2, e.g. "Code Reviewer dispatch produced 7 BLOCKERs">
+
 ## Decisions
 1. <decision 1>
 2. <decision 2>
@@ -80,7 +84,7 @@ Mode: <e.g. AI Collaboration Mode (Leader/Developer)>
 ## Verification checklist
 
 - Filename format `YYYY-MM-DD_<topic-kebab>.md`, date in local timezone.
-- Contains the six main sections: Goal / Decisions / Rejected alternatives / Hand-offs / Open questions / Next session.
+- Contains the seven main sections: Goal / Timeline / Decisions / Rejected alternatives / Hand-offs / Open questions / Next session.
 - Entries are summaries, never verbatim copies.
 - No secrets / tokens / PII.
 - If the session spans multiple days, add a phase tag to the topic (e.g. `kickoff` / `spec-phase` / `cr-round1`).

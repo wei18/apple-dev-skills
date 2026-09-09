@@ -64,7 +64,7 @@ apple-dev-skills 是一個 **marketplace**，服務對象是正在把一個點�
 | `mise-tool-management` | 用 mise 釘住 CLI 工具版本（swiftlint、xcbeautify…），讓本機開發與 CI 用同一個版本 |
 | `oslog-logger-defaults` | 預設的 logging 設定：Apple 自家 `os.Logger`，不用第三方函式庫，log 值預設 private，除非你自己 opt-in |
 | `apple-three-piece-analytics` | App Store Connect (ASC) Analytics + MetricKit + Game Center；不用第三方追蹤；PrivacyInfo 必備 |
-| `telemetry-facade-pattern` | 一次 logging 呼叫，路由到 OSLog / MetricKit / Game Center —— 換目的地不必動呼叫端 |
+| `telemetry-facade-pattern` | 一次 `observe(event)` 呼叫扇出到 OSLog / tracking / Game Center 等 sink，MetricKit payload 反向作為事件餵入 —— 換 sink 不必動呼叫端 |
 | `ai-translated-localization` | 預設 7 個語系；AI 翻譯流程；`Localizable.xcstrings`；完整度把關 |
 | `ios-accessibility-engineering` | SwiftUI 與 UIKit 的 VoiceOver / Dynamic Type / 觸控目標 / Reduce Motion；WCAG 2.2 |
 | `swift-dependency-injection` | 讓服務可以為了測試替換 —— protocol 注入 + composition root（environment vs constructor、`@TaskLocal`、Sendable） |
@@ -185,4 +185,4 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 此處僅以引用方式呈現。催生本 repo 雙 plugin 結構的設計 spec 與計畫原本放在 `docs/superpowers/`
 —— 已退役、改由 git 歷史保存；用 `git log -- docs/` 可以找回。MIT —— 見 [LICENSE](LICENSE)。
 
-<!-- src-sha: f164342e405c92e1e12f5c2d33c64ee2ca162293 -->
+<!-- src-sha: 6ca9308d6d090b68a617b53e6b76ea1b37790148 -->

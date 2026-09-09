@@ -67,7 +67,7 @@ Full index in the tables below.
 | `mise-tool-management` | Pin CLI tool versions (swiftlint, xcbeautify…) with mise, so local dev and CI use the exact same ones |
 | `oslog-logger-defaults` | Default logging setup: Apple's own `os.Logger`, no third-party library, log values private unless you opt in |
 | `apple-three-piece-analytics` | App Store Connect (ASC) Analytics + MetricKit + Game Center; no third-party tracking; PrivacyInfo mandatory |
-| `telemetry-facade-pattern` | One logging call, routed to OSLog / MetricKit / Game Center — swap where events go without touching call sites |
+| `telemetry-facade-pattern` | One `observe(event)` call fanned out to OSLog / tracking / Game Center sinks, with MetricKit payloads fed in as events — swap sinks without touching call sites |
 | `ai-translated-localization` | Default 7 locales; AI translation flow; `Localizable.xcstrings`; completeness gates |
 | `ios-accessibility-engineering` | VoiceOver / Dynamic Type / touch-target / Reduce Motion for SwiftUI & UIKit; WCAG 2.2 |
 | `swift-dependency-injection` | Make services swappable for tests — protocol injection + a composition root (environment vs constructor, `@TaskLocal`, Sendable) |

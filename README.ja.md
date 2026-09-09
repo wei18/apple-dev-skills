@@ -71,7 +71,7 @@ Claude Codeのsession内で実行します。
 | `mise-tool-management` | miseでCLIツールのバージョンを固定（swiftlint、xcbeautify…）——ローカル開発とCIで同じバージョンを使う |
 | `oslog-logger-defaults` | デフォルトのlogging設定：Apple純正の`os.Logger`、サードパーティ不使用、opt-inしない限りログ値はprivate |
 | `apple-three-piece-analytics` | App Store Connect (ASC) Analytics + MetricKit + Game Center；サードパーティトラッキング不使用；PrivacyInfoは必須 |
-| `telemetry-facade-pattern` | logging呼び出しは1つ、OSLog / MetricKit / Game Centerへルーティング——呼び出し側を変えずに送り先を差し替えられる |
+| `telemetry-facade-pattern` | `observe(event)` 呼び出し1つをOSLog / tracking / Game Centerの各sinkへファンアウト。MetricKitのpayloadは逆にイベントとして流し込む——呼び出し側を変えずにsinkを差し替えられる |
 | `ai-translated-localization` | デフォルトで7言語；AI翻訳フロー；`Localizable.xcstrings`；網羅性ゲート |
 | `ios-accessibility-engineering` | SwiftUIとUIKitにおけるVoiceOver / Dynamic Type / タップ領域 / Reduce Motion；WCAG 2.2 |
 | `swift-dependency-injection` | テストのためにサービスを差し替え可能にする——protocol注入 + composition root（environment vs constructor、`@TaskLocal`、Sendable） |
@@ -205,4 +205,4 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 `docs/superpowers/`にありました——現在は廃止され、git履歴として保存されています。
 `git log -- docs/`で見つけることができます。MIT——[LICENSE](LICENSE)を参照してください。
 
-<!-- src-sha: f164342e405c92e1e12f5c2d33c64ee2ca162293 -->
+<!-- src-sha: 6ca9308d6d090b68a617b53e6b76ea1b37790148 -->
