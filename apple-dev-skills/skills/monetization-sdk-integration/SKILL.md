@@ -151,4 +151,4 @@ If any field is "TBD" or "?", do NOT proceed — research first.
 ## Related skills
 
 - `build-time-secret-injection` — SIBLING; invoke together when wiring AdMob — that skill is the secret-handling layer (xcconfig injection), this skill is the SDK isolation and testing contract.
-- `app-store-review-rejections` — cites this skill's isolation contract when checking the Restore Purchases requirement under guideline 3.1.1.
+- `storekit2-iap-defaults` — same bridge-isolation pattern for the IAP side; `app-store-review-rejections` — ATT / PrivacyInfo consequences of shipping AdMob (5.1.2).

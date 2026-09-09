@@ -78,6 +78,9 @@ pixels (above) is the only viable content gate.
 
 ```
             ┌─────────────────────┐
+            │  E2E (host-driven,  │  Fewest, slowest — launches the real
+            │  XCUITest)          │  app (`host-driven-xcuitest-e2e`)
+            ├─────────────────────┤
             │  Snapshot (UI)      │  Few, starting from main screens
             ├─────────────────────┤
             │  Integration        │  With fakes
@@ -125,3 +128,4 @@ pixels (above) is the only viable content gate.
 - `xcode-cloud-single-track-ci`: CI Xcode lock and when PR CI runs tests.
 - `mise-tool-management`: CLI tools the test run shells out to (xcbeautify …) are pinned via mise; Xcode itself is not.
 - `cloudkit-schema-source-of-truth`: this skill's "unentitled runner" section is the seam that keeps live CloudKit/Game Center access — and the schema SSOT concerns it gates — out of the unentitled SwiftPM test run; use its test-doubles instead of a live container.
+- `host-driven-xcuitest-e2e`: the E2E tier above this pyramid — launches the real app instead of running inside the unentitled SwiftPM test run.

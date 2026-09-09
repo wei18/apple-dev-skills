@@ -102,8 +102,8 @@ key lives in a gitignored `secrets/` dir, rather than moving the real file.
 (outside-the-App-Store distribution), unrelated to TestFlight/App Store
 uploads. There is also **no ASC REST endpoint for binary upload**
 (`asc-api-automation`'s own scope note): Xcode Cloud, Xcode Organizer,
-`xcodebuild -exportArchive` (`destination: upload`), and `altool` are the only
-upload paths that exist.
+`xcodebuild -exportArchive` (`destination: upload`), `altool`, and Transporter
+are the only upload paths that exist.
 
 ## Build-number coordination with Xcode Cloud
 

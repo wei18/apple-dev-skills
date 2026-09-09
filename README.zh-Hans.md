@@ -111,7 +111,7 @@ swift-testing + snapshot、只用 OSLog、已知的运行时 bug 要避开）。
 
 | Plugin | 作者 | 涵盖范围 |
 |---|---|---|
-| [`apple-skills`](https://github.com/Prisma-Labs-Dev/apple-skills) | Prisma Labs (vabole), MIT | 广泛的 Apple 框架 —— SwiftUI、SwiftData、App Intents、WidgetKit、StoreKit、HealthKit… |
+| [`apple-skills`](https://github.com/Prisma-Labs-Dev/apple-skills) | Prisma Labs (vabole), MIT | 广泛的 Apple 框架 —— SwiftUI、SwiftData、App Intents、WidgetKit、StoreKit、HealthKit……以及一份 SwiftUI 性能审计指南（代码优先、view-update 成因），与 `ios-performance-engineering` 的 Instruments / MetricKit 测量互补 |
 | [`swiftui-expert`](https://github.com/AvdLee/SwiftUI-Agent-Skill) | Antoine van der Lee (MIT) | SwiftUI 模式、Swift Charts、Liquid Glass、Instruments 工具链 |
 | [`swiftui-pro`](https://github.com/twostraws/SwiftUI-Agent-Skill) | Paul Hudson (MIT) | SwiftUI 陷阱、deprecated API 观察清单、iOS 26 / Liquid Glass |
 | [`caveman`](https://github.com/JuliusBrussee/caveman) | JuliusBrussee (MIT) | 极度压缩的沟通模式 —— 省下约 75% token（通用 agent 行为） |
@@ -185,4 +185,4 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 此处仅以引用方式呈现。催生本 repo 双 plugin 结构的设计 spec 与计划原本放在 `docs/superpowers/`
 —— 已退役、改由 git 历史保存；用 `git log -- docs/` 可以找回。MIT —— 见 [LICENSE](LICENSE)。
 
-<!-- src-sha: 21b110d4b0af1826e2b40aed5e8c695d5e2a1cb2 -->
+<!-- src-sha: f164342e405c92e1e12f5c2d33c64ee2ca162293 -->

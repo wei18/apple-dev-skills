@@ -18,7 +18,7 @@ This catalog's default way to drive App Store Connect from scripts and CI: an Ap
 
 Owns: token minting, curl conventions, and the endpoint cookbook below. Does NOT own:
 
-- **Building / uploading the binary** — there is no REST endpoint for `.ipa` upload; builds arrive in ASC via Xcode Cloud (→ `xcode-cloud-single-track-ci`), Xcode Organizer, or Transporter. This skill picks up *after* the build exists in ASC.
+- **Building / uploading the binary** — there is no REST endpoint for `.ipa` upload; builds arrive in ASC via Xcode Cloud (→ `xcode-cloud-single-track-ci`), a local `xcodebuild -exportArchive` / `xcrun altool` run (→ `local-archive-export-upload`), Xcode Organizer, or Transporter. This skill picks up *after* the build exists in ASC.
 - **`.p8` key storage & leak prevention** → `build-time-secret-injection` (Layer 2 `secrets/.env`) + `apple-public-repo-security` (rotate-first SOP).
 - **What metadata will pass review** → `app-store-review-rejections`; this skill is *how* to submit, not *what*.
 
@@ -168,7 +168,7 @@ budget a manual, one-time (or rarely-repeated) click in the ASC web UI.
 1. **`iss` set to Team ID** — ASC API wants the **Issuer ID** (UUID); Team ID belongs to other Apple JWTs (e.g. APNs). Symptom: 401 `NOT_AUTHORIZED` with a well-formed token.
 2. **`exp` more than 20 minutes ahead** — token rejected outright; also watch local clock skew on `iat`.
 3. **openssl-signed tokens failing** — `openssl dgst` emits a DER-encoded signature; JWT ES256 requires the raw 64-byte r‖s form. CryptoKit's `rawRepresentation` is already correct.
-4. **Uploading the binary via REST** — no such endpoint exists; route builds through Xcode Cloud / Organizer / Transporter.
+4. **Uploading the binary via REST** — no such endpoint exists; route builds through Xcode Cloud, `local-archive-export-upload`, Organizer, or Transporter.
 5. **Ignoring pagination** — the default page size silently truncates; always `limit=200` + follow `links.next`.
 6. **Parsing `salesReports` as JSON** — it's a gzipped TSV file.
 7. **Tight-polling build processing or analytics** without reading `X-Rate-Limit` — 429 locks out every consumer of the key.
@@ -190,6 +190,7 @@ budget a manual, one-time (or rarely-repeated) click in the ASC web UI.
 ## Related skills
 
 - `xcode-cloud-single-track-ci` — build & upload side; this skill starts after the build exists in ASC
+- `local-archive-export-upload` — the local `xcodebuild -exportArchive` / `altool` upload path; this skill starts after the build exists in ASC
 - `build-time-secret-injection` — where `ASC_KEY_ID` / `ASC_ISSUER_ID` / the `.p8` live (Layer 2 `secrets/.env`)
 - `apple-public-repo-security` — `.p8` leak prevention and the rotate-first SOP
 - `app-store-review-rejections` — *what* to submit so review passes; this skill is *how* to submit

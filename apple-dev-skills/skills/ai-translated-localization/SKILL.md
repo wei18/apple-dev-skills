@@ -191,7 +191,7 @@ buries the real change. Splicing keeps a clean, reviewable diff (real example:
 
 ## Verification checklist
 
-- `Localizable.xcstrings` exists and each key has 7 locale entries (2 for the minimum set).
+- `Localizable.xcstrings` exists and each key has an entry for every declared locale (2 for the minimum set).
 - App Store Connect metadata is complete per locale (including screenshot captions).
 - Game Center / achievement display names are complete per locale.
 - `PrivacyInfo.xcprivacy` description itself doesn't need to be multi-locale, but the corresponding App Store privacy policy page does.

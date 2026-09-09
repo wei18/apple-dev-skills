@@ -116,7 +116,7 @@ level of detail.
 
 | Plugin | Author | Covers |
 |---|---|---|
-| [`apple-skills`](https://github.com/Prisma-Labs-Dev/apple-skills) | Prisma Labs (vabole), MIT | Broad Apple frameworks — SwiftUI, SwiftData, App Intents, WidgetKit, StoreKit, HealthKit … |
+| [`apple-skills`](https://github.com/Prisma-Labs-Dev/apple-skills) | Prisma Labs (vabole), MIT | Broad Apple frameworks — SwiftUI, SwiftData, App Intents, WidgetKit, StoreKit, HealthKit …, and a SwiftUI performance audit guide (code-first, view-update causes) that complements `ios-performance-engineering`'s Instruments/MetricKit measurement |
 | [`swiftui-expert`](https://github.com/AvdLee/SwiftUI-Agent-Skill) | Antoine van der Lee (MIT) | SwiftUI patterns, Swift Charts, Liquid Glass, Instruments toolchain |
 | [`swiftui-pro`](https://github.com/twostraws/SwiftUI-Agent-Skill) | Paul Hudson (MIT) | SwiftUI pitfalls, deprecated-API watchlist, iOS 26 / Liquid Glass |
 | [`caveman`](https://github.com/JuliusBrussee/caveman) | JuliusBrussee (MIT) | Ultra-compressed communication mode — cuts ~75% of tokens (general agent behavior) |

@@ -121,7 +121,7 @@ OSLogのみ、避けるべき既知の実行時バグ）。トピックが重な
 
 | Plugin | Author | Covers |
 |---|---|---|
-| [`apple-skills`](https://github.com/Prisma-Labs-Dev/apple-skills) | Prisma Labs (vabole), MIT | 幅広いAppleフレームワーク——SwiftUI、SwiftData、App Intents、WidgetKit、StoreKit、HealthKit… |
+| [`apple-skills`](https://github.com/Prisma-Labs-Dev/apple-skills) | Prisma Labs (vabole), MIT | 幅広いAppleフレームワーク——SwiftUI、SwiftData、App Intents、WidgetKit、StoreKit、HealthKit……に加え、SwiftUIパフォーマンス監査ガイド（コードファースト、view-update要因）も収録。`ios-performance-engineering` のInstruments / MetricKit計測と相補的 |
 | [`swiftui-expert`](https://github.com/AvdLee/SwiftUI-Agent-Skill) | Antoine van der Lee (MIT) | SwiftUIパターン、Swift Charts、Liquid Glass、Instrumentsツールチェーン |
 | [`swiftui-pro`](https://github.com/twostraws/SwiftUI-Agent-Skill) | Paul Hudson (MIT) | SwiftUIの落とし穴、非推奨APIのウォッチリスト、iOS 26 / Liquid Glass |
 | [`caveman`](https://github.com/JuliusBrussee/caveman) | JuliusBrussee (MIT) | 超圧縮されたコミュニケーションモード——トークンを約75%削減（汎用的なagentの振る舞い） |
@@ -205,4 +205,4 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 `docs/superpowers/`にありました——現在は廃止され、git履歴として保存されています。
 `git log -- docs/`で見つけることができます。MIT——[LICENSE](LICENSE)を参照してください。
 
-<!-- src-sha: 21b110d4b0af1826e2b40aed5e8c695d5e2a1cb2 -->
+<!-- src-sha: f164342e405c92e1e12f5c2d33c64ee2ca162293 -->
