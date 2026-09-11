@@ -16,7 +16,18 @@ description: Measure and fix iOS/macOS performance with Instruments (Time Profil
 
 ## Instruments — the primary measurement tool
 
-Never guess at a performance problem; profile first. Instruments ships with Xcode. Key templates:
+Never guess at a performance problem; profile first. Instruments ships with Xcode.
+
+| Symptom | Instrument / template | Metric to read |
+|---|---|---|
+| High CPU / slow interactive path | Time Profiler | inverted call tree, self time > 5 ms on main thread |
+| Unbounded memory growth | Allocations (Generation) | allocations that grow across repeated actions |
+| Scroll / animation stutter | Animation Hitches | `hitch rate` (ms of hitch per second) |
+| Main-thread freeze / spin | Hangs | block duration ≥ 250 ms |
+| Slow cold launch | App Launch | time to first committed frame |
+| Excessive SwiftUI re-renders | SwiftUI instrument | body invocation count, triggering property |
+
+Key templates in detail:
 
 **Time Profiler** — samples the call stack at ~1 kHz. Reveals which functions consume CPU time. After recording, invert the call tree and hide system libraries to surface your own hot paths. A function taking >5 ms on the main thread in an interactive path is a candidate for offloading.
 
@@ -24,7 +35,7 @@ Never guess at a performance problem; profile first. Instruments ships with Xcod
 
 **SwiftUI instrument** — records View body invocation counts, `@State` change propagation, and diffing cost. Xcode 26 introduced a next-generation SwiftUI instrument that tracks the causes of each update. A body that fires more than expected usually means a dependency is too coarse (e.g. observing the whole model when only one field is needed). The instrument shows which property change triggered each body re-render.
 
-**Hangs instrument** (Xcode 14+) — captures main-thread spins longer than a configurable threshold (default 250 ms). Apple classifies blocks 250–500 ms as micro-hangs and ≥500 ms as full hangs. Pairs with the **App Launch** template for pre-first-frame blocking. The system also generates `MXHangDiagnostic` on-device (see MetricKit below).
+**Hangs instrument** (Xcode 14+) — captures main-thread spins longer than a configurable threshold (default 250 ms). Apple's tooling reports hangs starting at 250 ms; on-device hang detection can be tuned from 250 ms up to several seconds depending on the diagnostic. Pairs with the **App Launch** template for pre-first-frame blocking. The system also generates `MXHangDiagnostic` on-device (see MetricKit below).
 
 **Hitches** — a hitch occurs when a frame takes longer than one vsync interval to deliver, causing a visual stutter. On 60 Hz displays the budget is ~16.67 ms; on ProMotion (120 Hz) it halves to ~8.33 ms. Use the **Animation Hitches** instrument template (Hitches, Display, and Core Animation Commits tracks — the standalone "Core Animation" template no longer exists) to see committed frames and dropped frames. The `hitch rate` (ms of hitch per second of scrolling) is the standard metric: <5 ms/s is good; 5–10 ms/s is concerning (user notices interruptions); >10 ms/s is critical (greatly impacts UX) — per WWDC 2020 session 10077.
 
@@ -83,7 +94,7 @@ func loadData() async throws {
 
 For CPU-heavy processing (image decoding, compression, sorting large arrays), use `Task.detached(priority: .userInitiated)` or dispatch to a background `Actor`. Never use `DispatchQueue.global().async` in new Swift 6 code — prefer structured concurrency.
 
-One-shot bootstrapping on first appearance belongs in `.task` — the correct Apple-recommended modifier for async work tied to view lifetime. Verify async-lifecycle behavior on your toolchain if you encounter unexpected issues.
+One-shot bootstrapping on first appearance belongs in `.task` — the correct Apple-recommended modifier for async work tied to view lifetime. See `swiftui-interaction-footguns` for `.task` re-fire semantics on view identity changes.
 
 ## Launch time
 
@@ -168,7 +179,8 @@ MetricKit data reflects **real user conditions** (actual device, network, batter
 |---|---|
 | `MXCPUMetric` | Cumulative CPU time (user + system) |
 | `MXMemoryMetric` | Peak and average memory, average suspended memory |
-| `MXDisplayMetric` | Average pixel luminance (not hitch rate — use `MXAnimationMetric` — `scrollHitchTimeRatio`: ratio of hitch time while scrolling (field-measured)) |
+| `MXDisplayMetric` | Average pixel luminance (not the hitch signal) |
+| `MXAnimationMetric` | `scrollHitchTimeRatio` — field-measured ratio of hitch time while scrolling (the hitch signal) |
 | `MXDiskIOMetric` | Cumulative logical write bytes |
 | `MXHangDiagnostic` | Call tree for a main-thread hang > 250 ms |
 | `MXCrashDiagnostic` | Crash reason + call tree |
