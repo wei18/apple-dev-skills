@@ -42,19 +42,14 @@ For each concrete claim, grep the stat output. If the claim mentions a path that
 
 ### Step 3 — surface discrepancies
 
-If found:
-- Did `git commit --amend` or rebase squash the wrong content?
-- Did a worktree wipe lose commits before push?
-- Did a force-push from another branch overwrite this branch's commits (the "push wrong ref" footgun)?
-- Did the subagent return claim work that never got committed?
+| Symptom in stat | Likely cause | Recovery |
+|---|---|---|
+| Total LOC far off the claim (e.g. `+50/-3` vs "1-line fix") | `git commit --amend` or a rebase squashed the wrong content | Inspect `git show` on the commit; re-amend or split it |
+| File count doesn't match (`0 files changed` vs "refactored X module") | A worktree wipe lost commits before push | Restore from reflog (`git reflog \| grep <SHA>`); re-dispatch if truly unrecoverable |
+| A named file (e.g. `Foo.swift:42`) is missing from the stat | Subagent's report claimed work that never got committed | Cherry-pick from a sibling branch, or re-apply the edit manually |
+| `git log --oneline` shows a different commit count than expected | Unintended squash, or a force-push from another branch overwrote this branch's commits (the "push wrong ref" footgun) | Re-dispatch the subagent with explicit recovery instructions |
 
-Discrepancy resolution options:
-- Restore commits from reflog (`git reflog | grep <SHA>`)
-- Cherry-pick the missing commits from a sibling branch
-- Re-apply the lost edits manually
-- Re-dispatch the subagent with explicit recovery instructions
-
-## When the rule fired in this project
+## Failure modes seen in practice
 
 **"Commit log claims work, diff doesn't show it" (general pattern)**: this class of mistake recurs when (a) `git commit --amend` after partial revert loses hunks but keeps the original message, (b) force-push from a stale branch overwrites newer commits, (c) subagent returns a structured "I committed X" report but the commits never made it to the branch ref due to worktree wipe before push. Each failure mode is caught by the same single check: `git show --stat --summary HEAD` vs. the commit body.
 
@@ -71,19 +66,16 @@ This skill starts after commits exist; it does not prescribe commit granularity.
 
 ## Heuristics for "what to check"
 
-Cheap signals:
-- Total LOC: stat says +50 / -3; message says "1-line fix" → discrepancy
-- File count: stat says 0 files changed; message says "refactored X module" → loud bug
-- Specific filenames: message says "edit `Foo.swift:42`"; stat doesn't list `Foo.swift` → loud bug
-- Squash sanity: `git log --oneline` should show 1 commit (post-squash) OR the chain you intended
-
-Don't deep-read diffs as part of this skill — that's Code Reviewer's job. Just confirm the SHAPE matches the claims.
+The four symptom patterns are in the Step 3 table above — those are the cheap signals to
+scan for. Don't deep-read diffs as part of this skill — that's Code Reviewer's job. Just
+confirm the SHAPE matches the claims.
 
 **A verification/acceptance report's own summary numbers need the same check.** This failure
-mode has recurred (fifth occurrence): a report's headline count ("N items verified", "M files
-changed") doesn't match its own itemized table below it. Before trusting or forwarding such a
-report, re-count its table rows yourself and compare against the summary line it prints —
-don't take the summary number on faith just because it's inside a "verification" document.
+mode recurs often enough to warrant its own check: a report's headline count ("N items
+verified", "M files changed") doesn't match its own itemized table below it. Before trusting
+or forwarding such a report, re-count its table rows yourself and compare against the summary
+line it prints — don't take the summary number on faith just because it's inside a
+"verification" document.
 
 ## Example application
 
