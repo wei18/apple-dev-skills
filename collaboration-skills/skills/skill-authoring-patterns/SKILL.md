@@ -55,11 +55,12 @@ GOOD: description: VoiceOver / Dynamic Type / touch-target implementation for Sw
 
 ## The listing budget is catalog-wide, not per-skill
 
-Claude Code loads a listing of every skill's name + `description` into context on every session so the model knows what's available; the listing's character budget scales at **1% of the model's context window** (raise it with the `skillListingBudgetFraction` setting or the `SLASH_COMMAND_TOOL_CHAR_BUDGET` env var). Each entry's own `description` (+ `when_to_use`, if present — see below) is separately capped at **1,536 characters** regardless of that budget (`skillListingMaxDescChars`). When the total listing overflows the budget, Claude Code truncates descriptions **starting with the skills you invoke least** — your most-used skills keep their full text, your least-used ones lose theirs first. Run `/skill-doctor` (≥ v2.1.252) or `/doctor` to see the actual per-session listing cost measured, rather than estimating it. ([Claude Code docs, Skills](https://code.claude.com/docs/en/skills))
-
-The practical implication for this catalog: the scarce resource is not "can my one `description` fit" — this catalog already runs `DESC_MAX = 800` in `scripts/check-consistency.py`, deliberately tighter than the official 1,536-char cap (and also under the 1,024-char hard limit the platform Agent Skills spec enforces for claude.ai / Skills API uploads), precisely because 38 skills' descriptions compete for one shared budget every session. Every new skill's `description` is a permanent tax on that shared budget, paid on every session regardless of whether the skill ever fires. So before adding a skill, ask **"is this trigger phrase worth permanently occupying part of every session's listing budget?"** — not just "does this description fit under 800 chars".
-
-`when_to_use` is a real frontmatter field (appended to `description` in the listing and counted toward the same 1,536-char cap) meant for trigger phrases / example requests. None of this catalog's 38 skills declares `when_to_use` in frontmatter (`grep -l '^when_to_use:' **/SKILL.md` → 0 hits; a plain `grep -rl when_to_use` also matches this paragraph's own mention of the field name, so target the frontmatter line specifically) — this catalog folds trigger phrasing directly into `description` instead (see the router form above). That's a deliberate, not accidental, choice: keeping trigger wording in one field is simpler to audit against `DESC_MAX` than splitting it across two fields that share a cap.
+Every enabled skill's `description` is always-on context, shared by a catalog-wide budget, not
+a per-skill one — so before adding a skill, ask "is this trigger phrase worth permanently
+occupying part of every session's listing budget?", not just "does this description fit under
+800 chars". For the exact mechanism (the 1% context-window budget, the 1,536-char per-entry
+cap, least-used-first truncation, the `when_to_use` field, and the measurement tools), read
+`references/listing-budget.md`.
 
 ## Section conventions we standardize
 
