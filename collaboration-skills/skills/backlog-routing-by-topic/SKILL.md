@@ -1,6 +1,6 @@
 ---
 name: backlog-routing-by-topic
-description: For repos using the `spec-phase-orchestration` doc layout (design.md / foundations.md / plan.md / methodology.md), route mid-discussion stray ideas to the matching file's §Backlog section by topic — product → design.md; tooling → foundations.md; implementation step → plan.md; collaboration → methodology.md; unclassifiable → today's meeting log §Open questions. Invoke when a stray idea pops up during focused work, when reviewing a meeting log for parking lot items, or when asked "where does this idea go".
+description: Route a stray idea that surfaces mid-task to the §Backlog of the right living doc in a spec-phase-orchestration repo (design.md, foundations.md, plan.md, methodology.md, or today's meeting log) as a single line, without derailing the current work. Use when a not-now-but-don't-forget idea comes up, when tidying a meeting log's parking-lot items, or when asked where an idea should go. Not for decisions that must be acted on now (those belong in the body of plan.md).
 ---
 
 # Backlog Routing by Topic
