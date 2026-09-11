@@ -1,6 +1,6 @@
 ---
 name: apple-public-repo-security
-description: Security baseline for public iOS / macOS repos — secret classification (CloudKit PEM, ASC API key, APNs key, signing cert, provisioning profiles), `.gitignore` baseline, three lines of defence (mise gitleaks + lefthook pre-commit · Xcode Cloud `ci_post_clone.sh` · GitHub Secret Scanning), rotate-first leak SOP (`git filter-repo`, fork persistence), Apple upstream telemetry disclosure (MetricKit / Game Center / sysdiagnose). Invoke when a repo goes public, an existing repo open-sources, a secret enters the build pipeline, or asked "how to prevent secret leaks in a public repo". Repo-hygiene baseline; for ship-in-binary identifiers (AdMob ID via xcconfig `$()`) see build-time-secret-injection.
+description: Use when a repo goes public or open-sources, when a CloudKit server-to-server PEM, ASC API `.p8`, APNs key, signing `.p12`, or provisioning profile first enters the pipeline, or when asked how to prevent or respond to a secret leak (gitleaks, lefthook, GitHub Secret Scanning, `git filter-repo`, rotate-first). Also for Apple upstream telemetry disclosure (MetricKit, Game Center, sysdiagnose). Repo-hygiene baseline only; ship-in-binary identifiers (AdMob IDs via xcconfig) and CLI keys in `secrets/.env` are build-time-secret-injection; ASC API usage is asc-api-automation.
 ---
 
 # Apple Public Repo Security
