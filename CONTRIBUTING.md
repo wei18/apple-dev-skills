@@ -15,7 +15,7 @@ mise install && lefthook install
 - `mise run check` — SSOT consistency gate (run before every PR; CI runs the same). Also runs
   `mise run check-skills` (`scripts/check-skills.py`), which checks every `SKILL.md` against the
   official Agent Skills / Claude Code frontmatter rules (`name`/`description` limits, known
-  frontmatter keys, `context: fork` requiring `agent:`) plus this catalog's own conventions
+  frontmatter keys, `context: fork` should name an `agent:` (defaults to general-purpose)) plus this catalog's own conventions
   (section matrix, `references/` pointers, cross-plugin refs); fails the gate on any BLOCKER.
 - `mise run readme-zh` — regenerate `README.zh-Hant.md` (Catalog heading `## 目錄`) from
   `README.md` (needs `claude` on PATH; auto-fires in pre-commit when `README.md` changes).
@@ -75,8 +75,10 @@ with `mise run check-externals -- --update` and commit the updated snapshot.
 
 Pick the plugin: Apple/Swift → `apple-dev-skills/skills/`, generic agent process →
 `collaboration-skills/skills/`. One dir per skill with a `SKILL.md` whose frontmatter
-`name:` equals the dir. Then update `README.md`'s Catalog table + the group `(N)` count and
-the plugin's `plugin.json` description count, and run `mise run check`.
+`name:` equals the dir. Then update `README.md`'s Catalog table + the group `(N)` count,
+the plugin's `plugin.json` description count, `scripts/check-consistency.py`'s `PLUGINS`
+constant, the matching plugin's `marketplace.json` description count, and README.md's
+"install only the N first-party skills" sentence — then run `mise run check`.
 
 Two gate rules `mise run check` enforces on the frontmatter `description`:
 - Max 800 characters.
