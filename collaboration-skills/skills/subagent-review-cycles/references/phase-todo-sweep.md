@@ -6,14 +6,16 @@ A separate close-the-loop activity that fires **once per phase** (not once per r
 the commit/branch the phase started from, e.g. `main` or the phase's starting SHA):
 
 ```
-git diff --name-only <base>..HEAD | xargs -r rg -n --no-heading -e 'TODO|FIXME|XXX|HACK|stub|placeholder|Phase [0-9]+ Part'
+git diff --name-only <base>..HEAD | xargs -r rg -n --no-heading -e 'TODO|FIXME|XXX|HACK|stub|placeholder'
 ```
 
 If `rg` isn't installed (it isn't pinned in this repo's `.mise.toml`), use the `grep` fallback:
 
 ```
-git diff --name-only <base>..HEAD | xargs -r grep -rnE 'TODO|FIXME|XXX|HACK|stub|placeholder|Phase [0-9]+ Part'
+git diff --name-only <base>..HEAD | xargs -r grep -rnE 'TODO|FIXME|XXX|HACK|stub|placeholder'
 ```
+
+Add your own project's phase-marker string to the pattern if it has one (e.g. `|Phase [0-9]+ Part` for a project that labels work-in-progress chunks that way).
 
 Both forms scope to the files the diff actually touched — a file outside the phase's
 diff is out of scope for this sweep even if it contains a match.
