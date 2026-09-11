@@ -1,6 +1,6 @@
 ---
 name: app-store-review-rejections
-description: Use when preparing an App Store submission, diagnosing an App Review rejection / Resolution Center message, or hardening a free game/app with ads + Remove-Ads IAP + CloudKit + Game Center against the rejection classes it realistically hits. Covers guideline 2.1 / 2.3.x (incl. 2.3.6 age rating) / 3.1.1 / 4.0 / 4.2 / 4.3 / 5.1.1 / 5.1.2 plus ASC export compliance, the ATT-vs-AdMob trap, privacy-label parity, and a pre-submit checklist.
+description: 'Use when preparing an App Store submission, reading an App Review rejection or Resolution Center message citing a guideline number (2.1, 2.3.x, 3.1.1, 4.3, 5.1.1, 5.1.2), or auditing an ads + Remove-Ads IAP + CloudKit + Game Center app for the rejection classes it realistically hits: the ATT-vs-AdMob trap, privacy-label parity with `PrivacyInfo.xcprivacy`, Restore Purchases, screenshot metadata, export compliance. Maps each class to a pre-submit fix. Not the submission mechanics (asc-api-automation) nor StoreKit implementation (storekit2-iap-defaults).'
 ---
 
 # App Store Review Rejections
