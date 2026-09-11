@@ -1,6 +1,6 @@
 ---
 name: xcode-cloud-single-track-ci
-description: Default CI strategy for solo / small-team Apple-platform projects — Xcode Cloud single-track only (defer GitHub Actions until real pain appears), 4 workflow types (PR / Main / Release / Periodic), pre-merge main on PR CI, Xcode version locked to local. Invoke when setting up CI on a new project, deciding GitHub Actions vs Xcode Cloud, writing ci_scripts/, or when asked "how should CI be set up, do I need dual-track".
+description: 'Use when setting up or changing CI for an Apple-platform project on Xcode Cloud — choosing Xcode Cloud vs GitHub Actions, splitting PR / Main / Release / scheduled workflows, writing `ci_scripts/ci_post_clone.sh` / `ci_pre_xcodebuild.sh` / `ci_post_xcodebuild.sh`, or wiring `CI_BUILD_NUMBER`, `MARKETING_VERSION`, `agvtool` numbering. Or asked "do I need dual-track CI", "main failed after the PR passed", "Xcode Cloud build number collides". Does NOT cover shipping a build by hand when Xcode Cloud is down → local-archive-export-upload, nor ASC REST calls after upload → asc-api-automation.'
 ---
 
 # Xcode Cloud Single-Track CI
