@@ -184,18 +184,15 @@ because you're verifying each step, not because the math is guaranteed accurate.
 
 ## What to probe (this is what snapshots miss)
 
-- **Negative / offline paths**: airplane mode mid-flow, cloud account signed out, retry after
-  a failed network call, a purchase-restore with nothing to restore. Core functionality should
-  rarely hard-gate on an optional cloud/account state — verify it doesn't.
-- **"Online but signed out" is not the same as "offline" — test both.** For any
-  cloud-backed screen, these diverge: offline, network calls fail fast (they throw
-  immediately, no connection to wait on); online-but-signed-out, the same calls can **hang**
-  (a real network round-trip stalls waiting on an unauthenticated container that never
-  resolves). A pass under airplane mode can mask a hang that only reproduces online.
-- **Account-gated features need a real signed-in test account** in the simulator — a
-  cloud-save resume affordance or a leaderboard, for instance, may by design show nothing when
-  signed out, which is correct behavior, not a bug; don't flag graceful degradation as broken
-  without first confirming the same flow works signed in.
+Core functionality should rarely hard-gate on an optional cloud/account state — verify it
+doesn't, and drive all three states below separately; they exercise different code paths.
+
+| State | How to induce | What diverges |
+|---|---|---|
+| Offline | Simulator airplane mode / network link conditioner mid-flow | Network calls fail fast — no connection to wait on |
+| Online, signed out | Sign out of the cloud account with network reachable | The same calls can **hang** (a real round-trip stalls waiting on an unauthenticated container that never resolves) — a pass under airplane mode can mask this |
+| Online, signed in | Real signed-in test account in the simulator | Baseline correct behavior — account-gated features may by design show nothing when signed out; confirm the flow works signed in before flagging graceful degradation as a bug |
+
 - **Navigation / modals**: does the destination screen actually appear after a selection; does
   a close/leave action show its confirmation; back-stack behavior after several pushes.
 - **Safe area / Dynamic Island**: overlay or completion content clipped or overlapping system
@@ -220,8 +217,8 @@ doesn't model. Driving the actual Simulator is the only check that covers the se
 - **No Simulator access (Linux CI, headless-only environment)**: this skill doesn't apply;
   rely on `host-driven-xcuitest-e2e` for automated coverage and snapshot tests for pixel
   regressions instead.
-- **A pure macOS (AppKit/SwiftUI-Mac) app**: `idb` targets iOS/iPadOS/tvOS simulators only;
-  drive a Mac app with `host-driven-xcuitest-e2e`'s window-frame-click pattern instead.
+- **A pure macOS (AppKit/SwiftUI-Mac) app**: `idb`'s `ui` subcommand only works against
+  simulators; drive a Mac app with `host-driven-xcuitest-e2e`'s window-frame-click pattern instead.
 
 ## Common Mistakes
 
