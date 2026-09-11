@@ -2,6 +2,15 @@
 
 SF Symbols is Apple-licensed and can't be redistributed as font files. These are stylistically-faithful redraws of the 20 most common symbols, as inline SVG. They look at home in iOS mockups without being literal copies.
 
+## Contents
+
+- [How to use](#how-to-use)
+- [Navigation / chrome](#navigation--chrome)
+- [TabBar / common](#tabbar--common)
+- [Status bar icons](#status-bar-icons)
+- [Common UI](#common-ui)
+- [Notes for inventing iOS-style icons](#notes-for-inventing-ios-style-icons)
+
 For any symbol not listed here, use a text placeholder: `[icon: figure.run.circle]`.
 
 ## How to use

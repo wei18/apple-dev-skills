@@ -86,7 +86,7 @@ This gives the user a checklist for review and a clear handoff if they want to i
 
 These come from Apple's Human Interface Guidelines. The design must look unmistakably iOS, not generic web.
 
-- **Device frame**: iPhone 17 Pro proportions — 402 × 874 pt, 47.33pt corner radius
+- **Device frame**: iPhone 17 Pro proportions — 402 × 874 pt, 47.33pt corner radius (unofficial measurement — Apple does not publish this value; community-measured)
 - **Always draw**: Dynamic Island (pill shape, centered, ~125 × 37 pt), status bar (time, signal, wifi, battery), home indicator (bottom)
 - **Default to Light Mode** unless the spec calls for dark
 - **Font**: SF Pro via system stack `-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, sans-serif`
@@ -159,3 +159,5 @@ Read `html-structure.md` before drawing your first screen. Read the other two as
 ## Related skills
 
 - `swiftui-navigation-architecture` — once a flow sketched here is approved, this is where the real navigation gets implemented; that skill produces working SwiftUI code, this one produces a static visual mockup only.
+
+Pre-code visual only. Auditing a built app → `interactive-simulator-ux-audit`; spec-level screen contracts → the user's spec skill.
