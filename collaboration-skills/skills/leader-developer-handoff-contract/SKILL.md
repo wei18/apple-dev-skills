@@ -101,17 +101,18 @@ Required if this task touches ≥2 files or adds new behavior: open `meetings/{d
 ## Constraints (optional)
 - DO NOT <forbidden action>
 - DO use <required tool / approach>
+- Base SHA (when `isolation:"worktree"`): <sha>; verify with `git log --oneline -5` before editing (see `subagent-conflict-detection`)
 ```
 
 ## Examples drawn from real dispatches
 
-### Developer drafting design.md §How.3 (Game Center)
+### Developer drafting design.md §How.3 (a feature section)
 
-- **Scope**: draft `design.md §How.3` GC integration section, covering leaderboard / achievement / protocol / auth fallback / friends scope
-- **Inputs**: `design.md §What.GC`, `foundations.md §1-§4`
+- **Scope**: draft `design.md §How.3` for the feature named in §What, covering its component / protocol / auth-fallback / scope breakdown
+- **Inputs**: `design.md §What.<feature>`, `foundations.md §1-§4`
 - **Skills**: `apple-dev-skills:swift6-concurrency`, `apple-dev-skills:swiftpm-modularization`, `apple-dev-skills:swift-testing-baseline`
 - **Return**: complete markdown section, ready to merge into design.md
-- **Verification**: includes 3 leaderboards + 10 achievements, protocol covers friends scope, auth failure has a fallback path
+- **Verification**: includes the entities §What enumerates, the protocol covers the scope §What defines, auth failure has a fallback path
 
 ### Code Reviewer round 1 over §How 1–7
 
