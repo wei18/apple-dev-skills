@@ -2,13 +2,21 @@
 
 A separate close-the-loop activity that fires **once per phase** (not once per review round): before the Leader signs off on a phase-completion PR, run a sweep against the phase's diff scope to catch deferred-and-forgotten debt.
 
-**Command** (Leader-run; against the phase's diff scope, not the full repo):
+**Command** (Leader-run; against the phase's diff scope, not the full repo — `<base>` is
+the commit/branch the phase started from, e.g. `main` or the phase's starting SHA):
 
 ```
-rg -n --no-heading -e 'TODO|FIXME|XXX|HACK|stub|placeholder|Phase [0-9]+ Part' <source-root>/
+git diff --name-only <base>..HEAD | xargs -r rg -n --no-heading -e 'TODO|FIXME|XXX|HACK|stub|placeholder|Phase [0-9]+ Part'
 ```
 
-Replace `<source-root>/` with the actual source directory for this project (e.g. `Packages/<target>/Sources/`, `Sources/`, `src/`). The path must match the repo's layout — if it doesn't, the sweep silently finds nothing and the phase incorrectly appears clean.
+If `rg` isn't installed (it isn't pinned in this repo's `.mise.toml`), use the `grep` fallback:
+
+```
+git diff --name-only <base>..HEAD | xargs -r grep -rnE 'TODO|FIXME|XXX|HACK|stub|placeholder|Phase [0-9]+ Part'
+```
+
+Both forms scope to the files the diff actually touched — a file outside the phase's
+diff is out of scope for this sweep even if it contains a match.
 
 **Disposition rule** — every match must fall into exactly one bucket; otherwise the phase is not complete:
 

@@ -51,7 +51,7 @@ Owns the source-selection decision and its PrivacyInfo/ATT consequence. Does NOT
 ### Adopt TelemetryDeck (privacy-friendly first)
 
 - **Trigger**: actually need the micro-behaviour stream of "which button, where do users get stuck".
-- **Priority**: TelemetryDeck > Firebase — Firebase does not access the IDFA and does not require ATT, and has shipped its own `PrivacyInfo.xcprivacy` since 10.22.0 (2024-03); the reason to prefer TelemetryDeck is the smaller data-collection disclosure surface (tracking domains, more collected-data-type entries) and build size.
+- **Priority**: TelemetryDeck > Firebase — Firebase does not require ATT and only reads the IDFA if AdSupport is linked, and has shipped its own `PrivacyInfo.xcprivacy` since 10.22.0 (2024-03); the reason to prefer TelemetryDeck is the smaller data-collection disclosure surface (tracking domains, more collected-data-type entries) and build size.
 - **How to integrate**: swap in the `TrackingSink` implementation via `telemetry-facade-pattern`; call sites change nothing.
 
 ### Adopt Sentry / Crashlytics

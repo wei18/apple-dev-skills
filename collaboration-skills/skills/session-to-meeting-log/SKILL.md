@@ -1,6 +1,6 @@
 ---
 name: session-to-meeting-log
-description: Consolidate a Claude Code session JSONL log into a summary-only meeting record under meetings/ (decisions, rejected alternatives, hand-offs, open questions). Use when the user asks to turn a session into a meeting log, archive today's discussion, or extract a record from a .jsonl file; or when a long session is wrapping up before its context rolls. Not for in-flight notes during a subagent task (agent-impl-notes-log) and not for extracting recurring patterns across logs (methodology-pattern-extractor).
+description: Consolidate a Claude Code session JSONL log into a summary-only meeting record under meetings/ (decisions, rejected alternatives, hand-offs, open questions). Use when the user asks to turn a session into a meeting log, archive today's discussion, or extract a record from a .jsonl file; or when a long session is wrapping up before its context rolls. Not for in-flight notes during a subagent task (agent-impl-notes-log) and not for extracting recurring patterns across logs (methodology-pattern-extractor). Pass the invoker's `$CLAUDE_CODE_SESSION_ID` as the first argument; the fork has no conversation history to infer it from.
 context: fork
 agent: general-purpose
 argument-hint: "[session-id-or-path] [topic]"
@@ -21,8 +21,12 @@ argument-hint: "[session-id-or-path] [topic]"
 
 - Default location: `~/.claude/projects/<encoded-project-path>/<sessionId>.jsonl`
 - `<encoded-project-path>`: replace every `/` and `.` in the absolute path with `-`, e.g. `/Users/alice/GitHub/MyOrg/my-project` → `-Users-alice-GitHub-MyOrg-my-project`, and `/Users/alice/.claude-mem/observer-sessions` → `-Users-alice--claude-mem-observer-sessions`.
-- `<sessionId>`: a UUID-like string, either supplied by the user or inferred from the most recent mtime in the directory.
-- If the user doesn't supply one, list the files in the directory, sort by mtime, and confirm the latest one.
+- `<sessionId>`: a UUID-like string, passed as the first argument. `context: fork` runs
+  this skill in a subagent with no conversation history and no way to ask the user to
+  confirm a guess — the **invoker** (not this fork) must run `echo $CLAUDE_CODE_SESSION_ID`
+  before dispatching (set automatically in Bash tool subprocesses) and pass the result as
+  `[session-id-or-path]`. If the argument is missing, fail immediately and print this
+  instruction rather than guessing from directory mtime.
 
 ### JSONL structure
 

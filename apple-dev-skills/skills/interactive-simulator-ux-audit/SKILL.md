@@ -1,6 +1,6 @@
 ---
 name: interactive-simulator-ux-audit
-description: Audit an iOS/iPadOS app's live behavior on a booted Simulator by driving it with `idb` (accessibility tree, taps, screenshots) to find bugs a fixed-frame snapshot cannot show — navigation and modal flows, back-stack, completion screens, safe-area / Dynamic Island clipping, offline and signed-out states, Dynamic Type at AX sizes. Use when asked to test the UI, find UX problems, drive the simulator, verify an interactive flow end-to-end, or size a parallel-simulator fleet. Not for scripted CI-run UI tests → host-driven-xcuitest-e2e; not for native macOS apps, which idb cannot target.
+description: Audit an iOS/iPadOS app's live behavior on a booted Simulator by driving it with `idb` (accessibility tree, taps, screenshots) to find bugs a fixed-frame snapshot cannot show — navigation and modal flows, back-stack, completion screens, safe-area / Dynamic Island clipping, offline and signed-out states, Dynamic Type at AX sizes. Use when asked to test the UI, find UX problems, drive the simulator, verify an interactive flow end-to-end, or size a parallel-simulator fleet. Not for scripted CI-run UI tests → host-driven-xcuitest-e2e; not for native macOS apps, which idb cannot target. Requires `udid` and `flow` arguments — the fork has no conversation history.
 context: fork
 agent: general-purpose
 argument-hint: "[udid] [flow]"
@@ -48,6 +48,9 @@ arguments and this file. When invoking (matches `argument-hint: "[udid] [flow]"`
 - Anything else the fork can't discover on its own: which app/scheme is under test,
   whether the build is already installed (skip "Build + install the app under test"
   below if so), and any account/state precondition (e.g. "drive it signed out").
+- **Expected build version / bundle identifier** — what the Review Checklist's
+  "installed build version matches the intended commit/build" item is checked
+  against; without it the fork can't tell a stale install from the current one.
 
 Without these, the fork has no way to know which simulator to drive or what "done"
 looks like — it starts from this file alone.

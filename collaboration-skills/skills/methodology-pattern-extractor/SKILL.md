@@ -1,9 +1,8 @@
 ---
 name: methodology-pattern-extractor
-description: Extract recurring collaboration patterns from accumulated meeting logs (optionally session JSONL) and record them in docs/methodology.md with evidence of where each was sighted. Use when the user asks to update methodology, extract patterns from this session, or consolidate recurring collaboration flows; or when five or more meeting logs have accumulated while §Patterns is still empty. Not for writing the meeting logs themselves (session-to-meeting-log) or for parking one-off ideas (backlog-routing-by-topic).
+description: Extract recurring collaboration patterns from accumulated meeting logs (optionally session JSONL) and record them in docs/methodology.md with evidence of where each was sighted. Use when the user asks to update methodology, extract patterns from this session, or consolidate recurring collaboration flows; or when five or more meeting logs have accumulated while §Patterns is still empty. Not for writing the meeting logs themselves (session-to-meeting-log) or for parking one-off ideas (backlog-routing-by-topic). Takes no arguments — the fork scans all of `meetings/*.md`.
 context: fork
 agent: general-purpose
-argument-hint: "[topic]"
 ---
 
 # Methodology Pattern Extractor
@@ -17,7 +16,11 @@ argument-hint: "[topic]"
 ## Inputs
 
 - All `meetings/*.md`
-- Corresponding session JSONL (optional, for filling in details)
+- Corresponding session JSONL (optional, for filling in details) — see
+  `session-to-meeting-log`'s "Locating the session file" for the
+  `~/.claude/projects/<encoded-project-path>/<sessionId>.jsonl` layout and the
+  path-encoding rule; this skill has no `[session-id]` argument, so treat it as
+  best-effort and skip it if the file isn't already known.
 - The existing `docs/methodology.md` (to avoid duplicate entries)
 
 ## Rule: ≥ 3 sightings or it's not a pattern

@@ -25,7 +25,7 @@ description: Use when a repo goes public or open-sources, when a CloudKit server
 | Secret | Purpose | Storage |
 |---|---|---|
 | CloudKit server-to-server key (Key ID + PEM) | Backend API | Xcode Cloud Env Vars (Secret); locally in `secrets/` (chmod 600, gitignored) or Keychain |
-| App Store Connect API Key (`.p8` + Key ID + Issuer ID) | TestFlight / submission automation | Xcode Cloud Env Vars (Secret) |
+| App Store Connect API Key (`.p8` + Key ID + Issuer ID) | TestFlight / submission automation | Xcode Cloud Env Vars (Secret); locally in `secrets/` (chmod 600, gitignored) or Keychain |
 | APNs Auth Key (`.p8` + Key ID + Team ID) | Push notifications | Xcode Cloud Env Vars (Secret) |
 | Signing certificate + private key (`.p12`) | Code signing | Xcode Cloud automatic signing, hosted by Apple |
 | Provisioning profiles | Code signing | Xcode Cloud Apple-managed |
@@ -70,8 +70,12 @@ NOTES.md.private
 
 # Local development secrets directory is `secrets/` (chmod 600 PEMs / API keys
 # live here; already ignored above via `secrets/`). Allow-list examples with a
-# nested `secrets/.gitignore` (`* / !*.example / !README.md`) instead of a
-# second top-level rule — see `build-time-secret-injection`.
+# nested `secrets/.gitignore` (`* / !*.example / !README.md / !example/ /
+# !example/**`) instead of a second top-level rule — see
+# `build-time-secret-injection`. The last two lines are required: `*` also
+# ignores the `example/` directory itself, and git does not descend into an
+# ignored directory to apply `!README.md` to files inside it (verify with
+# `git check-ignore -v secrets/example/README.md`).
 ```
 
 ### Three lines of defence
@@ -92,13 +96,16 @@ pre-commit:
       run: mise exec -- gitleaks git --pre-commit --staged --redact --verbose
 ```
 
-`ci_post_clone.sh` example — Xcode Cloud has no mise preinstalled (see
+`ci_post_clone.sh` example — Xcode Cloud runs custom build scripts with
+`ci_scripts/` as the root directory, so the first line must `cd` back to the
+repo root before anything else; Xcode Cloud also has no mise preinstalled (see
 `xcode-cloud-single-track-ci`), so this goes through the committed `bin/mise`
 wrapper, and scans the checked-out working directory rather than the staged
 diff (a fresh clone has nothing staged, so `--staged` would scan zero lines
 and leave this line of defence empty):
 
 ```bash
+cd "$CI_PRIMARY_REPOSITORY_PATH"
 ./bin/mise trust
 ./bin/mise install
 ./bin/mise exec -- gitleaks dir . --redact --verbose

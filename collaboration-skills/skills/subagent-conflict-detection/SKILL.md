@@ -1,7 +1,7 @@
 ---
 name: subagent-conflict-detection
 description: 'Use before dispatching a subagent with `isolation:"worktree"`, or while another subagent is in flight, to avoid three dispatch hazards — file-scope overlap with an in-flight subagent, a stale dispatch base, and collisions with another live agent/session editing the same checkout or git-submodule path. Invoke when about to call the Agent tool with `isolation:"worktree"`; when another subagent is running; right after a merge or branch switch; or when another Claude session is editing a shared repo/submodule path. Does NOT cover PR / merge mechanics (github-contribution-workflow) or post-commit diff sanity (pr-diff-verification).'
-allowed-tools: Bash(git worktree list) Bash(git status *) Bash(git log *) Bash(git rev-parse *) Bash(git merge-base *)
+allowed-tools: Bash(git worktree *) Bash(git status *) Bash(git log *) Bash(git rev-parse *) Bash(git merge-base *)
 ---
 
 # Subagent Conflict Detection
@@ -26,13 +26,16 @@ Skip when: dispatching the first subagent in a session, or all prior subagents h
 ### Step 1 — inventory in-flight subagents
 
 ```bash
-git worktree list | grep -v "\[main\]" | awk '{print $1}'
+git worktree list
 ```
 
-For each worktree path, capture:
+Skip the entry marked `[main]` (or `[<default-branch>]`) — every other line is an
+in-flight worktree. For each worktree path, capture (run from inside that path,
+not via `-C`, so the commands match the `Bash(git status *)` / `Bash(git log *)`
+rules the way this skill's `allowed-tools` writes them):
 - Branch checked out
-- Dirty files: `git -C <path> status --short`
-- Most recent commit subject: `git -C <path> log -1 --format=%s`
+- Dirty files: `(cd <path> && git status --short)`
+- Most recent commit subject: `(cd <path> && git log -1 --format=%s)`
 
 ### Step 2 — enumerate the NEW dispatch's likely file scope
 
@@ -85,7 +88,7 @@ git log --oneline -3                     # does it include the commit/PR this wo
 git merge-base --is-ancestor <dep-sha> HEAD && echo "base OK" || echo "STALE BASE"
 ```
 
-If the work depends on a just-merged PR, sync first (`git checkout main && git fetch && git reset --hard origin/main` — `reset --hard` discards uncommitted local changes, so commit them to a WIP commit or `git stash push -u -m <tag>` first — never a bare `git stash`/`pop` in a worktree session, since the stash stack is shared across worktrees) THEN dispatch. `<dep-sha>` above is the commit your work depends on (e.g. the merged PR's commit on `main`). State the expected base SHA in the dispatch prompt and tell the agent to verify it (`git log --oneline -5`; confirm a key file/symbol exists) before coding.
+If the work depends on a just-merged PR, sync first (`git checkout main && git fetch && git reset --hard origin/main` — `reset --hard` discards uncommitted local changes, so commit them to a WIP commit or `git stash push -u -m <tag>` first — never a bare `git stash`/`pop` in a worktree session, since the stash stack is shared across worktrees) THEN dispatch. To restore a tagged stash afterward: find its current `stash@{n}` by tag with `git stash list --format='%H %gs'`, restore with `git stash apply <sha>` (not `pop`), then `git stash drop <sha>` once you've confirmed the apply succeeded. `<dep-sha>` above is the commit your work depends on (e.g. the merged PR's commit on `main`). State the expected base SHA in the dispatch prompt and tell the agent to verify it (`git log --oneline -5`; confirm a key file/symbol exists) before coding.
 
 > Real incident (pre-v2.1.208 / local-HEAD-fallback behavior): a DEBUG test-hook subagent was dispatched right after a fix merged to `main`, but the dispatching HEAD was a pre-merge commit. The worktree branched from the stale base, so the new code referenced an `init` parameter and a file that only existed post-merge → 2 compile errors that the agent's own package build hadn't surfaced. Cost a full cherry-pick-onto-correct-base + rebuild cycle.
 
