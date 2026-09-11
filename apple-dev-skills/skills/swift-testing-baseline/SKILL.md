@@ -23,7 +23,7 @@ description: 'Default test stack for new Apple-platform Swift projects — Swift
 
 ### Snapshot testing
 
-- **`pointfreeco/swift-snapshot-testing`**, using its swift-testing-compatible `assertSnapshot`.
+- **`pointfreeco/swift-snapshot-testing`** (`// swift-snapshot-testing >= 1.17` for its swift-testing-compatible `assertSnapshot`).
 - **Snapshot images go into git** (default `__Snapshots__/` next to the test file) so visual diffs show up in PR review.
 - Start by covering **the main screens** and expand from there. Each snapshot should cover multiple locales, iPhone / Mac, light / dark, and typical states.
 
@@ -31,23 +31,23 @@ description: 'Default test stack for new Apple-platform Swift projects — Swift
 
 Tolerance is **per-suite by view type**, not a global knob:
 
-- **Content suites** (Completion / DailyHub / Home / Settings — text, cards,
-  badges) use the **default strict `.image`** (precision 1.0). Bit-exact is the
-  point: adding any visible element (a new label/badge) changes pixels and
-  **fails without a re-record** → the gate catches unintended UI drift. This is
-  the only reliable "a new label appeared" gate (see dead end below).
-- **AA-heavy board/grid suites** (`*Board*`, terminal overlays) keep a
-  **`.tolerantImage`** (≈0.95 precision, defined once in each app's
-  `SnapshotConfig.swift` as a project-local extension — `.tolerantImage` is NOT a
-  built-in pointfreeco/swift-snapshot-testing strategy; the library ships
-  `.image(precision:)` / `.image(perceptualPrecision:)`) — strict false-fails on dozens of antialiased cells.
-  Choose strategy at the call site via `as: .image` vs `as: .tolerantImage`;
-  **never sprinkle ad-hoc `precision:` overrides** at call sites.
-- **Baselines are the source of truth.** A suite failing on PNGs means *behavior
-  changed* → STOP and investigate; do **not** re-record to make it pass. Re-record
-  only for an intended visual change or a deliberate Xcode-version bump.
-- Snapshot suites run **local-Mac only** (`.enabled(if: !SnapshotEnv.isXcodeCloud)`)
-  — cross-machine AA drift makes them unreliable on CI runners.
+| View class | Strategy | Precision | Why | Re-record rule |
+|---|---|---|---|---|
+| Text-heavy content views (screens dominated by text, cards, badges) | Default strict `.image` | 1.0 (bit-exact) | Adding any visible element (a new label/badge) changes pixels and **fails without a re-record** — the only reliable "a new label appeared" gate (see dead end below) | Never re-record to silence a fail; investigate as a behavior change first |
+| Anti-aliasing-heavy grid / board / overlay views | `.tolerantImage` (project-local, see below) | ≈0.95 | Strict false-fails on dozens of antialiased cells | Same rule — re-record only for an intended visual change or a deliberate Xcode-version bump |
+
+`.tolerantImage` is **not** a built-in pointfreeco/swift-snapshot-testing strategy — it's a
+project-local extension each app defines once (naming and location are the reader's own choice;
+the library itself ships `.image(precision:)` / `.image(perceptualPrecision:)`). Choose strategy
+at the call site via `as: .image` vs `as: .tolerantImage`; **never sprinkle ad-hoc `precision:`
+overrides** at call sites.
+
+**Baselines are the source of truth.** A suite failing on PNGs means *behavior changed* → STOP
+and investigate; do **not** re-record to make it pass.
+
+Snapshot suites run **local-Mac only**, gated behind a project-local flag you define (e.g. an
+`isXcodeCloud` check on a `.enabled(if:)` trait) — cross-machine AA drift makes them unreliable
+on CI runners.
 
 **DEAD END — do not re-spike:** building a *non-pixel* "new label appeared" gate
 by extracting rendered SwiftUI text via the **accessibility tree**
@@ -98,10 +98,9 @@ pixels (above) is the only viable content gate.
 
 ## Rationale
 
-- swift-testing: Apple official, great Swift 6 support, more concise syntax (macros, `#expect`).
+- swift-testing: Apple official, great Swift 6 support, more concise syntax (macros, `#expect`). Swift 6.2 / Xcode 26 add exit tests (`#expect(processExitsWith:)`, `#require(processExitsWith:)` — macOS/Linux/FreeBSD/OpenBSD/Windows only, **not supported on the iOS simulator**) for testing `precondition`/`fatalError` paths, and attachments (`Attachment.record(_:named:)`) for saving debug artifacts from a test run.
 - Snapshots in git: PR reviewers see the visual diff directly and baselines are reproducible.
 - Protocol fakes: CI runs all tests without an iCloud account or Game Center sign-in, keeping the environment simple.
-- One-to-one test targets: clear dependencies; selective testing tools can pinpoint affected targets.
 
 ## Deviation considerations
 
@@ -129,3 +128,4 @@ pixels (above) is the only viable content gate.
 - `mise-tool-management`: CLI tools the test run shells out to (xcbeautify …) are pinned via mise; Xcode itself is not.
 - `cloudkit-schema-source-of-truth`: this skill's "unentitled runner" section is the seam that keeps live CloudKit/Game Center access — and the schema SSOT concerns it gates — out of the unentitled SwiftPM test run; use its test-doubles instead of a live container.
 - `host-driven-xcuitest-e2e`: the E2E tier at the top of this pyramid — launches the real app instead of running inside the unentitled SwiftPM test run.
+- `apple-skills:swift-testing` (external): `@Test` / `@Suite` / parameterized / exit-test syntax and XCTest migration; this skill only decides the stack and the CI isolation rule.
