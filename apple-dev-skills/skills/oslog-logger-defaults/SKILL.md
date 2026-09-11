@@ -10,7 +10,7 @@ description: Set up logging for an Apple-platform Swift app with `os.Logger` and
 - Starting a new Apple-platform project and picking a logging library.
 - Writing the first `Logger` declaration.
 - Deciding the default for privacy interpolation.
-- User asks "OSLog vs SwiftLog vs Sentry / CocoaLumberjack", "`.private` vs `.public` how to pick".
+- User asks "OSLog vs SwiftLog vs CocoaLumberjack", "`.private` vs `.public` how to pick".
 
 ## Default decisions
 
@@ -49,7 +49,7 @@ Logger.engine.info("user \(userId, privacy: .public) loaded puzzle \(puzzleId, p
 
 ## Deviation considerations
 
-- **Cross-platform shared logger interface** (Linux / Android target): use `swift-log` as a facade with OSLog as the Apple-side backend; the interface stays platform-neutral.
+- **Cross-platform shared logger interface** (Linux / Android target): use `swift-log` (`apple/swift-log`) as a facade; on Apple platforms, back it with a third-party OSLog handler package (apple/swift-log's own distribution ships no OSLog backend) so the interface stays platform-neutral.
 - **Need remote log aggregation**: pair with `telemetry-facade-pattern`'s fan-out sink rather than replacing OSLog directly.
 - **A third-party crash reporter requires its own logger**: usually avoidable; if not, keep its use scoped to that SDK.
 
