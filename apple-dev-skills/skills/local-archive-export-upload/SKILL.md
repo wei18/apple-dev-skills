@@ -40,7 +40,7 @@ signing/export-key semantics. Does NOT own:
 |---|---|---|
 | 1. Archive | `xcodebuild archive -scheme <Scheme> -destination 'generic/platform=iOS' -archivePath build/App.xcarchive` | `-destination` picks the platform; a `generic/platform=...` destination (not a specific simulator/device) is what produces an archivable, distributable build. |
 | 2. Export | `xcodebuild -exportArchive -archivePath build/App.xcarchive -exportPath build/export -exportOptionsPlist ExportOptions.plist` | Requires `-archivePath` + `-exportOptionsPlist`; `-exportPath` only needed when the plist's `destination` is `export` (see below). |
-| 3. Upload | `xcrun altool --upload-package build/export/App.ipa --api-key <keyID> --api-issuer <issuerID>` | Or fold into step 2 — see "One-step vs two-step" below. |
+| 3. Upload | `xcrun altool --upload-package build/export/App.ipa --api-key <keyID> --api-issuer <issuerID> --wait` | `--api-key` / `--api-issuer` are the spelling `altool --help`'s own example uses; add `--wait` to block until Apple finishes processing instead of polling separately. Or fold into step 2 — see "One-step vs two-step" below. |
 
 ## Signing: two non-interactive paths
 
@@ -57,8 +57,7 @@ interactive Accounts UI (needed on a script/cron path, not just CI):
 The full key set is printed by `xcodebuild -help` under "Available keys for
 -exportOptionsPlist" (18 keys on Xcode 26.5, covering thinning, manifests, on-demand
 resources). For a plain "ship to TestFlight" export, six keys are load-bearing
-— confirmed as the intersection across four real ExportOptions.plist files
-(two apps × two platforms, all identical on these keys):
+(cross-checked against the key list in `xcodebuild -help`):
 
 ```xml
 <key>destination</key>          <string>export</string>          <!-- or "upload" -->
@@ -70,8 +69,9 @@ resources). For a plain "ship to TestFlight" export, six keys are load-bearing
 ```
 
 - **`method: app-store-connect`** — the current name; `app-store` still works
-  but `xcodebuild -help` marks it "deprecated: use app-store-connect" (renamed
-  in Xcode 15+).
+  but Xcode 26.5's `xcodebuild -help` already marks it "deprecated: use
+  app-store-connect" (the exact Xcode version the rename landed in is
+  unconfirmed).
 - **`manageAppVersionAndBuildNumber: false`** — defaults to `YES` (Xcode bumps
   the build number for you on export); set `false` when your own tooling
   controls `CFBundleVersion` — see build-number coordination below.
@@ -80,14 +80,14 @@ resources). For a plain "ship to TestFlight" export, six keys are load-bearing
 
 ### One-step vs two-step upload — pick two-step on purpose
 
-`destination` takes **`export`** (write the `.ipa`/`.pkg` to `-exportPath`) or
-**`upload`** (xcodebuild uploads directly to Apple, no local artifact, no
-separate `altool` call). `upload` is fewer moving parts, but the network push
-then happens the instant `-exportArchive` runs — no artifact-only dry run, no
-confirmation gate before the irreversible step. Prefer `destination: export` +
-a separate, deliberately-gated upload command (your own `--dry-run`/
-`--i-am-sure`-style flag) so archive/export stay safe to run freely and only
-upload needs a human's explicit go-ahead.
+| `destination` | Artifact | Gate before upload | Use when |
+|---|---|---|---|
+| `export` | `.ipa`/`.pkg` written to `-exportPath` | Your own `--dry-run`/`--i-am-sure`-style flag on a separate upload command | Default |
+| `upload` | None — xcodebuild uploads directly to Apple, no local artifact, no separate `altool` call | None — the network push happens the instant `-exportArchive` runs | Deliberate one-shot only |
+
+Prefer `destination: export` + a separate, deliberately-gated upload command
+so archive/export stay safe to run freely and only upload needs a human's
+explicit go-ahead.
 
 ## Upload tool
 
