@@ -26,7 +26,7 @@ Owns container choice (Stack / SplitView / Tab), route modeling, the router obje
 | 2–5 top-level peer sections | `TabView` + one `NavigationStack` per tab, each with its own path |
 | Source list → detail (iPad / Mac) | `NavigationSplitView`; sidebar selection is router state, the detail column hosts its own `NavigationStack` |
 
-Never `NavigationView` in new code — superseded by `NavigationStack` / `NavigationSplitView` since iOS 16, formally deprecated as of iOS 27.
+Never `NavigationView` in new code — superseded by `NavigationStack` / `NavigationSplitView` since iOS 16, formally deprecated as of iOS 27. The Xcode 26 SDK does not yet emit a deprecation warning for it; the iOS 27 SDK is the one that will.
 
 ## The default shape
 
@@ -85,7 +85,7 @@ Rules the shape encodes:
 - **`navigationDestination(for:)` on the stack's root content, outside lazy containers.** Apple's docs: "Do not put a navigation destination modifier inside a 'lazy' container, like `List` or `LazyVStack`. … Add the navigation destination modifier outside these containers so that the navigation stack can always see the destination."
 - **Typed `[Route]` over `NavigationPath`** — pattern-matchable, exhaustively switched, `Codable` for free.
 - **Modal ≠ push** — presented flows hang off router optionals (`item:`-driven; one optional per presentation kind — sheet, cover, alert. Parallel `isPresented:` Bools race and can present blank); a presented flow is never a `Route` case. *Which* kind → next section.
-- **Router is `@MainActor`** (it is UI state; Swift 6 enforces it), routes are `Hashable + Codable` value types.
+- **Router is `@MainActor`** (it is UI state; Swift 6 enforces it), routes are `Hashable + Codable` value types. On Xcode 26's default MainActor isolation (SE-0466) this is implicit for a new project's modules — keep the explicit annotation anyway so the class stays correct if the module later turns default isolation off.
 
 ## Presentation semantics (decide per transition — iOS and macOS)
 
@@ -154,18 +154,20 @@ Route both entry and exit through router methods (as above) so no view ever enco
 - **Heterogeneous route types across feature packages** that genuinely can't share one enum → `NavigationPath` + its `CodableRepresentation` for restoration; you give up exhaustive matching.
 - **A 2-screen utility** → a bare `NavigationStack` without router or path is fine; adopt the shape when the second entry point appears, not speculatively.
 - **UIKit-hosted hybrids** (heavy `UIViewController` interop) → keep coordination at the UIKit layer; don't force a SwiftUI router across the hosting bridge.
-- **iOS 18 / macOS 15 floor** (the catalog's `apple-platform-targets` drop-down default) → the shape works unchanged (`@Observable`, `NavigationStack` both available; only Liquid Glass presentation chrome is unavailable). Below iOS 17, `ObservableObject` replaces `@Observable`.
+- **iOS 18 / macOS 15 floor** (the catalog's `apple-platform-targets` drop-down default) → the shape works unchanged (`@Observable`, `NavigationStack` both available; only Liquid Glass presentation chrome is unavailable).
+- **iOS 17 / macOS 14 floor** → still works unchanged; `@Observable` requires iOS 17.0 / macOS 14.0 as its own floor, so this is the lowest target the shape needs no changes on.
+- **Below iOS 17 / macOS 14** → `ObservableObject` replaces `@Observable` for the router.
 - **Mac Catalyst** → `fullScreenCover` *is* available there; the push/sheet fallback is for native (AppKit-based) macOS targets.
 
 ## Common Mistakes
 
-1. **`NavigationView` in new code** — superseded since iOS 16, formally deprecated as of iOS 27, unpredictable column behavior. Use `NavigationStack` / `NavigationSplitView`.
+1. **`NavigationView` in new code** — superseded since iOS 16, formally deprecated as of iOS 27 (the Xcode 26 SDK does not warn yet), unpredictable column behavior. Use `NavigationStack` / `NavigationSplitView`.
 2. **`navigationDestination(for:)` inside `List` / `LazyVStack`** — the lazy container may not have created the registering view yet, so pushes silently fail (runtime console warning). Register at the stack root.
 3. **Mixing `NavigationLink(destination:)` into a path-based stack** — pushes invisible to `path`; back-stack count, deep links, and restoration all desync.
 4. **Sheets modeled as pushed routes** — back-button vs dismiss semantics conflict; keep a separate `Modal` enum.
 5. **Per-tab paths in view `@State`** — switching tabs (or any identity churn) resets the stack; paths belong to the router.
 6. **`onOpenURL` sprinkled across views** — multiple competing handlers; one scene-root handler feeding one mapping function.
-7. **Router not `@MainActor`** — Swift 6 isolation errors the first time a `Task` mutates `path`; annotate the class, not call sites.
+7. **Router not `@MainActor`** — Swift 6 isolation errors the first time a `Task` mutates `path`; annotate the class, not call sites. (Implicit under Xcode 26's default MainActor isolation — SE-0466 — but not every module opts into that default, so annotate explicitly.)
 8. **Model objects as route payloads** — bloats `Hashable`/`Codable`, goes stale after edits; carry IDs and resolve at display.
 9. **`@Environment(\.dismiss)` read in the presenter** — it only dismisses when read *inside* the presented content; in the presenter it's a no-op. Presenter-side closing = nil out the router optional.
 10. **Shared Close across an iOS cover / macOS push split that pops one level** — on macOS the user lands mid-flow instead of on the hub; branch close to pop-to-landing (see the macOS fallback).
