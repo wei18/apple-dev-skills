@@ -59,7 +59,7 @@ Any proposal depending on external tools / APIs / third-party packages **must** 
 
 ```markdown
 **Prerequisites**:
-- [ ] Behaviour of Apple `XYZAPI.foo()` is consistent across iOS 26 and 25 — **Unconfirmed** (verified in plan.md step N)
+- [ ] Package `XYZLib` supports Swift 6 strict concurrency mode — **Unconfirmed** (verified in plan.md step N)
 - [x] ~~Xcode Cloud hook naming~~ — **Resolved** (Code Review round N, date): adopt `ci_post_clone.sh`
 ```
 
@@ -68,7 +68,7 @@ Any proposal depending on external tools / APIs / third-party packages **must** 
 
 ### No implementation code before design + plan approved
 
-- Before design.md §What + §How pass and plan.md is written and approved, **no implementation Swift code is written**.
+- Before design.md §What + §How pass and plan.md is written and approved, **no implementation code is written**.
 - Exception: a pure exploratory spike — must be logged under `meetings/` as a spike; its output doesn't land on main.
 
 ### Backlog sections
@@ -84,10 +84,12 @@ Every living doc carries a §Backlog; route stray ideas there by topic — see `
 
 ## Deviation considerations
 
-- **Tiny utility / 1-day project**: keep only README.md + meeting log; inline the design in the README.
-- **Adding a feature to an existing codebase**: skip foundations.md; lean on the existing conventions.
-- **Multi-person collaboration**: plan.md may split into `plan/<feature>.md`, but keep a master plan listing the dependencies.
-- **Full outsourcing / contractor**: use an RFC + tasks split instead; this skill is a solo / small-team default.
+| Project shape | Keep | Drop |
+|---|---|---|
+| Tiny utility / 1-day project | README.md + meeting log | foundations.md, design.md, plan.md (design inlined in the README) |
+| Adding a feature to an existing codebase | design.md, plan.md | foundations.md (lean on existing conventions instead) |
+| Multi-person collaboration | A master `plan.md` listing dependencies | A single flat plan.md (split into `plan/<feature>.md` instead) |
+| Full outsourcing / contractor | An RFC + tasks split | This skill's 5-doc default (solo / small-team only) |
 
 ## Verification checklist
 
