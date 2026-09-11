@@ -1,6 +1,6 @@
 ---
 name: apple-three-piece-analytics
-description: Default analytics stack for solo / small Apple-platform Apps — App Store Connect Analytics + MetricKit + Game Center (for games), no third-party tracking SDK by default, PrivacyInfo.xcprivacy mandatory. Invoke when deciding analytics SDK (vs Firebase / TelemetryDeck / Amplitude), writing PrivacyInfo, or when asked "should I integrate Firebase / Mixpanel / TelemetryDeck".
+description: 'Choose analytics and metrics sources for a solo / small-team Apple app and decide whether a third-party tracking SDK is justified. Use when picking an analytics SDK; when asked "should I add Firebase / Mixpanel / Amplitude / TelemetryDeck"; when asked what App Store Connect Analytics, MetricKit (`MXMetricPayload`) or Game Center can measure without an SDK; when the analytics choice drives `PrivacyInfo.xcprivacy` or ATT. Does NOT own MetricKit perf wiring (ios-performance-engineering), App Review privacy-label parity (app-store-review-rejections), or sink code (telemetry-facade-pattern).'
 ---
 
 # Apple Three-Piece Analytics

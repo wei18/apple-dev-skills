@@ -1,6 +1,6 @@
 ---
 name: swift-testing-baseline
-description: Default testing stack for new Apple-platform Swift projects — swift-testing (no XCTest), pointfreeco/swift-snapshot-testing, protocol-injected fakes for CloudKit / Game Center / network, snapshot images committed to git, CI Xcode version locked to local. Invoke when writing the first test target, choosing a snapshot framework, deciding CloudKit / GameKit test strategy, or when asked "which test framework".
+description: 'Default test stack for new Apple-platform Swift projects — Swift Testing (`@Test` / `#expect`, no XCTest), pointfreeco/swift-snapshot-testing with baselines in git, protocol-injected fakes for CloudKit / Game Center / network. Use when creating the first test target, choosing a snapshot framework or precision policy, deciding whether CI may touch iCloud / Game Center, when a SwiftPM test run hangs on a live CKContainer / GKLocalPlayer, or when asked "XCTest or Swift Testing". Owns the stack decision and CI isolation; Swift Testing syntax and migration → apple-skills:swift-testing.'
 ---
 
 # Swift Testing Baseline

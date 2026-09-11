@@ -1,6 +1,6 @@
 ---
 name: interactive-simulator-ux-audit
-description: Use when auditing an iOS/iPadOS app's live behavior in the Simulator — navigation, modals, back-stack, completion flows, safe-area/Dynamic-Island clipping, offline or signed-out states — bugs a fixed-size snapshot render structurally cannot show. Covers installing `idb` without Homebrew (direct GitHub release + an exec wrapper that preserves rpath), the describe-all → tap → screenshot drive loop, device-point vs screenshot-pixel coordinate spaces, and the "stale build" / "worktree launch crash" false-negative traps. Use when asked to "test the UI", "find UX problems", "drive the simulator", or verify an interactive flow end-to-end. Also covers sizing a parallel-simulator fleet — how many booted simulators fit in RAM when each agent drives its own.
+description: Audit an iOS/iPadOS app's live behavior on a booted Simulator by driving it with `idb` (accessibility tree, taps, screenshots) to find bugs a fixed-frame snapshot cannot show — navigation and modal flows, back-stack, completion screens, safe-area / Dynamic Island clipping, offline and signed-out states, Dynamic Type at AX sizes. Use when asked to test the UI, find UX problems, drive the simulator, verify an interactive flow end-to-end, or size a parallel-simulator fleet. Not for scripted CI-run UI tests → host-driven-xcuitest-e2e; not for native macOS apps, which idb cannot target.
 context: fork
 agent: general-purpose
 argument-hint: "[udid] [flow]"

@@ -1,6 +1,6 @@
 ---
 name: swiftui-interaction-footguns
-description: Checklist of known SwiftUI interaction bugs that slipped past pure-code review (tap-target shrink, sidebar inert Labels, sizeClass on Mac, .task re-fire, theme tint propagation, NSHostingView env). Use when reviewing any SwiftUI View file or a PR that adds Button / NavigationLink / TabView / Form / NavigationSplitView.
+description: 'Checklist of SwiftUI interaction bugs that pass code review but break at runtime: tap-target shrink under `.buttonStyle(.plain)`, inert sidebar `Label`s, `horizontalSizeClass` on Mac, `.task` re-fire, blank `fullScreenCover(isPresented:)` race, stale `dynamicTypeSize` in modals, `.tint` not propagating, `NSHostingView` environment. Use when reviewing a new or changed SwiftUI View, a PR adding Button / NavigationLink / TabView / Form / NavigationSplitView, or after a smoke test surfaces a tap or navigation bug. Navigation shape itself → swiftui-navigation-architecture.'
 ---
 
 # SwiftUI Interaction Footguns

@@ -1,6 +1,6 @@
 ---
 name: ai-translated-localization
-description: Default localization scope AND execution playbook for Apple-platform Apps — 7 locales (en, zh-Hant, zh-Hans, ja, ko, es, th) translated via AI agent flow using `Localizable.xcstrings`. Source = en, primary = zh-Hant. Minimum set zh-Hant + en. Invoke when (1) deciding L10n scope / catalog format / translation flow at project setup, OR (2) actually executing a translation pass to add or refresh strings.
+description: 'Localization scope and AI-translation execution for Apple-platform Apps on `Localizable.xcstrings` — default locale set, source / primary language rule, per-locale review gotchas, completeness gates. Use when deciding which locales to ship at project setup; when adding or refreshing user-facing strings (UI keys, Game Center, App Store metadata) in non-source locales; when `extractionState: stale` entries or untranslated placeholder markers appear; or when asked "how many locales", "how do translations enter git". Does NOT cover RTL layout or ASC upload mechanics → asc-api-automation.'
 ---
 
 # AI-Translated Localization

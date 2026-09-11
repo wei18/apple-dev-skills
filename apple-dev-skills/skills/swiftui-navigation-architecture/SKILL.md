@@ -1,6 +1,6 @@
 ---
 name: swiftui-navigation-architecture
-description: Default navigation shape for SwiftUI Apps (iOS 26 / macOS 26, Swift 6) — value-based `NavigationStack(path:)` over a typed `Route` enum, one `@Observable @MainActor` Router in `.environment`, `navigationDestination(for:)` at the stack root (never in a lazy container), per-transition presentation semantics (push / sheet / `fullScreenCover` / popover / alert / root-swap) incl. macOS behavior (no native `fullScreenCover` → push fallback, pop-to-landing), `item:`-driven modal optionals, `.onOpenURL` deep-link funnel, `NavigationSplitView`, per-tab paths, `Codable` restoration. Invoke when wiring an App's navigation, choosing sheet vs cover vs push, adding deep links / restoration, migrating off `NavigationView`, or asked "router / coordinator in SwiftUI". Bugs → swiftui-interaction-footguns.
+description: 'Wire SwiftUI navigation as data on the iOS 26 / macOS 26, Swift 6 baseline: one `@Observable @MainActor` Router in `.environment`, `NavigationStack(path:)` over a typed `Route` enum, `navigationDestination(for:)` at the stack root, `item:`-driven sheets and covers, `.onOpenURL` deep links, `NavigationSplitView`, per-tab paths, `Codable` restoration. Use when wiring an App''s navigation, choosing push vs sheet vs `fullScreenCover`, adding deep links or restoration, migrating off `NavigationView`, or asked for a router / coordinator in SwiftUI. Runtime bugs → swiftui-interaction-footguns.'
 ---
 
 # SwiftUI Navigation Architecture

@@ -1,6 +1,6 @@
 ---
 name: ios-accessibility-engineering
-description: Concrete VoiceOver / Dynamic Type / touch-target / Reduce Motion implementation guide for SwiftUI and UIKit. Invoke when adding or auditing VoiceOver labels, Dynamic Type support, touch-target sizing, or Reduce Motion behavior, running a WCAG accessibility audit, when asked "make this accessible", or diagnosing an accessibility-related App Review rejection.
+description: Implement and audit VoiceOver (`accessibilityLabel` / `Value` / `Hint`, traits, `accessibilityElement(children:)`, `AccessibilityNotification`), Dynamic Type (text styles, caps, AX5), 44pt touch targets, and Reduce Motion / Transparency for SwiftUI and UIKit, with a WCAG 2.2 mapping. Use when asked to make a screen accessible, when VoiceOver reads the wrong thing, for a pre-submission a11y audit or Accessibility Inspector pass, or an accessibility App Review rejection. Not Rotor / `AccessibilityFocusState` depth; live Simulator driving → interactive-simulator-ux-audit.
 ---
 
 # iOS Accessibility Engineering

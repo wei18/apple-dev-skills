@@ -1,6 +1,6 @@
 ---
 name: oslog-logger-defaults
-description: Default logging stack for Apple-platform Swift Apps — Apple's built-in `os.Logger` (no third-party), subsystem = bundle ID, category = module name, dynamic string / object interpolation defaults to `.private` (numeric and Boolean values default to `.public`), with explicit overrides where needed. Invoke when choosing a logging library, writing the first Logger declaration, deciding privacy interpolation, or when asked "OSLog vs SwiftLog vs CocoaLumberjack, which one".
+description: Set up logging for an Apple-platform Swift app with `os.Logger` and decide its `subsystem` / `category` naming and `privacy:` interpolation. Use when choosing a logging library (`os.Logger` vs swift-log `import Logging` vs CocoaLumberjack); when writing the first `Logger(subsystem:category:)`; when deciding `.private` vs `.public` for a value; when asked what `.private` hides in Console.app, sysdiagnose, or `OSLogStore`. Does NOT cover `os_signpost` / Instruments profiling (ios-performance-engineering) or fanning logs out to trackers (telemetry-facade-pattern).
 ---
 
 # OSLog / `os.Logger` Defaults

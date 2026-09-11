@@ -1,6 +1,6 @@
 ---
 name: telemetry-facade-pattern
-description: Single `Telemetry` SwiftPM target with a fan-out facade — callers say "what happened" (`telemetry.observe(event)`), facade dispatches to multiple sinks (OSLog / NoOp tracking / MetricKit / Game Center). Invoke when deciding logger / tracker coupling, designing telemetry interfaces, or when asked "should Logger and Tracking be one thing".
+description: Design the app-side event pipeline that fans one `telemetry.observe(event)` call out to logging, tracking, MetricKit and Game Center sinks. Use when deciding whether Logger and analytics tracking share one interface; when adding a `TelemetrySink` / `MetricKitSink` / `GameCenterSink`; when a wired-looking sink never fires (score not submitted, achievement not unlocked, `GKLeaderboard.submitScore` unreached); when sink order or UI-blocking sink I/O matters. Does NOT choose the Logger API (oslog-logger-defaults) or which analytics sources to use (apple-three-piece-analytics).
 ---
 
 # Telemetry Facade Pattern

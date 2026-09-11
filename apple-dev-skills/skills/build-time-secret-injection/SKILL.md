@@ -1,6 +1,6 @@
 ---
 name: build-time-secret-injection
-description: Use when introducing an AdMob production ID (`GADApplicationIdentifier` Info.plist key, ad unit IDs), ASC API `.p8` key, or any "ships in binary but must stay out of public-repo PR diffs" identifier into an Apple build. Codifies the xcconfig + Info.plist `$()` substitution + `Bundle.main` read pattern, paired with `secrets/.env` for CLI tooling; multi-app `CI_PRODUCT` dispatch + built-bundle smoke-test. Build-time injection mechanism, not the repo-hygiene baseline; for secret-leak prevention (gitleaks, lefthook, GitHub Secret Scanning) see apple-public-repo-security.
+description: Use when wiring a value that ships in the binary but must stay out of public-repo diffs until launch (AdMob `GADApplicationIdentifier` / banner unit ID, a third-party SDK app key) into an Apple build via xcconfig, Info.plist `$()` substitution and a guarded `Bundle.main` read, including `ci_post_clone.sh` generation on Xcode Cloud; or when CLI tooling reads an ASC `.p8` / key ID from `secrets/.env`. Not for signing certs, CloudKit or APNs keys, nor leak prevention (gitleaks, lefthook, Secret Scanning) — see apple-public-repo-security. SDK isolation is monetization-sdk-integration.
 ---
 
 # Build-time Secret Injection (Apple-platform)

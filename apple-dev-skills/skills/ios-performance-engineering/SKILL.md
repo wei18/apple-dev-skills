@@ -1,6 +1,6 @@
 ---
 name: ios-performance-engineering
-description: Measure and fix iOS/macOS performance — Instruments (Time Profiler, Allocations, SwiftUI instrument, Hangs), os_signpost, MetricKit field telemetry, XCTMetric baselines, launch-time optimisation, memory footprint, binary size. Invoke when diagnosing slowness/hitches/high memory, setting up CI perf baselines, wiring MetricKit, or asking "why is my app slow / using too much memory / large".
+description: Measure and fix iOS/macOS performance with Instruments (Time Profiler, Allocations, Hangs, App Launch), `xctrace` in CI, `OSSignposter`, MetricKit field telemetry (`MXMetricManager`, `MXHangDiagnostic`), `XCTMetric` baselines, launch time, memory footprint, and binary size. Use when diagnosing hangs, hitches, high memory, slow launch, or a large binary, wiring MetricKit, or setting CI perf baselines. SwiftUI body re-render analysis from code review → apple-skills:guide-swiftui-performance-audit or swiftui-expert's `.trace` toolchain; this skill owns measurement and the system-level surface.
 ---
 
 # iOS Performance Engineering
