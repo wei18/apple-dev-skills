@@ -21,14 +21,14 @@ never launch a process at all. This is the automated, CI-runnable sibling of
 
 ## Scope
 
-Owns: Tuist scheme/target wiring for native XCUITest targets, and the macOS driving mechanics
-below. Does **not** own: manual/interactive Simulator exploration → `interactive-simulator-ux-audit`;
+Assumes a Tuist-generated project; a hand-maintained `.xcodeproj` adds the same dedicated
+scheme directly in Xcode's scheme editor instead of via `Project.swift`. Owns: Tuist
+scheme/target wiring for native XCUITest targets, and the macOS driving mechanics below.
+Does **not** own: manual/interactive Simulator exploration → `interactive-simulator-ux-audit`;
 unit/snapshot test framework choice → `swift-testing-baseline`; general navigation architecture
 under test → `swiftui-navigation-architecture`.
 
 ## Tuist wiring: a dedicated scheme, not a test plan
-
-(Assumes a Tuist-generated project — see `build-time-secret-injection`'s Tuist-assumption note; a hand-maintained `.xcodeproj` adds the same dedicated scheme directly in Xcode's scheme editor instead of via `Project.swift`.)
 
 A Tuist `.uiTests` product target needs **its own scheme** with an explicit
 `testAction: .targets([...])` — not membership in an existing scheme's `.xctestplan`.
@@ -52,26 +52,29 @@ let e2eScheme = Scheme.scheme(
 )
 ```
 
-- Adding a native `.uiTests` target to an *existing* scheme's `.testPlans([...])` builds the
-  scheme but produces no `.xctest` bundle for it — `xcodebuild test` then fails with "no test
-  bundles available to test". A package's own SPM test targets run fine via a test plan
-  because they're cross-linked into the plan's buildables; a same-project native UI test
-  target is not. The fix is the dedicated scheme above, not a plan tweak.
-- `TestAction`'s factory is `.targets(...)`, not `.testAction(...)`; `TestableTarget` accepts
-  a plain string literal target name.
-- **Name the target `<App>E2ETests`, not `<App>UITests`**, if the same package already has an
-  SPM snapshot/unit target with that suffix (e.g. `MyAppUITests` for snapshot tests) — the two
-  would collide.
-- Give the E2E target its own build settings (not the app's entitlement-carrying settings) so
-  it carries no unintended app capabilities, and keep the E2E scheme's default test action on
-  Debug only — it should never be part of a Release archive or the fast default test run.
+| Situation | Do | Not |
+|---|---|---|
+| New native `.uiTests` target | Dedicated scheme with `testAction: .targets([...])` | Add it to an existing scheme's `.testPlans([...])` — builds the scheme but produces no `.xctest` bundle; `xcodebuild test` fails with "no test bundles available to test" |
+| Naming the E2E target | `<App>E2ETests` | `<App>UITests`, if an SPM snapshot/unit target already uses that suffix (e.g. `MyAppUITests`) — Xcode name collision |
+| Diagnostic output in the test runner | `print()` — lands in the `xcodebuild` log directly | Write to `/tmp` — the runner's sandbox usually blocks it |
+| `-only-testing:` scope | `TestTarget[/TestClass[/TestMethod]]` (per `man xcodebuild`), only as many segments as the intended scope | — |
+| UI test target lives in a different SwiftPM package than the app (cross-package) | An `.xctestplan` referencing both packages' schemes; verify empirically | Assume the dedicated-scheme rule above always wins |
+
+A package's own SPM test targets run fine via a test plan because they're cross-linked into the
+plan's buildables; a same-project native UI test target is not — the fix is the dedicated scheme
+above, not a plan tweak. `TestAction`'s factory is `.targets(...)`, not `.testAction(...)`;
+`TestableTarget` accepts a plain string literal target name. Give the E2E target its own build
+settings (not the app's entitlement-carrying settings) so it carries no unintended app
+capabilities, and keep the E2E scheme's default test action on Debug only — it should never be
+part of a Release archive or the fast default test run.
 
 ## Driving SwiftUI on macOS: window-frame anchoring
 
 On native (AppKit-hosted) macOS SwiftUI, the naive APIs don't work:
 
 - `element.tap()` throws `point.x != INFINITY` (`NSInternalInconsistencyException`) — SwiftUI
-  exposes no accessibility activation point on macOS the way it does on iOS.
+  exposes no accessibility activation point on macOS the way it does on iOS. (Observed
+  in-project; exact Xcode version unrecorded — this error text is not documented by Apple.)
 - `app.coordinate(withNormalizedOffset: .zero)` resolves to `(-inf, -inf)` — the application
   element itself has no usable frame to normalize against.
 
@@ -94,26 +97,23 @@ click(app.buttons["submit"].frame)
 Other macOS-driving specifics:
 
 - `hittable` is **not** a valid NSPredicate key in an `XCUIElementQuery` predicate
-  (`XCTElementQueryInvalidPredicate` at runtime) — `isHittable` only works as a Swift-side
-  property check, never inside a predicate string.
-- The test-runner process's sandbox usually can't write to `/tmp`. Dump diagnostic state
-  (e.g. `app.debugDescription`) via `print()` so it lands in the `xcodebuild` log directly —
-  and don't pipe `xcodebuild` through `tail` or another filter that can drop buffered output
-  before the dump is flushed.
+  (`XCTElementQueryInvalidPredicate` at runtime; observed in-project, exact Xcode version
+  unrecorded) — `isHittable` only works as a Swift-side property check, never inside a
+  predicate string.
+- When dumping diagnostic state (e.g. `app.debugDescription`) via `print()` per the table
+  above, don't pipe `xcodebuild` through `tail` or another filter that can drop buffered
+  output before the dump is flushed.
 - Tapping the *same* element across multiple steps where its accessibility label mutates
   between taps (e.g. a cell whose label changes once filled): capture `element.frame` **once**
   and convert it to an app-relative coordinate up front, rather than re-querying the element
   by its now-stale label on each subsequent tap.
 - Test classes that touch `XCUIElement` APIs must be `@MainActor` under Swift 6 strict
   concurrency — those APIs are main-actor-isolated.
-- `-only-testing:` identifiers have the form `TestTarget[/TestClass[/TestMethod]]` (per
-  `man xcodebuild`) — target-only and target/class are both valid, narrowing scope to
-  that target or class; a full three-segment path narrows to one method.
 
 ## Locale-stable queries
 
 If the app ships more than one locale, query by a **stable accessibility identifier** set in
-code (`accessibilityIdentifier("game.completion.hero")`) rather than by visible label text —
+code (`accessibilityIdentifier("checkout.confirmation.title")`) rather than by visible label text —
 translated strings break a hardcoded English-label query the moment a non-English locale runs
 the same test. Reserve literal label matching for elements whose text is guaranteed
 locale-invariant by design (e.g. digits, or an identifier deliberately not localized).
