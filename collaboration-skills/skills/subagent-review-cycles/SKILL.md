@@ -1,6 +1,6 @@
 ---
 name: subagent-review-cycles
-description: The Leader / Developer / Code-Reviewer triad pattern — Leader dispatches Developer for proposal → Code Reviewer for adversarial review (with WebSearch, no CLI) → Leader accepts/rejects with specific reasons → iterate up to `limit(N)` rounds. Round-1 cosmetic-grade fixes get inline-applied by Leader instead of consuming a round. Invoke when planning multi-round review on a document, dispatching a Code Reviewer subagent, or when asked "how many review rounds / what skills should the Code Reviewer carry".
+description: Structure a multi-round Leader / Developer / Code-Reviewer review of a document or code change. Use when planning how many review rounds to run, dispatching a Code Reviewer subagent and deciding which tools and review criteria it carries, adjudicating a reviewer's BLOCKER / MAJOR / MINOR findings, or when asked "how many review rounds", "may the Code Reviewer run CLI", "what counts as a rejection". Does NOT own the dispatch prompt's required elements (leader-developer-handoff-contract) nor pre-dispatch worktree conflict checks (subagent-conflict-detection).
 ---
 
 # Subagent Review Cycles

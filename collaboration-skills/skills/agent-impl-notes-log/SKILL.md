@@ -1,6 +1,7 @@
 ---
 name: agent-impl-notes-log
-description: "Maintain a running `meetings/{date}_{topic}.impl-notes.md` *during* subagent task execution to capture in-flight design decisions, intentional deviations from spec, considered alternatives, and open questions for Leader/User. Distinct from the post-hoc phase meeting log; this file is updated incrementally as decisions are made. Invoke at the start of any non-trivial subagent dispatch (M- or L-size: touches ≥2 files, adds new behavior, or gets a spec before code), when ambiguity is encountered mid-task, or when about to deviate from spec."
+description: "Keep a running impl-notes file next to the phase meeting log while a subagent executes a task, recording design decisions, intentional deviations from spec, tradeoffs, and open questions as they happen rather than after the fact. Use at the start of any non-trivial subagent dispatch (multi-file change, ambiguous spec, new dependency or module, refactor), when ambiguity is hit mid-task, or before deviating from spec. Not the post-hoc meeting log (session-to-meeting-log); the two coexist."
+argument-hint: "[topic]"
 ---
 
 # Agent Implementation Notes — Running Log

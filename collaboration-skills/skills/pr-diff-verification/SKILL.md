@@ -1,6 +1,6 @@
 ---
 name: pr-diff-verification
-description: Use before pushing a branch or opening a PR to verify `git show --stat --summary HEAD` matches what the commit message claims. Prevents the "commit log wrote but code didn't make it" class of accidents where the commit message describes changes that aren't in the diff (e.g. amend overwrote the previous commit's content, force-push lost commits, worktree wipe lost staged work). Invoke whenever Leader is about to `git push` a feature branch OR open a PR.
+description: Check that a branch's actual diff matches what its commit messages and any subagent report claim, before the commits leave the machine. Use before `git push` of a feature branch, before `gh pr create` or `gh pr merge`, after a subagent reports "committed N files", after an amend / rebase / force-push, or when a verification report's headline count looks off. Catches "commit log wrote but code didn't make it" accidents. Does NOT read the diff for correctness (that is a Code Reviewer's job) nor own gh / PR mechanics (github-contribution-workflow).
 allowed-tools: Bash(git show *) Bash(git diff *) Bash(git log *) Bash(git reflog *) Bash(git rev-parse *)
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: subagent-conflict-detection
-description: 'Use before dispatching a subagent with `isolation:"worktree"`, or while another subagent is in flight, to avoid three dispatch hazards — file-scope overlap with an in-flight subagent, a stale dispatch base, and collisions with another live agent/session editing the same checkout or git-submodule path. Invoke when about to call the Agent tool with `isolation:"worktree"`; when another subagent is running; right after a merge or branch switch (verify the dispatch base first); or when another Claude session is editing a shared repo/submodule path.'
+description: 'Use before dispatching a subagent with `isolation:"worktree"`, or while another subagent is in flight, to avoid three dispatch hazards — file-scope overlap with an in-flight subagent, a stale dispatch base, and collisions with another live agent/session editing the same checkout or git-submodule path. Invoke when about to call the Agent tool with `isolation:"worktree"`; when another subagent is running; right after a merge or branch switch; or when another Claude session is editing a shared repo/submodule path. Does NOT cover PR / merge mechanics (github-contribution-workflow) or post-commit diff sanity (pr-diff-verification).'
 allowed-tools: Bash(git worktree list) Bash(git status *) Bash(git log *) Bash(git rev-parse *) Bash(git merge-base *)
 ---
 

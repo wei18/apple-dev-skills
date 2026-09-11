@@ -1,6 +1,6 @@
 ---
 name: spec-phase-orchestration
-description: The pre-implementation document pipeline — 5 files + `meetings/` directory (README.md + docs/design.md + docs/foundations.md + docs/plan.md + docs/methodology.md + meetings/), section-by-section approval (§What before §How), prerequisite checklist with Unconfirmed / Resolved gates, "no implementation code before design.md and plan.md approved" rule. Invoke when deciding doc structure for a spec-first project, or when asked "which documents go in the spec phase".
+description: Run the spec-first document phase of a project and gate implementation on it. Use when starting a project that needs a spec before code, deciding which documents the spec phase produces and in what order, choosing whether a section may advance while a prerequisite is unconfirmed, judging whether implementation code may start yet, or when asked "design or foundations first", "which documents go in the spec phase", "can we code before plan.md is approved". Does NOT own where stray ideas are parked (backlog-routing-by-topic) nor the per-section review rounds (subagent-review-cycles).
 ---
 
 # Spec Phase Orchestration

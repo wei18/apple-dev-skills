@@ -1,6 +1,6 @@
 ---
 name: github-contribution-workflow
-description: Author GitHub contributions with the gh CLI — open/merge PRs, open issues, create/edit files on GitHub, set repo secrets, configure contribution-flow repo settings. Use when running `gh pr create` / `gh pr merge` / `gh pr checks` / `gh issue create` / `gh secret set` / `gh api`, checking CI before merge, or bumping a submodule pin. Covers Conventional branch/PR-title conventions, Co-Authored-By trailer + 🤖 footer, squash+delete merge, CLEAN-before-merge, `gh secret set` without --body, `git update-index` submodule bumps, the --no-verify rule. Does NOT cover pure local git, diff-vs-commit verification (→ pr-diff-verification), security repo settings (→ apple-public-repo-security), worktree conflicts (→ subagent-conflict-detection), plugin distribution (→ claude-skill-plugin-packaging).
+description: Drive GitHub contributions through the gh CLI — pull requests, issues, GitHub-side file edits, repo secrets, contribution-flow repo settings, submodule pin bumps. Use when about to run `gh pr create` / `gh pr merge` / `gh pr checks` / `gh issue create` / `gh secret set` / `gh api`, or asked "open a PR", "merge this", "bump the submodule". Does NOT cover pure local git, diff-vs-commit sanity (pr-diff-verification), security repo settings (apple-dev-skills:apple-public-repo-security), worktree conflicts (subagent-conflict-detection), plugin distribution (claude-skill-plugin-packaging).
 ---
 
 # GitHub Contribution Workflow
