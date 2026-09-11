@@ -33,7 +33,7 @@ description: 'Localization scope and AI-translation execution for Apple-platform
 | Korean | `ko` | High-penetration Asian market |
 
 - Locale codes are the **script-based BCP-47 forms** (`zh-Hant` / `zh-Hans`), not region
-  forms (`zh-TW` / `zh-CN`) — matches the committed catalogs and your repo's L10n completeness gate.
+  forms (`zh-TW` / `zh-CN`) — matches the committed catalogs and, if the repo has one (recommended, see Step 5), its L10n completeness gate.
 - **Minimum set**: zh-Hant + en (every project includes at least these two).
 - Per-project locale lists can be adjusted, but **English and zh-Hant are always included**.
 
@@ -148,8 +148,8 @@ Verification gates before merging a translation pass:
 
 ### L10n gate scope — and its two blind spots
 
-Your repo's L10n completeness gate (CI-enforced) checks **per-key locale
-completeness**: every key present in a catalog has all declared locales, no `<TRANSLATE>`.
+If the repo has a per-key completeness gate (recommended, see Step 5), it checks **per-key
+locale completeness**: every key present in a catalog has all declared locales, no `<TRANSLATE>`.
 Two things it does **NOT** catch — both have shipped English-fallback bugs in real projects:
 
 1. **A required key being *absent* entirely.** The gate validates keys that
@@ -161,17 +161,17 @@ Two things it does **NOT** catch — both have shipped English-fallback bugs in 
    already has the feature** (real-world: a new game adopted shared audio-settings
    UI without copying the required catalog keys; another adopted an ATT primer
    and the raw dotted keys appeared at runtime — both passed the gate).
-2. **A key referenced from shared UI code but absent from an app's catalog.**
-   Per-key completeness alone will NOT catch this — the gate only validates keys
-   that already exist in a catalog, so a key referenced from a shared UI module
-   that the app's own catalog never declares renders raw at runtime while the gate
-   stays green. **Build a shared-code dotted-key gate:** every dotted-namespace key
-   (e.g. `leave.game.close`, `att.primer.title`) referenced from a shared UI module
-   (SharedUI / SettingsUI / any shared UI module) must exist in **every** app
-   catalog or CI fails. Scope it to *dotted* keys to avoid app-conditional
-   English-phrase false positives — English-phrase shared keys are a separate,
-   harder case (no dotted namespace to anchor on; track them with a dedicated
-   audit rather than this gate).
+2. **Multi-app repos sharing UI modules only:** a key referenced from shared UI code
+   but absent from an app's catalog. Per-key completeness alone will NOT catch this
+   — the gate only validates keys that already exist in a catalog, so a key
+   referenced from a shared UI module that the app's own catalog never declares
+   renders raw at runtime while the gate stays green. **Build a shared-code
+   dotted-key gate:** every dotted-namespace key (e.g. `leave.game.close`,
+   `att.primer.title`) referenced from a shared UI module (SharedUI / SettingsUI /
+   any shared UI module) must exist in **every** app catalog or CI fails. Scope it
+   to *dotted* keys to avoid app-conditional English-phrase false positives —
+   English-phrase shared keys are a separate, harder case (no dotted namespace to
+   anchor on; track them with a dedicated audit rather than this gate).
 
 ### xcstrings editing footgun
 
@@ -184,7 +184,7 @@ buries the real change. Splicing keeps a clean, reviewable diff (real example:
 
 ### Tooling notes
 
-- xcstrings is JSON; parse with any JSON library. Schema: `{"sourceLanguage": "en", "strings": {<key>: {"localizations": {<locale>: {"stringUnit": {"state": "translated", "value": "..."}}}}}}`.
+- xcstrings is JSON; parse with any JSON library. Schema: `{"version": "1.0", "sourceLanguage": "en", "strings": {<key>: {"localizations": {<locale>: {"stringUnit": {"state": "translated", "value": "..."}}}}}}`. The top-level `"version"` field auto-bumps to `1.1` when Xcode 26's type-safe symbol generation or AI-generated comments touch the catalog — preserve it verbatim when splicing (see the splice footgun above).
 - Plural variations use `{"variations": {"plural": {<cldr-form>: {"stringUnit": {...}}}}}` instead of a single `stringUnit`.
 - When fanning out via an LLM, send a single key + source + glossary in the prompt; don't batch hundreds at once (latency wins less than accuracy loses).
 - For ASC metadata (App Store description, keywords, "what's new"), use the **same flow** but route to the ASC API endpoints rather than xcstrings. The translation principles (length budget, register, gotchas) apply identically.
