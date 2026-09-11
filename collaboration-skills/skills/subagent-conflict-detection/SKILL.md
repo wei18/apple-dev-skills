@@ -26,13 +26,16 @@ Skip when: dispatching the first subagent in a session, or all prior subagents h
 ### Step 1 — inventory in-flight subagents
 
 ```bash
-git worktree list
+git worktree list --porcelain | awk '/^worktree /{print $2}' | tail -n +2
 ```
 
-Skip the entry marked `[main]` (or `[<default-branch>]`) — every other line is an
-in-flight worktree. For each worktree path, capture (run from inside that path,
-not via `-C`, so the commands match the `Bash(git status *)` / `Bash(git log *)`
-rules the way this skill's `allowed-tools` writes them):
+Plain `git worktree list` is fine for a human to eyeball, but don't parse it: filtering
+on `[main]` breaks when the default branch isn't named `main`, and splitting on
+whitespace breaks on a path containing a space. `--porcelain` sidesteps both — `tail -n
++2` drops the first (main-checkout) `worktree` line. For each remaining worktree path,
+capture (run from inside that path, not via `-C`, so the commands match the
+`Bash(git status *)` / `Bash(git log *)` rules the way this skill's `allowed-tools`
+writes them):
 - Branch checked out
 - Dirty files: `(cd <path> && git status --short)`
 - Most recent commit subject: `(cd <path> && git log -1 --format=%s)`
@@ -65,14 +68,10 @@ share a simulator (see `apple-dev-skills:interactive-simulator-ux-audit` for the
 `isolation: "worktree"` does **not** always branch from your current local HEAD. The base is
 decided by `worktree.baseRef`:
 
-- **`"fresh"` (the default)** — branches from the repository's **default branch on the
-  remote** (typically `origin/main`), not your local HEAD. Any commit you haven't pushed yet
-  is invisible to the worktree. If the dispatched work depends on your in-progress local
-  branch, push first, or set `worktree.baseRef: "head"` in settings.
-- **`"head"`** — branches from your local HEAD **commit**; uncommitted working-tree edits are
-  NOT carried over — commit first (gitignored files can be copied via `.worktreeinclude`).
-  Dispatching right after a merge without syncing HEAD first branches from the pre-merge base
-  (see the incident below). Confirm with `git log --oneline -3` before dispatching.
+| `baseRef` | Branches from | Invisible to the worktree | Pre-dispatch action |
+|---|---|---|---|
+| `"fresh"` (default) | The repository's **default branch on the remote** (typically `origin/main`) | Any commit you haven't pushed yet | Push first, or set `worktree.baseRef: "head"` in settings |
+| `"head"` | Your local HEAD **commit** | Uncommitted working-tree edits (gitignored files can still be copied via `.worktreeinclude`) | Commit first; confirm with `git log --oneline -3` before dispatching, especially right after a merge (see the incident below) |
 
 Two fallbacks worth knowing: with no remote configured, or when `origin/HEAD` isn't cached
 locally and can't be fetched, `"fresh"` falls back to your current local HEAD. And **before
@@ -137,13 +136,13 @@ Options:
 
 ## Anti-patterns this prevents
 
-- **Parallel-dispatch race** (methodology.md §Anti-patterns): Two subagents on isolated worktrees edit the same file. `--force-with-lease` does NOT silently overwrite — it rejects the push when the remote ref has moved since the client last fetched. The real footgun is a different one: worktree B rebases onto a stale base (e.g. the main SHA from before worktree A pushed), producing a divergent history; resolving it then requires a force-push that can drop worktree A's commits. Prevent this by serializing or carving scopes before dispatch.
+- **Parallel-dispatch race**: Two subagents on isolated worktrees edit the same file. `--force-with-lease` does NOT silently overwrite — it rejects the push when the remote ref has moved since the client last fetched. The real footgun is a different one: worktree B rebases onto a stale base (e.g. the main SHA from before worktree A pushed), producing a divergent history; resolving it then requires a force-push that can drop worktree A's commits. Prevent this by serializing or carving scopes before dispatch.
 - **Lost-work on worktree wipe**: Subagent A's worktree wipes without commit; subagent B's dispatch reuses the path or branch name; A's work is unrecoverable.
 - **Code Reviewer confusion**: CR sees a PR whose diff includes changes from a parallel subagent that's not yet merged; verdict is on wrong baseline.
 
 ## Pre-flight discipline this skill adds
 
-A Leader's pre-dispatch pre-flight typically includes "kill orphan procs", "rebase WIP onto main", and "mise trust" — this skill adds the conflict-detection step before those. For why `mise trust` is required before `mise install`/`mise exec` take effect in a fresh worktree or CI checkout, see `apple-dev-skills:mise-tool-management`.
+If your Leader runs a pre-dispatch pre-flight (process cleanup, rebase onto main, tool trust), insert this conflict-detection step before it. For why `mise trust` is required before `mise install`/`mise exec` take effect in a fresh worktree or CI checkout, see `apple-dev-skills:mise-tool-management`.
 
 ## False-positive handling
 
