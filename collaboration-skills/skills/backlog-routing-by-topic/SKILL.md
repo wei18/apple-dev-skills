@@ -20,6 +20,7 @@ description: Route a stray idea that surfaces mid-task to the §Backlog of the r
 | **Implementation step / refactor / test coverage expansion** | `docs/plan.md §Backlog` |
 | **Collaboration mode / agent skill setup / review flow** | `docs/methodology.md §Backlog` |
 | **Unclassifiable / highly divergent** | Today's `meetings/{date}_*.md` §Open questions |
+| **Mixed (product + tooling)** | File at the bigger decision point; add one cross-ref line in the other |
 
 ## Entry format
 
