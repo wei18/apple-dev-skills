@@ -1,6 +1,6 @@
 ---
 name: mise-tool-management
-description: Use mise (mise.jdx.dev) to manage binary CLI / build tools (swiftlint, swiftformat, xcbeautify, gitleaks, lefthook, etc.) on both dev machines and CI, sharing a single `.mise.toml` for version parity. Invoke when choosing a tool version manager (vs asdf / Homebrew / manual), writing `.mise.toml`, or when asked "how do I manage swiftlint / xcbeautify versions".
+description: 'Use when pinning binary CLI / build tools (swiftlint, xcbeautify, gitleaks, lefthook) with mise so dev machines and CI share one `.mise.toml` — choosing mise vs asdf / Homebrew / manual, writing `.mise.toml` (`aqua:` / `ubi:` backends, `os = ["macos"]` guards), running `mise trust` / `mise install` / `mise exec` from `ci_post_clone.sh` or a fresh git worktree, or debugging "mise exec ignores .mise.toml in a new worktree", `unsupported env: linux/amd64`. Does NOT cover Xcode Cloud workflow design → xcode-cloud-single-track-ci, nor gitleaks / lefthook policy → apple-public-repo-security.'
 ---
 
 # mise Tool Management
