@@ -198,12 +198,11 @@ submodule only when you need to **vendor + pin** another repo's content into you
 - **Bare submodule of a multi-plugin repo (root has only `marketplace.json`) ≠ discovered.**
   Pair it with the `extraKnownMarketplaces` + `enabledPlugins` settings (Model B2) — or,
   if the submodule's own root has `plugin.json` instead, it self-loads on its own (Model D).
-- **`git commit -a` skips new files** — `plugin.json`/`marketplace.json` are new; `-a` will silently omit them. Use explicit `git add` and verify with `git show --stat --summary` (plain `--stat` doesn't print the `create mode` lines new files need).
 - **Marketplace state is per-user** (`~/.claude/plugins/known_marketplaces.json`), but the **committed project `.claude/settings.json` declaration** is what makes it reproducible for everyone on trust. Marketplace names are checked against a reserved list (`claude-code-marketplace`, `anthropic-marketplace`, `agent-skills`, …) on every load — a name collision silently stops that marketplace from loading.
-- **Token cost**: every enabled skill's description is always-on context — see
-  `skill-authoring-patterns` §listing budget for the exact mechanism. `/doctor` and
-  `/skill-doctor` show the actual per-session cost; `skillOverrides: "name-only"` can demote
-  a low-priority plugin to save budget.
+- **Token cost**: every enabled skill's description is always-on context — for the exact
+  mechanism see the listing-budget reference doc under `skill-authoring-patterns`. `/doctor`
+  and `/skill-doctor` show the actual per-session cost; `skillOverrides: "name-only"` can
+  demote a low-priority plugin to save budget.
 - **Relative marketplace paths resolve for both git-based and local-directory marketplaces**
   — they fail only when the marketplace was added by a direct URL to `marketplace.json`. A
   `directory` source resolves against the *containing* repo's main checkout (including from
@@ -216,6 +215,7 @@ submodule only when you need to **vendor + pin** another repo's content into you
 
 ## Verification
 
+- `git commit -a` skips new files — `plugin.json`/`marketplace.json` are new, so `-a` silently omits them. Use explicit `git add` and verify with `git show --stat --summary` (plain `--stat` doesn't print the `create mode` lines new files need).
 - `/reload-plugins` then check the skills list shows `your-skills:<skill>` entries.
 - `claude plugin details your-skills@your-skills` lists the bundled skills, agents, and
   token cost — not scope. **Scope** (`user` / `project`) comes from `claude plugin list`;
