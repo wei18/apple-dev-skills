@@ -122,9 +122,12 @@ for name, (plugin, d) in skills.items():
     # An arrow whose right-hand side is a skill name (`X → other-skill`, `X → plugin:other-skill`)
     # is a routing pointer / negative boundary, which the doctrine allows; only arrows that
     # chain non-skill words (`archive → export → upload`) count as a workflow summary.
-    routing = re.compile(r"→\s*`?(?:[a-z0-9-]+:)?([a-z0-9-]+)`?")
-    step_arrows = sum(1 for m in re.finditer("→", desc)
-                      if not (routing.match(desc, m.start()) and routing.match(desc, m.start()).group(1) in skills))
+    # A `plugin:skill` target (any prefix, incl. aggregated externals) is routing by form alone.
+    routing = re.compile(r"→\s*`?(?:(?P<prefix>[a-z0-9-]+):)?(?P<skill>[a-z0-9-]+)`?")
+    def is_routing(m):
+        r = routing.match(desc, m.start())
+        return bool(r) and (r.group("prefix") is not None or r.group("skill") in skills)
+    step_arrows = sum(1 for m in re.finditer("→", desc) if not is_routing(m))
     if step_arrows >= 2 or re.search(r"(Step ?1|\b1\)\s.*\b2\)\s)", desc): add("MINOR", name, "description may summarize workflow", desc[:80])
 
 sev_order = {"BLOCKER":0,"MAJOR":1,"MINOR":2}
