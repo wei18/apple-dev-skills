@@ -1,6 +1,6 @@
 ---
 name: cloudkit-schema-source-of-truth
-description: Use when a CloudKit-backed app's persistence layer adds or edits a record type, field, or index and the schema needs to reach a container, or when asked "how do I push CloudKit schema to Production", "why can't cktool deploy to prod", or "why is a field silently missing in Production". Covers one committed `.ckdb` per app as the schema source of truth, `xcrun cktool` export/validate/deploy against Development (management token from an env file, passed positionally since cktool rejects piped stdin, purged after use), Production promotion as an irreversible Console-button-only gate `cktool` cannot reach, Production fields/indexes being add-only, and Just-In-Time schema existing only in Development — a field the code writes that Production was never seeded with fails silently.
+description: 'Committed `.ckdb` as the CloudKit schema source of truth, with `xcrun cktool` export / validate / import against Development and Production promotion kept as a Console-only gate. Use when a CloudKit-backed persistence layer adds or edits a record type, field, or index; before any Production schema deploy; or when asked "how do I push CloudKit schema to Production", "why can''t cktool deploy to prod", "why is a field silently missing in Production". Does NOT own the Swift persistence seam → swift-dependency-injection, or token storage → apple-public-repo-security.'
 ---
 
 # CloudKit Schema Source of Truth
