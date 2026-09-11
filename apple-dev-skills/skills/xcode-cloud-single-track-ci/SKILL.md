@@ -93,7 +93,7 @@ When two PRs each pass pre-merge and merge back to back, **their combined result
 
 - The Xcode version in the Xcode Cloud workflow matches the README / `foundations.md` toolchain line.
 - PR CI has "Merge with base branch before building" enabled.
-- `bin/mise` is committed; `ci_post_clone.sh` starts with `./bin/mise trust` then `./bin/mise install`, not a bare `mise` call.
+- `bin/mise` is committed; `ci_post_clone.sh` starts with `cd "$CI_PRIMARY_REPOSITORY_PATH"`, then runs `./bin/mise trust && ./bin/mise install`, not a bare `mise` call.
 - Periodic workflow trigger time is explicit (UTC recommended).
 - Existing Mac apps: Xcode Cloud's next build number (App Store Connect → Xcode Cloud → Settings → Build Number) is set above the last shipped build number.
 

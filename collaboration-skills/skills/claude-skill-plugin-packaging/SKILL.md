@@ -109,8 +109,10 @@ No submodule, no vendoring — Claude Code resolves the pinned `ref` on trust. *
 (since v2.1.195)**: auto-install-on-trust applies to plugins declared via a relative/
 `directory` source; a plugin whose source is *external* (`github`, `npm`, `url`,
 `git-subdir`) — like this one — is *enabled* in settings but each collaborator still has
-to run the `claude plugin install` command Claude Code prints on first load. `github` /
-`git-subdir` / `url` sources take `ref` but not `sha`; for an exact-commit pin use B2.
+to run the `claude plugin install` command Claude Code prints on first load. The
+**marketplace source** (`extraKnownMarketplaces` / `marketplace add`) — where this
+`marketplace.json` itself is fetched from — takes `ref` but not `sha`; for an
+exact-commit pin use B2.
 
 ### B2. Vendored submodule + project-scope committed settings (SHA-level pin, offline-capable)
 

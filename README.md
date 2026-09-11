@@ -58,7 +58,7 @@ Full index in the tables below.
 
 | Skill | One-liner |
 |---|---|
-| `swift6-concurrency` | Swift 6 language mode + complete concurrency checking; Sendable by default |
+| `swift6-concurrency` | Swift 6 language mode + complete concurrency checking; `MainActor` by default, Sendable only where code crosses into `nonisolated`/actor context |
 | `apple-platform-targets` | Default iOS 26 / macOS 26, Xcode 26.x; drop to 18 / 15 only when an older user base requires it |
 | `swiftpm-modularization` | Single Package, multi-target, thin App, DI composition root, one-to-one tests |
 | `swift-testing-baseline` | swift-testing + pointfreeco snapshot; protocol fakes; strict/tolerant snapshot gate |
@@ -91,12 +91,12 @@ Full index in the tables below.
 |---|---|
 | `spec-phase-orchestration` | Pre-implementation doc pipeline; section-by-section approval |
 | `subagent-review-cycles` | Leader / Developer / Code-Reviewer triad; round-1 cosmetic inline; limit(N) |
-| `leader-developer-handoff-contract` | 5 required elements when dispatching a sub-agent |
+| `leader-developer-handoff-contract` | 6 required elements when dispatching a sub-agent |
 | `agent-impl-notes-log` | Running impl-notes during a sub-agent task — decisions, deviations, open questions |
 | `subagent-conflict-detection` | Check a new sub-agent's targets don't overlap an in-flight worktree |
 | `methodology-pattern-extractor` | Extract patterns recurring ≥3 times from meeting logs |
 | `session-to-meeting-log` | Consolidate a Claude Code session into a meeting log; summary, not verbatim |
-| `pr-diff-verification` | Before push/PR, verify `git show --stat HEAD` matches the commit's claims |
+| `pr-diff-verification` | Before push/PR, verify `git show --stat --summary HEAD` matches the commit's claims |
 | `backlog-routing-by-topic` | Route stray ideas by topic to the matching spec file's §Backlog |
 | `claude-skill-plugin-packaging` | Distribute/install Claude Code skills — depth-1 rule, plugin + marketplace, aggregation |
 | `skill-authoring-patterns` | Apple/Swift catalog layer over `superpowers:writing-skills` — router descriptions, bookend sections, two-tier references, evidence-based CR |
@@ -173,7 +173,7 @@ npx skills add wei18/apple-dev-skills --skill swift6-concurrency
 > **Path C does not include the aggregated externals.** `npx skills` reads this repo's
 > `marketplace.json` / `plugin.json`, but it only follows locally-declared skill paths. It
 > does not fetch the externals' remote `github` / `git-subdir` sources. So the commands above
-> install only the 39 first-party skills — the 7 externals are silently skipped. To
+> install only the 38 first-party skills — the 7 externals are silently skipped. To
 > flat-install the whole catalog (externals included, pulled from their authors' repos):
 
 ```bash

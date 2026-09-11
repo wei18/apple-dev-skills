@@ -49,7 +49,7 @@ secrets/
   ├── .env                          # gitignored, real values
   ├── .env.example                  # committed, structure + docstring
   ├── <Domain>AuthKey_*.p8          # gitignored binary cert
-  └── .gitignore                    # deny-by-default: */!*.example/!README.md
+  └── .gitignore                    # deny-by-default: */!*.example/!README.md/!example/ /!example/**
 ```
 
 - `.env` is `KEY=VALUE` shell-style
@@ -140,7 +140,7 @@ A future PR should add a build-phase script that asserts no `$()` literals survi
 
 6. **`Bundle.main` from inside a SwiftPM package** is fine for app-target composition root reads but flaky for #Preview / test host / unit-test contexts. Wrap reads in a smoke test that asserts the key exists in source plist; runtime guard compensates for missing-substitution case.
 
-7. **`secrets/` or `Tuist/<Domain>.xcconfig` committed by accident.** Use an inner `secrets/.gitignore` deny-list (`* / !*.example / !README.md`) PLUS root `.gitignore` rules `Tuist/*.xcconfig` + `!Tuist/*.xcconfig.example` so neither slips through default-add operations.
+7. **`secrets/` or `Tuist/<Domain>.xcconfig` committed by accident.** Use an inner `secrets/.gitignore` deny-list (`* / !*.example / !README.md / !example/ / !example/**` — the last two are required, otherwise `*` ignores the `example/` directory and git never descends into it) PLUS root `.gitignore` rules `Tuist/*.xcconfig` + `!Tuist/*.xcconfig.example` so neither slips through default-add operations.
 
 8. **Tuist `tuist generate` silently clobbering unmanaged xcconfigs.** If `Tuist/<Domain>.xcconfig` exists but is NOT referenced in `Project.swift`'s `.settings(configurations:)`, Tuist regen drops it from the project. Verify Project.swift wiring before assuming xcconfig is active.
 
@@ -159,7 +159,7 @@ A future PR should add a build-phase script that asserts no `$()` literals survi
 ## Verification checklist (audit existing implementations)
 
 - [ ] Root `.gitignore` has `Tuist/*.xcconfig` + `!Tuist/*.xcconfig.example`
-- [ ] `secrets/.gitignore` inner deny-list present (`* / !*.example / !README.md`)
+- [ ] `secrets/.gitignore` inner deny-list present (`* / !*.example / !README.md / !example/ / !example/**`); `git check-ignore -v secrets/example/README.md` reports nothing
 - [ ] `Project.swift` per-target `.settings(configurations:)` references the xcconfig
 - [ ] `Info.plist` uses `$(KEY)` substitution for each secret
 - [ ] App code reads via `Bundle.main.object(forInfoDictionaryKey:)` with guard (NOT `as!`)

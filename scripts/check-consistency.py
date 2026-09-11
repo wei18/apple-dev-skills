@@ -3,14 +3,14 @@
 
 Checks
   1. Each <plugin>/skills/<dir>/ has a SKILL.md whose frontmatter name == <dir>.
-  2. README.md Catalog contains every first-party skill (both plugins, 37) AND the
-     six aggregated external plugin names (missing-direction only; extra kebab
+  2. README.md Catalog contains every first-party skill (both plugins, 38) AND the
+     seven aggregated external plugin names (missing-direction only; extra kebab
      tokens are tolerated by design — Catalog prose legitimately names other things).
-  3. Counts present: the values 25/12/6 each appear among the Catalog's "(N)" group
+  3. Counts present: the values 26/12/7 each appear among the Catalog's "(N)" group
      headers (set membership, not per-header association); the Install one-liner
      comments and each plugin.json's "N first-party" are checked exactly.
-  4. Each README mirror (scripts/mirrors.py; currently README.zh-Hant.md, README.zh-Hans.md)
-     exists and its embedded src-sha == git hash-object README.md.
+  4. Each README mirror (see mirrors.py for the current list) exists and its
+     embedded src-sha == git hash-object README.md.
   5. All plugin/marketplace JSON parse; the two subdir plugin sources resolve to dirs;
      marketplace.json lists exactly the 9 plugins (2 local + 7 externals).
   6. The `"ref": "v<semver>"` marketplace pin in README.md and every mirror ==
@@ -30,6 +30,10 @@ Checks
   11. Every skill named in the Catalog's journey anchor list (above the tables)
       exists — rule 2 only checks the missing direction, so a rename would leave a
       dead pointer there while the tables below stayed correct.
+  12. Each first-party plugin's marketplace.json description leading number
+      (e.g. "26 first-party Apple/Swift skills") == the PLUGINS constant below.
+  13. README.md's "install only the N first-party skills" sentence (flat-install
+      caveat) has N == sum(PLUGINS.values()).
 Stdlib only.
 """
 from __future__ import annotations
@@ -163,17 +167,31 @@ for plugin, n in re.findall(r"/plugin install (\S+?)@apple-dev-skills\s+#\s*(\d+
     if plugin in PLUGINS and int(n) != PLUGINS[plugin]:
         fail(f"[readme] Install comment says '{n}' for {plugin}, expected {PLUGINS[plugin]}")
 
+# 13. "install only the N first-party skills" flat-install caveat == sum(PLUGINS.values())
+total_first_party = sum(PLUGINS.values())
+m = re.search(r"install only the (\d+) first-party skills", readme)
+if not m:
+    fail("[readme] no 'install only the N first-party skills' sentence found")
+elif int(m.group(1)) != total_first_party:
+    fail(f"[readme] 'install only the {m.group(1)} first-party skills' != {total_first_party}")
+
 # 4. Mirror freshness
+MIRROR_TASK = {  # mirror filename -> its `mise run <task>` regenerator (scripts/*.mise.toml)
+    "README.zh-Hant.md": "readme-zh",
+    "README.zh-Hans.md": "readme-zh-hans",
+    "README.ja.md": "readme-ja",
+}
 for mirror_name in MIRRORS:
+    task = MIRROR_TASK.get(mirror_name, "readme-zh")
     mirror = ROOT / mirror_name
     if not mirror.is_file():
-        fail(f"[{mirror_name}] missing — run `mise run readme-zh`")
+        fail(f"[{mirror_name}] missing — run `mise run {task}`")
         continue
     m = re.search(r"src-sha:\s*([0-9a-f]+)", mirror.read_text(encoding="utf-8"))
     cur = subprocess.run(["git", "hash-object", "README.md"], cwd=ROOT,
                          capture_output=True, text=True, check=True).stdout.strip()
     if not m: fail(f"[{mirror_name}] no embedded src-sha")
-    elif m.group(1) != cur: fail(f"[{mirror_name}] stale — run `mise run readme-zh` (src-sha != README.md)")
+    elif m.group(1) != cur: fail(f"[{mirror_name}] stale — run `mise run {task}` (src-sha != README.md)")
 
 # 5. marketplace JSON + subdir sources
 mp = ROOT / ".claude-plugin" / "marketplace.json"
@@ -187,6 +205,16 @@ try:
     expected_names = set(PLUGINS) | EXTERNALS
     if names != expected_names:
         fail(f"[marketplace] plugin set mismatch — missing: {sorted(expected_names - names)}, extra: {sorted(names - expected_names)}")
+    # 12. marketplace.json plugins[].description leading count == PLUGINS constant
+    for p in d.get("plugins", []):
+        name = p.get("name")
+        if name not in PLUGINS: continue
+        expected = PLUGINS[name]
+        counts = [int(c) for c in re.findall(r"(\d+)\s+first-party", p.get("description", ""))]
+        if not counts:
+            fail(f"[marketplace] {name} description has no 'N first-party' count")
+        elif any(c != expected for c in counts):
+            fail(f"[marketplace] {name} description says '{counts} first-party', expected {expected}")
     # 8. plugin.json version == marketplace.json plugins[].version (pair bump-version.py maintains)
     mp_versions = {p.get("name"): p.get("version") for p in d.get("plugins", [])}
     for plugin in PLUGINS:

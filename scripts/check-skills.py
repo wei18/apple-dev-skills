@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Skill-format gate: official Agent Skills / Claude Code rules + this catalog's own conventions.
-Report-only. Usage: python3 check-skills.py <repo-root> [--md out.md]"""
+Exits 1 on any BLOCKER. Usage: python3 check-skills.py <repo-root> [--md out.md]"""
 import os, re, sys, glob, json
 
 ROOT = sys.argv[1] if len(sys.argv) > 1 else "."
 PLUGINS = {"apple-dev-skills": "apple-dev-skills/skills", "collaboration-skills": "collaboration-skills/skills"}
 OFFICIAL_KEYS = {"name","description","when_to_use","argument-hint","arguments","disable-model-invocation",
-                 "user-invocable","allowed-tools","model","effort","context","agent","background","paths",
+                 "user-invocable","allowed-tools","disallowed-tools","model","effort","context","agent","background","paths",
                  "shell","hooks","license","metadata","compatibility","version"}
 SECTIONS = ["When to invoke","Scope","Rationale","Deviation considerations","Common Mistakes",
             "Review Checklist|Verification checklist","Related skills"]
@@ -26,7 +26,7 @@ def parse_front(text):
             fm[cur] += " " + line.strip()
     for k, v in fm.items():
         v = v.strip()
-        if v.startswith('"') and v.endswith('"'): v = v[1:-1]
+        if len(v) >= 2 and v[0] == v[-1] and v[0] in ('"', "'"): v = v[1:-1]
         if v in (">", "|", ">-", "|-"): v = ""
         fm[k] = v
     return fm, m.group(2)
@@ -72,8 +72,9 @@ for name, (plugin, d) in skills.items():
     desc = fm.get("description","")
     if not desc: add("BLOCKER", name, "description empty", "")
     L = len(desc) + len(fm.get("when_to_use",""))
-    if L > 1024: add("BLOCKER", name, "description<=1024 (API)", f"{L}")
-    if L > 800:  add("MAJOR",   name, "description<=800 (repo gate)", f"{L}")
+    if len(desc) > 1024: add("BLOCKER", name, "description<=1024 (API)", f"{len(desc)}")
+    if L > 1536: add("BLOCKER", name, "description+when_to_use<=1536 (Claude Code listing)", f"{L}")
+    if len(desc) > 800:  add("MAJOR",   name, "description<=800 (repo gate)", f"{len(desc)}")
     if re.search(r"<[a-zA-Z/][^>]*>", desc): add("BLOCKER", name, "description XML tag", desc[:80])
     if FIRST_PERSON.search(desc): add("MAJOR", name, "description first person", FIRST_PERSON.search(desc).group(0))
     if not re.search(r"\b(when|use for|query|invoke)\b", desc, re.I): add("MAJOR", name, "description lacks trigger phrase", desc[:80])
