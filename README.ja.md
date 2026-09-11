@@ -62,7 +62,7 @@ Claude Codeのsession内で実行します。
 
 | Skill | 一言でいうと |
 |---|---|
-| `swift6-concurrency` | Swift 6言語モード + 完全なconcurrencyチェック；デフォルトでSendable |
+| `swift6-concurrency` | Swift 6言語モード + 完全なconcurrencyチェック；デフォルトのactor isolationは`MainActor`、`nonisolated` / actorへ跨る箇所のみSendableが必要 |
 | `apple-platform-targets` | デフォルトはiOS 26 / macOS 26、Xcode 26.x；既存ユーザーが旧バージョンの場合のみ18 / 15へ下げる |
 | `swiftpm-modularization` | 単一Package、マルチtarget、薄いApp、DI composition root、テストは1対1 |
 | `swift-testing-baseline` | swift-testing + pointfreeco snapshot；protocol fake；厳格/寛容なsnapshotゲート |
@@ -95,12 +95,12 @@ Claude Codeのsession内で実行します。
 |---|---|
 | `spec-phase-orchestration` | 実装前のドキュメントパイプライン；セクションごとの承認 |
 | `subagent-review-cycles` | Leader / Developer / Code-Reviewerのトライアド；1ラウンド目の外観上の指摘はinlineで即対応；limit(N) |
-| `leader-developer-handoff-contract` | sub-agentへのディスパッチ時に必須の5要素 |
+| `leader-developer-handoff-contract` | sub-agentへのディスパッチ時に必須の6要素 |
 | `agent-impl-notes-log` | sub-agentタスク進行中のリアルタイムimpl-notes——意思決定、逸脱、未解決の疑問 |
 | `subagent-conflict-detection` | 新しいsub-agentの作業対象が進行中のworktreeと重複していないか確認 |
 | `methodology-pattern-extractor` | 会議記録から3回以上繰り返されるパターンを抽出 |
 | `session-to-meeting-log` | Claude Codeのsessionを会議記録にまとめる；逐語録ではなく要約 |
-| `pr-diff-verification` | push／PR作成前に`git show --stat HEAD`がcommitの主張と一致することを確認 |
+| `pr-diff-verification` | push／PR作成前に`git show --stat --summary HEAD`がcommitの主張と一致することを確認 |
 | `backlog-routing-by-topic` | 散発的なアイデアをトピックごとに対応するspecファイルの§Backlogへ振り分け |
 | `claude-skill-plugin-packaging` | Claude Codeスキルの配布／インストール——depth-1ルール、plugin + marketplace、集約 |
 | `skill-authoring-patterns` | `superpowers:writing-skills`の上に重なるApple/Swiftカタログ層——routerの説明文、bookendセクション、二層のreferences、エビデンスベースのCR |
@@ -179,7 +179,7 @@ npx skills add wei18/apple-dev-skills --skill swift6-concurrency
 > **経路Cには集約された外部プラグインは含まれません。** `npx skills`はこのrepoの
 > `marketplace.json` / `plugin.json`を読み込みますが、ローカルで宣言されたスキルのパスしか
 > 辿りません。外部プラグインのリモートの`github` / `git-subdir`ソースは取得しません。その
-> ため上記のコマンドは39のファーストパーティスキルしかインストールしません——7つの外部
+> ため上記のコマンドは38のファーストパーティスキルしかインストールしません——7つの外部
 > プラグインは黙って読み飛ばされます。カタログ全体（外部プラグインを含め、著者のrepoから
 > 取得）をフラットにインストールするには：
 
@@ -205,4 +205,4 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 `docs/superpowers/`にありました——現在は廃止され、git履歴として保存されています。
 `git log -- docs/`で見つけることができます。MIT——[LICENSE](LICENSE)を参照してください。
 
-<!-- src-sha: 6ca9308d6d090b68a617b53e6b76ea1b37790148 -->
+<!-- src-sha: 92addee1cd524bf074406c50bf882691f565f7a8 -->

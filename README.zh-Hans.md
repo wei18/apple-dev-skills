@@ -55,7 +55,7 @@ apple-dev-skills 是一个 **marketplace**，服务对象是正在把一个点�
 
 | Skill | 一句话说明 |
 |---|---|
-| `swift6-concurrency` | Swift 6 语言模式 + 完整 concurrency 检查；默认 Sendable |
+| `swift6-concurrency` | Swift 6 语言模式 + 完整 concurrency 检查；默认 actor isolation 为 `MainActor`，只有跨入 `nonisolated` / actor 的代码才需要 Sendable |
 | `apple-platform-targets` | 默认 iOS 26 / macOS 26、Xcode 26.x；只有既有用户仍在旧版时才降到 18 / 15 |
 | `swiftpm-modularization` | 单一 Package、多 target、薄 App、DI composition root、测试一对一 |
 | `swift-testing-baseline` | swift-testing + pointfreeco snapshot；protocol fake；严格/宽松 snapshot 把关 |
@@ -88,12 +88,12 @@ apple-dev-skills 是一个 **marketplace**，服务对象是正在把一个点�
 |---|---|
 | `spec-phase-orchestration` | 实现前的文档流水线；逐节核准 |
 | `subagent-review-cycles` | Leader / Developer / Code-Reviewer 三角；第一轮外观问题直接 inline；limit(N) |
-| `leader-developer-handoff-contract` | 调度 sub-agent 时必备的 5 个元素 |
+| `leader-developer-handoff-contract` | 调度 sub-agent 时必备的 6 个元素 |
 | `agent-impl-notes-log` | Sub-agent 任务进行中的即时 impl-notes —— 决策、偏离、未决问题 |
 | `subagent-conflict-detection` | 检查新 sub-agent 的目标不与进行中的 worktree 重叠 |
 | `methodology-pattern-extractor` | 从会议记录中提取重复出现 ≥3 次的模式 |
 | `session-to-meeting-log` | 把一场 Claude Code session 整合成会议记录；是摘要，不是逐字稿 |
-| `pr-diff-verification` | Push／开 PR 前，确认 `git show --stat HEAD` 与 commit 宣称的内容相符 |
+| `pr-diff-verification` | Push／开 PR 前，确认 `git show --stat --summary HEAD` 与 commit 宣称的内容相符 |
 | `backlog-routing-by-topic` | 依主题把零散点子路由到对应 spec 文件的 §Backlog |
 | `claude-skill-plugin-packaging` | 发布／安装 Claude Code 技能 —— depth-1 规则、plugin + marketplace、汇总 |
 | `skill-authoring-patterns` | 叠在 `superpowers:writing-skills` 之上的 Apple/Swift 目录层 —— router 描述、bookend 段落、两层式 references、证据导向 CR |
@@ -164,7 +164,7 @@ npx skills add wei18/apple-dev-skills --skill swift6-concurrency
 
 > **路径 C 不包含汇总而来的外部 plugin。** `npx skills` 会读取本 repo 的
 > `marketplace.json` / `plugin.json`，但只跟随本地声明的技能路径。它不会抓取外部
-> plugin 的远端 `github` / `git-subdir` 来源。所以上述指令只会安装 39 个第一方技能 ——
+> plugin 的远端 `github` / `git-subdir` 来源。所以上述指令只会安装 38 个第一方技能 ——
 > 7 个外部 plugin 会被静默跳过。若要平铺安装整份目录（含外部 plugin，从原作者的 repo 拉取）：
 
 ```bash
@@ -185,4 +185,4 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 此处仅以引用方式呈现。催生本 repo 双 plugin 结构的设计 spec 与计划原本放在 `docs/superpowers/`
 —— 已退役、改由 git 历史保存；用 `git log -- docs/` 可以找回。MIT —— 见 [LICENSE](LICENSE)。
 
-<!-- src-sha: 6ca9308d6d090b68a617b53e6b76ea1b37790148 -->
+<!-- src-sha: 92addee1cd524bf074406c50bf882691f565f7a8 -->
