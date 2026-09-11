@@ -1,6 +1,6 @@
 ---
 name: claude-skill-plugin-packaging
-description: How to distribute Claude Code skills for reuse across repos and how to install them — as a plugin via a marketplace, a pinned git-submodule with committed project-scope settings, or globally. Covers the depth-1 discovery rule (why a bare folder/submodule of skills is NOT found), the `settings.json` schema, aggregating other skill repos, and the gotchas. Invoke when sharing skills across projects, wiring a skill plugin into a repo, choosing flat-skills vs plugin, or asked "why aren't my submodule'd skills showing up / how do I install project skills".
+description: Package Claude Code skills as a plugin plus marketplace and install them into other repos — globally, pinned per project via committed settings, or as a skills-dir plugin. Use when sharing skills across repos, wiring an existing skill plugin into a project, choosing flat project skills versus a plugin, aggregating other people's skill repos by reference, or when a submodule or nested folder of skills is not being discovered. Does not cover PR/issue mechanics (github-contribution-workflow) or how to write the skill itself (skill-authoring-patterns).
 ---
 
 # Claude Code Skill Plugin Packaging
