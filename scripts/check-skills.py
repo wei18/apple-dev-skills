@@ -118,8 +118,14 @@ for name, (plugin, d) in skills.items():
     # --- prose triggers that official `paths:` could replace
     m = PATHS_HINT.search(desc + "\n" + body[:1500])
     if m and "paths" not in fm: add("MINOR", name, "prose file-trigger; candidate for paths:", m.group(0))
-    # --- description summarizing workflow (heuristic: numbered steps / arrows)
-    if re.search(r"(→.*→|Step ?1|\b1\)\s.*\b2\)\s)", desc): add("MINOR", name, "description may summarize workflow", desc[:80])
+    # --- description summarizing workflow (heuristic: numbered steps / arrows).
+    # An arrow whose right-hand side is a skill name (`X → other-skill`, `X → plugin:other-skill`)
+    # is a routing pointer / negative boundary, which the doctrine allows; only arrows that
+    # chain non-skill words (`archive → export → upload`) count as a workflow summary.
+    routing = re.compile(r"→\s*`?(?:[a-z0-9-]+:)?([a-z0-9-]+)`?")
+    step_arrows = sum(1 for m in re.finditer("→", desc)
+                      if not (routing.match(desc, m.start()) and routing.match(desc, m.start()).group(1) in skills))
+    if step_arrows >= 2 or re.search(r"(Step ?1|\b1\)\s.*\b2\)\s)", desc): add("MINOR", name, "description may summarize workflow", desc[:80])
 
 sev_order = {"BLOCKER":0,"MAJOR":1,"MINOR":2}
 findings.sort(key=lambda f:(sev_order[f[0]], f[1], f[2]))
