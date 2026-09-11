@@ -25,13 +25,18 @@ description: Design the app-side event pipeline that fans one `telemetry.observe
         func receive(_ event: TelemetryEvent) async
     }
     ```
-  - The main facade — default to a `Telemetry` **actor**. Sink stateful subscriptions (e.g. `MetricKitSink` holding `MXMetricManagerSubscriber` reference identity) require an actor for clean lifecycle management. A `Sendable` struct facade is acceptable only when every sink is fully synchronous and stateless. The facade fans out to multiple sinks.
+  - The main facade — choose the type per the table below. The facade fans out to multiple sinks.
+
+    | Facade type | Use when | Cost |
+    |---|---|---|
+    | `actor Telemetry` (default) | any sink holds subscription identity (e.g. `MXMetricManagerSubscriber`) or does async I/O | `observe` is `async` |
+    | `struct Telemetry: Sendable` | every sink is fully synchronous and stateless | no lifecycle owner for stateful sinks |
   - Default sinks (see below)
 
 ### Call sites describe only "what happened"
 
 ```swift
-telemetry.observe(.puzzleCompleted(id: puzzleId, durationMs: 12_345))
+telemetry.observe(.sessionCompleted(id: sessionId, durationMs: 12_345))
 ```
 
 - The call site **doesn't know** who will consume the event.
@@ -43,7 +48,7 @@ telemetry.observe(.puzzleCompleted(id: puzzleId, durationMs: 12_345))
 |---|---|---|
 | `OSLogSink` | All events | Human-readable debug messages |
 | `TrackingSink` (default `NoOpTrackingSink`) | Business events | v1 has no third-party tracking but the protocol is reserved; future swaps require zero call-site changes |
-| `MetricKitSink` | Subscribes via `MXMetricManager.shared.add(self)`; on receiving `MXMetricPayload`, broadcasts to other sinks | Performance / diagnostics persistence — `MXMetricManagerSubscriber` inherits `NSObjectProtocol`, so `MetricKitSink` must be an `NSObject` subclass, not a struct or actor. An `NSObject` subclass *can* conform to a `Sendable` sink protocol, but only while every stored property is immutable — a `var` there fails with "stored property … is mutable". Hold subscription state behind `@MainActor` or a `Mutex`, or mark the class `@unchecked Sendable` and synchronise it yourself |
+| `MetricKitSink` | iOS ≤ 26: subscribes via `MXMetricManager.shared.add(self)`; on receiving `MXMetricPayload`, broadcasts to other sinks. iOS 27+: `MXMetricManagerSubscriber` is deprecated — hold a single `MetricManager()` instance instead and `for await report in manager.metricReports` (don't create more than one instance; two concurrent iterators only split the sequence) | Performance / diagnostics persistence — on iOS ≤ 26, `MXMetricManagerSubscriber` inherits `NSObjectProtocol`, so `MetricKitSink` must be an `NSObject` subclass, not a struct or actor. An `NSObject` subclass *can* conform to a `Sendable` sink protocol, but only while every stored property is immutable — a `var` there fails with "stored property … is mutable". Hold subscription state behind `@MainActor` or a `Mutex`, or mark the class `@unchecked Sendable` and synchronise it yourself |
 | `GameCenterSink` (games) | Completion / achievement events | Submit score / unlock achievement |
 
 ```swift
@@ -63,22 +68,23 @@ public struct NoOpTrackingSink: TelemetrySink {
 A sink that *exists as a type* is worth **zero** until it is in the **live** sinks
 array. Five traps, in the order they bit:
 
-1. **Existing-but-unwired = dead code.** Real-world example: a `GameCenterSink`/`AchievementEvaluator`
-   were fully written but never added to the live `Telemetry` sinks list
-   (the composition root shipped `[OSLogSink, NoOpTrackingSink]` only) → no score, no
-   achievement, silently. **Verify the composition root's actual sinks array**,
-   not that the sink type compiles. `git log -S "GameCenterSink("` showing only
-   the creation commit is the smoking gun.
+1. **Existing-but-unwired = dead code.** Real-world example: a `GameCenterSink`
+   and its achievement-evaluation logic were fully written but never added to
+   the live `Telemetry` sinks list (the composition root shipped
+   `[OSLogSink, NoOpTrackingSink]` only) → no score, no achievement, silently.
+   **Verify the composition root's actual sinks array**, not that the sink type
+   compiles. `git log -S "GameCenterSink("` showing only the creation commit is
+   the smoking gun.
 2. **Sink ordering matters when one sink reads another's write.** The facade
    forwards in array order, so a sink that *writes* state another sink *reads*
-   must come first — e.g. `PersonalRecordSink` writes `completedCount` **before**
-   `GameCenterSink`'s evaluator reads it; reversed = an off-by-one where the
-   count achievement fires one completion late. Make read/write sink order
-   explicit and test it.
+   must come first — e.g. a persistence sink writes a counter (a completed-session
+   count) **before** `GameCenterSink`'s evaluator reads it; reversed = an
+   off-by-one where a count-based achievement fires one completion late. Make
+   read/write sink order explicit and test it.
 3. **I/O sinks on a gameplay-reachable path must not block.** Completion events
-   are reached from the interactive path (e.g. `placeMove → sessionCompleted →
-   telemetry.observe`). A sink doing CloudKit reads + GameKit network I/O
-   synchronously there **freezes the UI**. Forward to such sinks on a
+   are reached from the interactive path (e.g. an interactive input handler →
+   a completion event → `telemetry.observe`). A sink doing CloudKit reads +
+   GameKit network I/O synchronously there **freezes the UI**. Forward to such sinks on a
    **detached, order-preserving Task** (chain each on the previous so events
    still forward in order) and return immediately; keep the fast sinks
    (OSLog / NoOp) synchronous.
