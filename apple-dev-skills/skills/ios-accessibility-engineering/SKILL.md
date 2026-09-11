@@ -83,7 +83,7 @@ In UIKit: `UIAccessibility.post(notification: .announcement, argument: "Level co
 withAnimation(reduceMotion ? nil : .easeInOut) { state.toggle() }
 ```
 
-- `\.accessibilityReduceTransparency` — remove blur / frosted-glass effects when true; use an opaque fill instead. **SwiftUI `.background(.ultraThinMaterial)` does NOT automatically drop its blur when Reduce Transparency is on — you must branch on `\.accessibilityReduceTransparency` manually and substitute a solid background.**
+- `\.accessibilityReduceTransparency` — remove blur / frosted-glass effects when true; use an opaque fill instead. Apple does not guarantee that SwiftUI `.background(.ultraThinMaterial)` automatically drops its blur when Reduce Transparency is on — the conservative approach is to branch on `\.accessibilityReduceTransparency` yourself and substitute a solid background rather than rely on the material.
 - `\.accessibilityDifferentiateWithoutColor` — never rely on color alone to convey state; add an icon or label.
 - `\.colorSchemeContrast` (`.increased`) — if you draw custom backgrounds, check this and raise contrast when set.
 
@@ -103,6 +103,8 @@ idb screenshot --udid <udid> after-ax5.png
 **CI a11y gate**: in XCUITest, call `try app.performAccessibilityAudit()` (iOS 17 / macOS 14 / Xcode 15+; narrow with `for:` to specific audit types such as `.dynamicType`, `.contrast`, `.hitRegion`) to fail CI on accessibility violations — this is Apple's own runtime audit gate. Supplement with `cvs-health/ios-swiftui-accessibility-techniques`'s `a11y-check`, a **static scanner** (not a runtime audit runner), as a complementary lint-layer check. Treat both as complements to, not replacements for, manual Accessibility Inspector review.
 
 ## WCAG 2.2 mapping for App Review
+
+Ship to 44×44pt (HIG); 24px AA is the floor, not the target.
 
 | WCAG criterion | What it requires | How it surfaces in iOS |
 |---|---|---|
@@ -129,6 +131,7 @@ App Review does not formally audit against WCAG, but the Human Interface Guideli
 
 - `swiftui-interaction-footguns`: Dynamic Type / modal env footguns and the `minimumScaleFactor` pitfall in detail.
 - `swift-testing-baseline`: headless AX-tree limitation and why sim verification is the reliable gate.
+- `interactive-simulator-ux-audit`: the live-simulator drive/tap/screenshot loop this skill's verification steps rely on.
 
 ## External references
 
