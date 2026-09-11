@@ -55,7 +55,7 @@ GOOD: description: VoiceOver / Dynamic Type / touch-target implementation for Sw
 
 ## The listing budget is catalog-wide, not per-skill
 
-Claude Code loads a listing of every skill's name + `description` into context on every session so the model knows what's available; the listing's character budget scales at **1% of the model's context window** (raise it with the `skillListingBudgetFraction` setting or the `SLASH_COMMAND_TOOL_CHAR_BUDGET` env var). Each entry's own `description` (+ `when_to_use`, if present — see below) is separately capped at **1,536 characters** regardless of that budget (`skillListingMaxDescChars`). When the total listing overflows the budget, Claude Code truncates descriptions **starting with the skills you invoke least** — your most-used skills keep their full text, your least-used ones lose theirs first. ([Claude Code docs, Skills](https://code.claude.com/docs/en/skills))
+Claude Code loads a listing of every skill's name + `description` into context on every session so the model knows what's available; the listing's character budget scales at **1% of the model's context window** (raise it with the `skillListingBudgetFraction` setting or the `SLASH_COMMAND_TOOL_CHAR_BUDGET` env var). Each entry's own `description` (+ `when_to_use`, if present — see below) is separately capped at **1,536 characters** regardless of that budget (`skillListingMaxDescChars`). When the total listing overflows the budget, Claude Code truncates descriptions **starting with the skills you invoke least** — your most-used skills keep their full text, your least-used ones lose theirs first. Run `/skill-doctor` (≥ v2.1.252) or `/doctor` to see the actual per-session listing cost measured, rather than estimating it. ([Claude Code docs, Skills](https://code.claude.com/docs/en/skills))
 
 The practical implication for this catalog: the scarce resource is not "can my one `description` fit" — this catalog already runs `DESC_MAX = 800` in `scripts/check-consistency.py`, deliberately tighter than the official 1,536-char cap (and also under the 1,024-char hard limit the platform Agent Skills spec enforces for claude.ai / Skills API uploads), precisely because 38 skills' descriptions compete for one shared budget every session. Every new skill's `description` is a permanent tax on that shared budget, paid on every session regardless of whether the skill ever fires. So before adding a skill, ask **"is this trigger phrase worth permanently occupying part of every session's listing budget?"** — not just "does this description fit under 800 chars".
 
@@ -72,7 +72,7 @@ gaps in the "today" column are historical debt, not evidence the convention is o
 | `## Rationale` | *why* this default was chosen. Unique to this catalog. | Not retrofitted | 20/38 |
 | `## Deviation considerations` | *when to override* the default, and the cost (e.g. "Drop to iOS 18 when an existing user base still runs it — every Liquid Glass API then needs an availability guard, and the pre-26 chrome must be snapshot-tested separately"). Also ours. | Not retrofitted | 22/38 |
 | `## Common Mistakes` | concrete, anti-pattern-named items ("Using `DateFormatter()` in `body`"), as many as are real — do not pad to a number. | Not retrofitted; older skills express this as inline anti-pattern sections instead. | 10/38 |
-| `## Review Checklist` | a `- [ ]` list at the **end**, runnable top-to-bottom. | Not retrofitted; older skills use a prose `## Verification checklist` instead. | 28/38 (incl. the older prose form) |
+| `## Review Checklist` | a `- [ ]` list at the **end**, runnable top-to-bottom. | Not retrofitted; older skills use a prose `## Verification checklist` instead. | 25/38 (incl. the older prose form; `mise run check`'s section matrix) |
 
 - **`## Related skills`** — siblings by name.
 
@@ -106,7 +106,7 @@ description: <precision router — see above>
 
 ## Two-tier depth (references/)
 
-Keep `SKILL.md` scannable: decision logic, short paired WRONG/RIGHT snippets (one point each), quick tables. Move long migrations, full API references, and big samples into `references/*.md` and **point to them from `SKILL.md` with a plain instruction** ("for the full lock-vs-actor guide, read `references/synchronization.md`"). This is a documentation convention — the agent reads those files via normal file reads when your `SKILL.md` tells it to; there is no automatic lazy-load. It keeps the always-in-context cost low while letting depth exist.
+Keep `SKILL.md` scannable: decision logic, short paired WRONG/RIGHT snippets (one point each), quick tables. Move long migrations, full API references, and big samples into `references/*.md` and **point to them from `SKILL.md` with a plain instruction** ("for the full guide, read `references/<topic>.md`"). This is a documentation convention — the agent reads those files via normal file reads when your `SKILL.md` tells it to; there is no automatic lazy-load. It keeps the always-in-context cost low while letting depth exist.
 
 ## Naming & granularity
 
@@ -119,7 +119,7 @@ When you CR a skill or a batch, apply the evidence-based, multi-lens doctrine (i
 
 - **Diverse lenses, not one reviewer** — for a batch, dispatch reviewers with distinct expertise (correctness, a11y, security, performance, skill-authoring). Different lenses catch what redundancy can't.
 - **Evidence for every falsifiable claim** — a reviewer flagging "this API/version is wrong" cites the source (Apple docs / Swift Evolution / WCAG), not "looks off"; each lists "what I did NOT verify + confidence".
-- **Reviewers can be wrong → the Leader adjudicates** — don't take the union on faith. Verify disputed falsifiable claims yourself before accepting or overruling (real cases: a reviewer "corrected" an iPhone-14-Pro size that was already right; another pushed a deprecated CLI form).
+- **Reviewers can be wrong → the Leader adjudicates** — don't take the union on faith. Verify disputed falsifiable claims yourself before accepting or overruling.
 
 ## Common Mistakes
 
@@ -151,7 +151,3 @@ When you CR a skill or a batch, apply the evidence-based, multi-lens doctrine (i
 - `superpowers:writing-skills` — **read first** for the general discipline this skill deliberately does not repeat.
 - `claude-skill-plugin-packaging` — packaging/distribution/discovery of the authored skill.
 - `subagent-review-cycles` — the round structure the evidence-based CR plugs into.
-
-## Provenance
-
-The structural patterns (router descriptions, bookend sections, two-tier references, naming) were distilled by **studying** high-quality public Swift/Apple skill collections — methodology only, no content copied — and combined with this catalog's own `Rationale`/`Deviation` convention and an evidence-based multi-reviewer CR doctrine. General skill-authoring doctrine is intentionally delegated to `superpowers:writing-skills`.
