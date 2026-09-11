@@ -7,7 +7,7 @@ description: 'Choose analytics and metrics sources for a solo / small-team Apple
 
 ## When to invoke
 
-- Starting a new App and deciding on an analytics SDK.
+- Deciding on an analytics SDK.
 - Evaluating Firebase / TelemetryDeck / Mixpanel / Amplitude / Sentry.
 - Writing `PrivacyInfo.xcprivacy`.
 - User asks "what metrics should I track", "what can I see without a third-party SDK".
@@ -24,6 +24,7 @@ Owns the source-selection decision and its PrivacyInfo/ATT consequence. Does NOT
 |---|---|---|
 | **App Store Connect Analytics** | Downloads, sessions, active devices, retention, sources, store conversion | App Store Connect web |
 | **MetricKit** (`MXMetricPayload`, `MXDiagnosticPayload`) | Performance & diagnostics: crash / hang / launch time / jank / energy / memory | The App receives them → persist to log / optionally upload later |
+| **MetricKit, iOS 27+** (`MetricManager().metricReports` / `.diagnosticReports`, `for await`) | Same coverage; `MXMetricManager` / `MXMetricPayload` / `MXMetricManagerSubscriber` are deprecated starting iOS 27 | Same — catalog default is iOS 26, so no forced migration yet |
 | **Game Center** (if it's a game) | Leaderboards / achievement completion / peer-player comparison | Game Center API / Game Center app |
 
 > **macOS caveat**: macOS 12–15 only send `MXDiagnosticPayload`; macOS 26 and later send a daily `MXMetricPayload` just like iOS. Only a deployment target below macOS 26 needs to fall back to App Store Connect Analytics + targeted `OSSignposter` traces.
@@ -63,7 +64,7 @@ Owns the source-selection decision and its PrivacyInfo/ATT consequence. Does NOT
 
 - `PrivacyInfo.xcprivacy` exists and passes App Store Connect validation.
 - No `import Firebase*` / `import Sentry` / `import Amplitude`, etc.
-- MetricKit subscription is wired (`MXMetricManager.shared.add(...)`).
+- MetricKit subscription is wired (iOS ≤ 26: `MXMetricManager.shared.add(...)`; iOS 27+: `MetricManager()` and `for await` over `metricReports` / `diagnosticReports`).
 - Game Center entitlement aligns with leaderboard / achievement definitions (for games).
 
 ## Related skills
