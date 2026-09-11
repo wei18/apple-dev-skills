@@ -1,6 +1,6 @@
 ---
 name: swift6-concurrency
-description: Default to Swift 6 language mode with complete concurrency checking from the first line of code; default actor isolation is `MainActor`, so Sendable is required only for types that cross into `nonisolated` / actor code, not for every in-house type; isolate third-party deps that lag with @preconcurrency. Invoke when writing Package.swift, picking the Swift language mode in Xcode build settings, or when asked "should I turn on strict concurrency?".
+description: 'Swift 6 language mode with complete concurrency checking from the first line of a new Apple-platform project; in-house types treated as `Sendable`; `@preconcurrency import` for lagging deps. Use when setting `swiftLanguageModes` / `swiftSettings` in Package.swift or SWIFT_STRICT_CONCURRENCY / default actor isolation in Xcode build settings, when a new dependency raises Sendable or actor-isolation errors, or when asked "should I turn on strict concurrency". Does NOT own deployment targets → apple-platform-targets; actor / async patterns → apple-skills:swift-concurrency.'
 ---
 
 # Swift 6 / Strict Concurrency
