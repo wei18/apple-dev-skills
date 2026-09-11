@@ -38,7 +38,7 @@ description: Use when a repo goes public or open-sources, when a CloudKit server
 - Apple Developer Team ID / DUNS / address (if they appear in entitlements / profile metadata)
 - Build logs containing secrets (redact before viewing)
 - Developers' local `secrets/` real files
-- Personal notes / drafts (like `NOTES.md.private`)
+- Personal notes / drafts
 
 ### Starter `.gitignore`
 
@@ -66,7 +66,6 @@ xcuserdata/
 
 # Personal notes
 *.private.md
-NOTES.md.private
 
 # Local development secrets directory is `secrets/` (chmod 600 PEMs / API keys
 # live here; already ignored above via `secrets/`). Allow-list examples with a
@@ -122,9 +121,9 @@ fi
    - Rotate the ASC API key
    - Rotate the APNs key
    - Signing cert leak: revoke + reissue in Apple Developer Center
-2. Use [`git filter-repo`](https://github.com/newren/git-filter-repo) to clean history + force push (**`git filter-branch` is deprecated, do not use**)
+2. Use [`git filter-repo`](https://github.com/newren/git-filter-repo) to clean history + force push (Git's own docs say `git filter-branch`'s use "is not recommended", not that it's deprecated — but `filter-repo` remains the practical choice; GitHub's own sensitive-data-removal workflow requires `filter-repo` ≥ 2.47 run with `--sensitive-data-removal`)
 3. Notify GitHub support to purge forks / caches — **acknowledge that fork removal is not guaranteed**
-4. Open an incident log + lessons learned under `meetings/`
+4. Open an incident log + lessons learned in the project's incident-log location (`meetings/` for consumers of `collaboration-skills:spec-phase-orchestration`)
 5. **Do not** continue other development until the four steps above are done
 
 ### Setup templates (shipped in the repo)
@@ -185,3 +184,4 @@ Every PR review additionally checks:
 - `xcode-cloud-single-track-ci`: `ci_post_clone.sh` is where the second line lives.
 - `oslog-logger-defaults`: `.private` interpolation matches the sysdiagnose redaction semantics.
 - `apple-three-piece-analytics`: "no third-party SDK" is one of the public commitments.
+- `build-time-secret-injection`: ship-in-binary identifiers (AdMob IDs via xcconfig) and CLI keys in `secrets/.env` — this skill only owns the leak-prevention lines of defence, not where those values live day to day.
