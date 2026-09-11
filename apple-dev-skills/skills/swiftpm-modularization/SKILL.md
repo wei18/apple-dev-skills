@@ -33,9 +33,9 @@ description: 'Default module shape for Apple-platform Swift Apps — one Swift P
 ### Dependencies flow upward, never downward
 
 ```
-Engine (pure Swift core)
+Core (pure Swift, no Apple frameworks)
    ↑
-GameState / Domain
+Domain (business logic / state)
    ↑
 Service modules (CloudKit / GameKit / Storage / Telemetry)
    ↑
@@ -80,7 +80,7 @@ App target
     └── <Project>Kit/
         ├── Package.swift
         └── Sources/
-            ├── <Engine>/         # pure Swift core
+            ├── <Core>/           # pure Swift, no Apple frameworks
             ├── <Domain>/         # domain logic
             ├── <Storage>/        # service module (CloudKit import restricted here)
             ├── <Telemetry>/      # Logger / Tracking facade
@@ -91,7 +91,7 @@ App target
 
 ## Common footguns
 
-### Pin parity across sibling apps
+### Pin parity across sibling apps (multi-app monorepos only)
 
 - `swift package resolve` **always** re-resolves to the newest version each dependency's range allows — it does not consult a sibling app's committed pins. Running it to "materialize" a fresh `Package.resolved` for a second app silently drifts its pins away from the first app's committed versions.
 - To give app B pin-parity with app A: **copy** A's committed `Package.resolved` to B and swap only the `originHash` (obtained from one throwaway resolve on B), preserving the file's JSON formatting; then verify `swift build` leaves the file byte-identical (no churn). Diff the **full** pin list against the reference, not just the one dependency a task happened to mention.
@@ -99,7 +99,7 @@ App target
 ### Renaming a target or test directory
 
 - `swift build` plus an import-site `grep` are not sufficient verification for a target/test-directory rename. Non-Swift tooling — CI workflow files, task runners, code-gen scripts — often hard-code the **path string**, which compiles fine and passes the import grep but breaks at the tooling layer.
-- Before pushing a rename, also `grep -rn '<OldName>' <tooling dirs> .github ci_scripts` and run any gate that reads those paths (e.g. localization or fixture generation) locally to confirm it still resolves.
+- Before pushing a rename, grep the repo's CI / task-runner / code-gen config for the old path string and run any gate that reads those paths locally to confirm it still resolves.
 
 ### `.xcassets` inside a package target
 
@@ -110,10 +110,11 @@ App target
   `Assets.car` for the same target, giving `Multiple commands produce …Assets.car`.
 - The common guard of checking for a `/SourcePackages/plugins/` path does not reliably tell you
   whether the build is happening under Xcode — don't rely on it to skip the plugin conditionally.
+- Keep asset catalogs in the App target; have package UI code read colors/images through injected tokens or `Bundle.module` resources that are not `.xcassets`.
 
 ## Related skills
 
-- `swift6-concurrency`: Package applies `swiftLanguageModes: [.v6]` in one place.
+- `swift6-concurrency`: Package applies `swiftLanguageModes: [.v6]` in one place. `swift-tools-version: 6.2` is the shared gate for both `platforms: [.iOS(.v26), ...]` (`apple-platform-targets`) and `swiftSettings: [.defaultIsolation(...)]` (`swift6-concurrency`) — 6.0/6.1 reject both.
 - `apple-platform-targets`: Package `platforms:` aligned with App target.
 - `swift-testing-baseline`: test target framework and location.
 - `telemetry-facade-pattern`: why `Telemetry` is a standalone target.
