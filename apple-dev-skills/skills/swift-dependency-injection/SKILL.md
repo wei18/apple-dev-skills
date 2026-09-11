@@ -1,6 +1,6 @@
 ---
 name: swift-dependency-injection
-description: Testable seam design via protocol injection, SwiftUI environment, and task-local overrides; Swift 6 Sendable rules for dependencies; mentions pointfreeco/swift-dependencies and Factory as library options. Invoke when designing a new service seam, asking "how do I inject CloudKit/network/clock", setting up a composition root, or making code testable.
+description: 'Design injectable seams so Swift services can be swapped for fakes in tests. Use when a type reaches for `URLSession.shared`, `Date()`, `UUID()`, `random(in:)` or a singleton; when asked "how do I inject CloudKit / network / clock" or "should this be a singleton"; when choosing constructor vs `@Environment` / `EnvironmentKey` vs `@TaskLocal` injection; when writing the `makeApp()` composition root; when evaluating swift-dependencies or Factory. Does NOT choose the test framework or snapshot tooling (swift-testing-baseline) or the target layout that hosts the root (swiftpm-modularization).'
 ---
 
 # Swift Dependency Injection
