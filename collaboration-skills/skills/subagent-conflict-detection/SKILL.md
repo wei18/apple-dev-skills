@@ -33,12 +33,19 @@ Plain `git worktree list` is fine for a human to eyeball, but don't parse it: fi
 on `[main]` breaks when the default branch isn't named `main`, and splitting on
 whitespace breaks on a path containing a space. `--porcelain` sidesteps both — `tail -n
 +2` drops the first (main-checkout) `worktree` line. For each remaining worktree path,
-capture (run from inside that path, not via `-C`, so the commands match the
-`Bash(git status *)` / `Bash(git log *)` rules the way this skill's `allowed-tools`
-writes them):
+capture:
 - Branch checked out
 - Dirty files: `(cd <path> && git status --short)`
 - Most recent commit subject: `(cd <path> && git log -1 --format=%s)`
+
+Expect one permission prompt per worktree for these two checks, whichever form you write
+them in. Per the [permissions docs](https://code.claude.com/docs/en/permissions), a Bash
+rule "must match each subcommand independently"; `git -C <path> status` is a different
+invocation form that `Bash(git status *)` doesn't match; and `cd` combined with `git`
+"prompts when the `cd` changes into a different directory, since running `git` in a new
+directory can execute that directory's hooks". So this skill's `allowed-tools` covers the
+Step-1 listing (`Bash(git worktree *)`) but not the per-worktree checks — the prompt is
+expected; approve it.
 
 ### Step 2 — enumerate the NEW dispatch's likely file scope
 
