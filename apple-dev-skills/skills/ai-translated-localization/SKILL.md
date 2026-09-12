@@ -25,7 +25,7 @@ description: 'Localization scope and AI-translation execution for Apple-platform
 | Locale | Code | Notes |
 |---|---|---|
 | English | `en` | Catalog `sourceLanguage`; translation source for the fan-out |
-| Traditional Chinese | `zh-Hant` | Primary language — author-written alongside `en`, never AI-translated |
+| Traditional Chinese | `zh-Hant` | Primary language (author's native locale in the origin project; substitute yours) — author-written alongside `en`, never AI-translated |
 | Japanese | `ja` | Largest adjacent market outside the Chinese sphere |
 | Simplified Chinese | `zh-Hans` | Converted from `zh-Hant` + Mainland phrasing review |
 | Spanish | `es` | World's second largest native-speaker base |
@@ -58,7 +58,7 @@ description: 'Localization scope and AI-translation execution for Apple-platform
 - 7 locales cover most of the global market while remaining a polish scope a solo developer can sustain.
 - AI translation quality for App UI strings (short, clear context) is at commercial level; long marketing copy is still recommended for human review.
 - xcstrings JSON structure is naturally friendly to AI / diff / version control.
-- `zh-Hant` as primary reflects the author's native-language accuracy; `en` is the
+- Primary = the author's native locale (`zh-Hant` in the origin project); `en` is the
   fan-out source because translator competence is broader from English (see Field notes).
 
 ## Deviation considerations
@@ -75,7 +75,7 @@ Use when actually performing a translation pass. The flow is **source-pair seed 
 ### Step 1 — Seed source pair (en + zh-Hant)
 
 - Source language for translation **must be English** (broader translator competence across all target locales than zh-Hant).
-- Authors write English first; zh-Hant is the project's primary native locale and is hand-written in parallel — *not* AI-translated from English. Both are written by the author with intent; the other 5 locales fan out from `en`.
+- Authors write English first; the primary locale (the author's native locale — `zh-Hant` in the origin project) is hand-written in parallel — *not* AI-translated from English. Both are written by the author with intent; the other 5 locales fan out from `en`.
 - Each new key lands in xcstrings with **at minimum** `en` + `zh-Hant` populated and `extractionState: manual`.
 - Other 5 locales (`ja`, `zh-Hans`, `es`, `th`, `ko`) start either absent or with the placeholder string `<TRANSLATE>` so the fan-out pass can find them with a single grep.
 
@@ -158,6 +158,6 @@ For the xcstrings JSON schema (including the `"version"` field and plural variat
 
 Real translation passes have surfaced these recurring decisions:
 
-- **Source = `en`, primary = `zh-Hant`** — both written by author. The other 5 fan out from `en` because translator competence is broader from English than from Chinese for `th` / `ko` / `es`.
+- **Source = `en`, primary = the author's native locale (`zh-Hant` in the origin project)** — both written by author. The other 5 fan out from `en` because translator competence is broader from English than from Chinese for `th` / `ko` / `es`.
 - **Glossary beats per-string correctness** — visual consistency across screens matters more than the perfect translation of any single string.
 - **5 locales in one pass is the sweet spot** — fewer wastes the per-pass setup; more risks AI fatigue degradation on the last locales. 1 commit per locale keeps PR review tractable.
