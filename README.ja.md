@@ -169,7 +169,7 @@ OSLogのみ、避けるべき既知の実行時バグ）。トピックが重な
 {
   "extraKnownMarketplaces": {
     "apple-dev-skills": {
-      "source": { "source": "github", "repo": "wei18/apple-dev-skills", "ref": "v1.7.1" }
+      "source": { "source": "github", "repo": "wei18/apple-dev-skills", "ref": "v2.0.0" }
     }
   },
   "enabledPlugins": {
@@ -221,4 +221,4 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 `docs/superpowers/`にありました——現在は廃止され、git履歴として保存されています。
 `git log -- docs/`で見つけることができます。MIT——[LICENSE](LICENSE)を参照してください。
 
-<!-- src-sha: 7699870110c96d109c7bcda48151e19787a07aa3 -->
+<!-- src-sha: 7924a7df00ae1716dc63a5f4079753769dc081f2 -->
