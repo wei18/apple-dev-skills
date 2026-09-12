@@ -126,14 +126,14 @@ Large binaries increase download time and App Store review scrutiny. Primary lev
 
 ## MetricKit — field performance telemetry
 
-MetricKit delivers on-device aggregated performance metrics to your app once per day (diagnostic payloads are delivered immediately, with no disconnect-from-Xcode condition, since iOS 15 / macOS 12). For the full `MXMetricManagerSubscriber` receiver sample, read `references/samples.md`.
+MetricKit delivers on-device aggregated performance metrics to your app once per day (diagnostic payloads are delivered immediately, with no disconnect-from-Xcode condition, since iOS 15 / macOS 12). For the full `MXMetricManagerSubscriber` receiver sample, read `references/samples.md`. `MXMetricManager` / `MXMetricManagerSubscriber` are deprecated from iOS / macOS 27 in favour of `MetricManager().metricReports` (`for await`) — the catalog floor is 26, so the sample below still applies; see `apple-three-piece-analytics` and `telemetry-facade-pattern` for the 27+ shape.
 
 MetricKit data reflects **real user conditions** (actual device, network, battery state), making it the authoritative source for field performance signals. Key metric classes:
 
 | Class | What it measures |
 |---|---|
 | `MXCPUMetric` | Cumulative CPU time (user + system) |
-| `MXMemoryMetric` | Peak and average memory, average suspended memory |
+| `MXMemoryMetric` | Peak memory (`peakMemoryUsage`) and average suspended memory (`averageSuspendedMemory`) — there is no average-memory property |
 | `MXDisplayMetric` | Average pixel luminance (not the hitch signal) |
 | `MXAnimationMetric` | `scrollHitchTimeRatio` — field-measured ratio of hitch time while scrolling (the hitch signal) |
 | `MXDiskIOMetric` | Cumulative logical write bytes |
@@ -147,7 +147,7 @@ Wire MetricKit as a **sink** in your telemetry facade (per `telemetry-facade-pat
 
 For the `testScrollPerformance` sample wiring `XCTOSSignpostMetric.scrollDecelerationMetric`, `XCTMemoryMetric`, and `XCTCPUMetric` into `measure {}`, read `references/samples.md`.
 
-`measure {}` runs the block 5 times (by default) and records the mean. On first run, set the baseline via the inline editor in Xcode. Subsequent runs fail on either of two independent thresholds, both configurable per metric: **Max % Relative Standard Deviation** (default 10%) and **Max % Deviation** from the baseline average (default 10%) — exceeding either one fails the test; it is not a single product formula. Commit baselines in `.xcbaseline` files alongside the test file.
+`measure {}` runs the block `iterationCount + 1` times (default 5 recorded + 1 discarded warm-up) and records the mean of the recorded runs. On first run, set the baseline via the inline editor in Xcode. Subsequent runs fail on either of two independent thresholds, both configurable per metric: **Max % Relative Standard Deviation** (default 10%) and **Max % Deviation** from the baseline average (default 10%) — exceeding either one fails the test; it is not a single product formula. Commit baselines in `.xcbaseline` files alongside the test file.
 
 For server-side CI (where a physical display is unavailable), use `XCTCPUMetric` and `XCTMemoryMetric` in unit tests that exercise logic without UIKit rendering. UI performance metrics require a simulator or device with an active display session.
 

@@ -24,7 +24,7 @@ Owns the source-selection decision and its PrivacyInfo/ATT consequence. Does NOT
 |---|---|---|
 | **App Store Connect Analytics** | Downloads, sessions, active devices, retention, sources, store conversion | App Store Connect web |
 | **MetricKit** (`MXMetricPayload`, `MXDiagnosticPayload`) | Performance & diagnostics: crash / hang / launch time / jank / energy / memory | The App receives them → persist to log / optionally upload later |
-| **MetricKit, iOS 27+** (`MetricManager().metricReports` / `.diagnosticReports`, `for await`) | Same coverage; `MXMetricManager` / `MXMetricPayload` / `MXMetricManagerSubscriber` are deprecated starting iOS 27 | Same — catalog default is iOS 26, so no forced migration yet |
+| **MetricKit, iOS / macOS 27+** (`MetricManager().metricReports` / `.diagnosticReports`, `for await`) | Same coverage; `MXMetricManager` / `MXMetricPayload` / `MXMetricManagerSubscriber` are deprecated starting iOS / macOS 27 | Same — catalog default is iOS 26, so no forced migration yet |
 | **Game Center** (if it's a game) | Leaderboards / achievement completion / peer-player comparison | Game Center API / Game Center app |
 
 > **macOS caveat**: macOS 12–15 only send `MXDiagnosticPayload`; macOS 26 and later send a daily `MXMetricPayload` just like iOS. Only a deployment target below macOS 26 needs to fall back to App Store Connect Analytics + targeted `OSSignposter` traces.

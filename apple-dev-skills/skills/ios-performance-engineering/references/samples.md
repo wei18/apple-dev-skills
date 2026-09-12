@@ -22,6 +22,10 @@ func downsample(imageAt url: URL, to pointSize: CGSize, scale: CGFloat) -> UIIma
 
 ## MetricKit receiver (MXMetricManagerSubscriber)
 
+`MXMetricManager` / `MXMetricManagerSubscriber` are deprecated from iOS / macOS 27
+(replacement: `MetricManager().metricReports`, `for await`); this sample targets the
+catalog's iOS 26 floor.
+
 ```swift
 import MetricKit
 
