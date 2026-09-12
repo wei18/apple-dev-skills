@@ -52,11 +52,15 @@ def set_plugin_version(plugin_dir: str, version: str):
     print(f"  {plugin_dir}: -> {version} (plugin.json + marketplace entry)")
 
 
-def set_marketplace_version(version: str):
-    # Refuse to bump while any mirror is already stale — otherwise the re-stamp
-    # below just re-freshens a src-sha that was never an honest mirror of README.md
-    # (regression: bump-version.py --marketplace silently launders a stale mirror
-    # into a green gate, see check-consistency.py rule 4).
+def precheck_marketplace_mirrors():
+    """Refuse to bump `--marketplace` while any mirror is already stale — otherwise the
+    re-stamp in set_marketplace_version() just re-freshens a src-sha that was never an
+    honest mirror of README.md (regression: bump-version.py --marketplace silently
+    launders a stale mirror into a green gate, see check-consistency.py rule 4).
+
+    Called before ANY file is written (not just before the marketplace edits) so a
+    multi-flag bump (e.g. --apple + --marketplace) can't die here after --apple's
+    plugin.json + marketplace.json edits are already on disk — a non-atomic partial bump."""
     pre_sha = subprocess.run(["git", "hash-object", "README.md"], cwd=ROOT,
                              capture_output=True, text=True, check=True).stdout.strip()
     for mirror_name in MIRRORS:
@@ -65,6 +69,8 @@ def set_marketplace_version(version: str):
         if not m or m.group(1) != pre_sha:
             die(f"{mirror_name} src-sha is stale vs README.md — run `mise run readme-zh` first, then re-run bump")
 
+
+def set_marketplace_version(version: str):
     MP.write_text(sub_once(MP.read_text(encoding="utf-8"),
                            r'("metadata"\s*:\s*\{[^}]*?"version"\s*:\s*")' + SEMVER + r'(")',
                            rf"\g<1>{version}\g<2>", "marketplace metadata"), encoding="utf-8")
@@ -95,6 +101,8 @@ def main():
         ap.error("nothing to bump — pass at least one of --marketplace/--apple/--collab")
     for v in (args.marketplace, args.apple, args.collab):
         if v and not re.fullmatch(SEMVER, v): die(f"not a semver: {v}")
+
+    if args.marketplace: precheck_marketplace_mirrors()  # before any write — see docstring
 
     if args.apple: set_plugin_version("apple-dev-skills", args.apple)
     if args.collab: set_plugin_version("collaboration-skills", args.collab)
