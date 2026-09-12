@@ -43,8 +43,8 @@ marketplace 剛好跟它第一個 plugin 同名。
 
 > 兩個 plugin 一起裝，會載入全部 38 條第一方描述 —— 約 5,500 tokens，是預設 1% 技能清單
 > 預算（200k context 模型下是 2,000 tokens）的約 2.7 倍，還沒算外部 plugin。技能清單預算是
-> context window 的 1%；爆量時 Claude Code 會從最少被呼叫的技能開始砍描述 —— 新安裝的技能
-> 通常排最前面。執行 `/doctor` 檢查清單成本，太吃緊就調高 `skillListingBudgetFraction`
+> context window 的 1%；爆量時 Claude Code 會從最少被呼叫的技能開始砍描述；實務上通常
+> 就是還沒有呼叫紀錄的新安裝技能。執行 `/doctor` 檢查清單成本，太吃緊就調高 `skillListingBudgetFraction`
 > （例如 `0.02`），或透過 `/plugin` 停用不想用的 plugin。
 
 ## 目錄
@@ -200,4 +200,4 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 此處僅以引用方式呈現。催生本 repo 雙 plugin 結構的設計 spec 與計畫原本放在 `docs/superpowers/`
 —— 已退役、改由 git 歷史保存；用 `git log -- docs/` 可以找回。MIT —— 見 [LICENSE](LICENSE)。
 
-<!-- src-sha: 717b9af19a42afc699c85476dae674477abc3726 -->
+<!-- src-sha: 7699870110c96d109c7bcda48151e19787a07aa3 -->

@@ -52,7 +52,7 @@ Claude Codeのsession内で実行します。
 > トークン——読み込まれます。これはデフォルトの1%スキル一覧予算（200kコンテキストモデルで
 > 2,000トークン）の約2.7倍で、外部プラグインを含めない数字です。スキル一覧の予算はcontext
 > windowの1%です。溢れると、Claude Codeは呼び出し頻度が低いスキルから順に説明文を落とし
-> ます——新しくインストールしたスキルはその筆頭です。`/doctor`で一覧のコストを確認し、
+> ます。実際には、まだ呼び出し履歴のない新しくインストールしたスキルがそれに当たりがちです。`/doctor`で一覧のコストを確認し、
 > 厳しければ`skillListingBudgetFraction`（例：`0.02`）を上げるか、使わないpluginを
 > `/plugin`から無効化してください。
 
@@ -221,4 +221,4 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 `docs/superpowers/`にありました——現在は廃止され、git履歴として保存されています。
 `git log -- docs/`で見つけることができます。MIT——[LICENSE](LICENSE)を参照してください。
 
-<!-- src-sha: 717b9af19a42afc699c85476dae674477abc3726 -->
+<!-- src-sha: 7699870110c96d109c7bcda48151e19787a07aa3 -->

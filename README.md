@@ -46,8 +46,8 @@ what is installed and which plugin each skill came from.
 > Installing both plugins loads all 38 first-party descriptions — about 5,500 tokens, ~2.7×
 > the default 1% skill-listing budget (2,000 tokens on a 200k-context model) — before any
 > externals. The skill-listing budget is 1% of the context window; when it overflows, Claude
-> Code drops descriptions starting with the skills you invoke least — freshly installed ones
-> first. Run `/doctor` to check the listing's cost, then raise `skillListingBudgetFraction`
+> Code drops descriptions starting with the skills you invoke least; in practice that tends
+> to mean freshly installed ones, which have no invocation history yet. Run `/doctor` to check the listing's cost, then raise `skillListingBudgetFraction`
 > (e.g. `0.02`) if it's tight, or disable plugins you don't use via `/plugin`.
 
 ## Catalog
