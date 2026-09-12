@@ -1,6 +1,6 @@
 ---
 name: monetization-sdk-integration
-description: 'Use when adding, upgrading, or auditing a third-party monetization SDK (AdMob / Google Mobile Ads, UMP consent, mediation networks, RevenueCat), or when a PR adds `import GoogleMobileAds` outside the single live-bridge file, breaks `canImport` / `.when(platforms: [.iOS])` gating, or lands without a Fake bridge. Owns the break-glass admission test, single-import-site isolation contract, and test seam. Does not cover native StoreKit 2 IAP (storekit2-iap-defaults), production ID storage (build-time-secret-injection), or App Review consequences (app-store-review-rejections).'
+description: 'Use when adding, upgrading, or auditing a third-party monetization SDK (AdMob / Google Mobile Ads incl. UMP consent; the same contract applies to any other ad or subscription SDK), or when a PR adds `import GoogleMobileAds` outside the single live-bridge file, breaks `canImport` / `.when(platforms: [.iOS])` gating, or lands without a Fake bridge. Owns the break-glass admission test, single-import-site isolation contract, and test seam. Does not cover native StoreKit 2 IAP (storekit2-iap-defaults), production ID storage (build-time-secret-injection), or App Review consequences (app-store-review-rejections).'
 ---
 
 # Monetization SDK Integration

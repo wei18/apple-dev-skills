@@ -1,6 +1,6 @@
 ---
 name: ios-accessibility-engineering
-description: Implement and audit VoiceOver (`accessibilityLabel` / `Value` / `Hint`, traits, `accessibilityElement(children:)`, `AccessibilityNotification`), Dynamic Type (text styles, caps, AX5), 44pt touch targets, and Reduce Motion / Transparency for SwiftUI and UIKit, with a WCAG 2.2 mapping. Use when asked to make a screen accessible, when VoiceOver reads the wrong thing, for a pre-submission a11y audit or Accessibility Inspector pass, or an accessibility App Review rejection. Not Rotor / `AccessibilityFocusState` depth; live Simulator driving → interactive-simulator-ux-audit.
+description: Implement and audit VoiceOver (`accessibilityLabel` / `Value` / `Hint`, traits, `accessibilityElement(children:)`, `AccessibilityNotification`), Dynamic Type (text styles, caps, AX5), 44pt touch targets, and Reduce Motion / Transparency for SwiftUI and UIKit, with a WCAG 2.2 mapping. Use when asked to make a screen accessible, when VoiceOver reads the wrong thing, for a pre-submission a11y audit or Accessibility Inspector pass, when wiring `performAccessibilityAudit()` as a CI gate, or an accessibility App Review rejection. Not Rotor / `AccessibilityFocusState` depth; live Simulator driving → interactive-simulator-ux-audit.
 ---
 
 # iOS Accessibility Engineering
@@ -112,7 +112,7 @@ Ship to 44×44pt (HIG); 24px AA is the floor, not the target.
 | 1.4.3 Contrast (minimum) | ≥ 4.5:1 for normal text, 3:1 for large text | Check in Accessibility Inspector |
 | 1.4.4 Resize text | Text reflows up to 200% without loss of content | Dynamic Type + `ViewThatFits` |
 | 2.5.8 Target size (Minimum) — **AA** | Interactive targets ≥ 24×24 CSS px (WCAG 2.2 new AA criterion) | `.contentShape` + padding; the **AA conformance gate** |
-| 2.5.5 Target size — AAA | Interactive targets ≥ 44×44 CSS px (≈44pt on 1× devices) | Apple HIG minimum; stronger than AA — aim for this |
+| 2.5.5 Target size (Enhanced) — AAA | Interactive targets ≥ 44×44 CSS px (≈44pt on 1× devices) | Apple HIG minimum; stronger than AA — aim for this |
 
 App Review does not formally audit against WCAG, but the Human Interface Guidelines cite these thresholds and reviewers reject apps that are obviously unusable with VoiceOver or at accessibility text sizes.
 

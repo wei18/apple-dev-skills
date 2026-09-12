@@ -1,6 +1,6 @@
 ---
 name: local-archive-export-upload
-description: 'Use when a build must reach TestFlight without Xcode Cloud (quota, outage, CI not wired yet), or when a local `xcodebuild archive` / `-exportArchive -exportOptionsPlist` / `xcrun altool --upload-package` command fails — `ExportOptions.plist` keys (`method`, `destination`, `teamID`, `manageAppVersionAndBuildNumber`), `-authenticationKeyPath` vs `-allowProvisioningUpdates`, `CFBundleVersion` colliding with Xcode Cloud''s counter. Temporary fallback for xcode-cloud-single-track-ci; does NOT cover ASC operations after upload → asc-api-automation, nor `notarytool` notarization.'
+description: 'Use when a build must reach TestFlight without Xcode Cloud (quota, outage, CI not wired yet), or when a local `xcodebuild archive` / `-exportArchive -exportOptionsPlist` / `xcrun altool --upload-package` command fails — `ExportOptions.plist` keys (`method`, `destination`, `teamID`, `manageAppVersionAndBuildNumber`), `-authenticationKeyPath` vs `-allowProvisioningUpdates`, `CFBundleVersion` colliding with Xcode Cloud''s counter. Temporary fallback for xcode-cloud-single-track-ci; does NOT cover ASC operations after upload → asc-api-automation, nor `notarytool` notarization → apple-skills:guide-macos-spm-packaging.'
 allowed-tools: Bash(xcodebuild archive *)
 ---
 
@@ -175,8 +175,10 @@ is in `references/evidence.md`.
 - `xcode-cloud-single-track-ci` — the primary CI path this substitutes for;
   restore it once quota/outage clears.
 - `asc-api-automation` — TestFlight/App Store operations once the build lands in ASC.
-- `app-store-review-rejections` — export-compliance (2.5.x) and what has to be
-  true for review to pass.
+- `app-store-review-rejections` — its export-compliance row (an ASC upload
+  step, not a Guideline number) and what has to be true for review to pass.
+- `apple-skills:guide-macos-spm-packaging` (aggregated external) — Developer-ID
+  signing / `notarytool` notarization for outside-the-App-Store distribution.
 - `build-time-secret-injection` / `apple-public-repo-security` — where the
   `.p8` and its issuer/key IDs live and how leaks are prevented.
 - `storekit2-iap-defaults` — this pipeline is how a build carrying that

@@ -1,6 +1,6 @@
 ---
 name: ios-design-mockup
-description: 'Generate a single-file HTML iOS design mockup from a written spec (PRD / requirements / user stories) — a designer-style user-flow canvas: iPhone frames, SVG navigation arrows, a design-tokens panel. Use when asked to "turn this spec into a mockup", "show me the screens", "design this", "visualize this app", "make a Figma-like flow", or to communicate iOS designs to PMs/stakeholders without a working prototype. Not a clickable prototype, not Figma files, not SwiftUI/production code. Do NOT fire when merely discussing/planning/reviewing screens conceptually, or when no visual artifact was requested.'
+description: 'Generate a single-file HTML iOS design mockup from a written spec (PRD / requirements / user stories) — a designer-style user-flow canvas: iPhone frames, SVG navigation arrows, a design-tokens panel. Use when asked to "turn this spec into a mockup", "show me the screens", "visualize this app", "make a Figma-like flow", or to communicate iOS designs to PMs/stakeholders without a working prototype. Not a clickable prototype, not Figma files, not SwiftUI/production code. Do NOT fire when merely discussing/planning/reviewing screens conceptually, or when no visual artifact was requested.'
 argument-hint: "[spec-path]"
 ---
 
@@ -160,4 +160,4 @@ Read `html-structure.md` before drawing your first screen. Read the other two as
 
 - `swiftui-navigation-architecture` — once a flow sketched here is approved, this is where the real navigation gets implemented; that skill produces working SwiftUI code, this one produces a static visual mockup only.
 
-Pre-code visual only. Auditing a built app → `interactive-simulator-ux-audit`; spec-level screen contracts → the user's spec skill.
+Pre-code visual only. Auditing a built app → `interactive-simulator-ux-audit`; spec-level screen contracts → a screen-contract / spec skill if the project has one, otherwise `collaboration-skills:spec-phase-orchestration` §What.

@@ -65,3 +65,4 @@ Logger.engine.info("user \(userId, privacy: .public) loaded puzzle \(puzzleId, p
 - `telemetry-facade-pattern`: where `OSLogSink` sits within the facade.
 - `apple-three-piece-analytics`: OSLog is an Apple-only path, in the same "no third-party" stance as ASC / MetricKit / GC.
 - `apple-public-repo-security`: `.private` corresponds to sysdiagnose redaction, but is still visible under a debugger — the safety reasoning for the public repo relies on this semantics.
+- `ios-performance-engineering`: `OSSignposter` / `os_signpost` intervals and Instruments profiling; this skill stops at `Logger`.

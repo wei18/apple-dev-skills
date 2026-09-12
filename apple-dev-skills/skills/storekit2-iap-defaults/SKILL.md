@@ -1,6 +1,6 @@
 ---
 name: storekit2-iap-defaults
-description: 'Default StoreKit 2 architecture for a single non-consumable IAP (Remove Ads, Pro Unlock): `StoreKitBridge` isolates `import StoreKit` to one Live file; launch-time `Transaction.updates`; `Transaction.currentEntitlements` for unlock state; `finish()` timing; `AppStore.sync()` restore; `.storekit` + Fake-bridge test seam. Invoke when adding IAP, wiring StoreKit 2, or asked "how do I unlock a purchase / restore purchases / test IAP". Does NOT cover subscriptions or ad SDKs.'
+description: 'Default StoreKit 2 architecture for a single non-consumable IAP (Remove Ads, Pro Unlock): `StoreKitBridge` isolates `import StoreKit` to one Live file; launch-time `Transaction.updates`; `Transaction.currentEntitlements` for unlock state; `finish()` timing; `AppStore.sync()` restore; `.storekit` + Fake-bridge test seam. Invoke when adding IAP, wiring StoreKit 2, or asked "how do I unlock a purchase / restore purchases / test IAP". Does NOT cover subscriptions → apple-skills:storekit, or ad SDKs → monetization-sdk-integration.'
 ---
 
 # StoreKit 2 IAP Defaults
@@ -198,3 +198,4 @@ signed-in sandbox tester.
 - `local-archive-export-upload` / `xcode-cloud-single-track-ci` — shipping the binary.
 - `swift-dependency-injection` — the general protocol-injection pattern this bridge instantiates.
 - `swift-testing-baseline` — where this bridge's fake fits this catalog's test stack.
+- `apple-skills:storekit` (aggregated external) — StoreKit 2 API reference incl. subscriptions, `SubscriptionStoreView`, renewal state — the part this skill does not cover.

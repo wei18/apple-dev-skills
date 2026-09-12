@@ -1,6 +1,6 @@
 ---
 name: swift6-concurrency
-description: 'Swift 6 language mode with complete concurrency checking from the first line of a new Apple-platform project; in-house types treated as `Sendable`; `@preconcurrency import` for lagging deps. Use when setting `swiftLanguageModes` / `swiftSettings` in Package.swift or SWIFT_STRICT_CONCURRENCY / default actor isolation in Xcode build settings, when a new dependency raises Sendable or actor-isolation errors, or when asked "should I turn on strict concurrency". Does NOT own deployment targets → apple-platform-targets; actor / async patterns → apple-skills:swift-concurrency.'
+description: 'Swift 6 language mode with complete concurrency checking from the first line of a new Apple-platform project; `MainActor` default isolation per the Xcode 26 template, `Sendable` only where a value crosses an isolation boundary; `@preconcurrency import` for lagging deps. Use when setting `swiftLanguageModes` / `swiftSettings` in Package.swift or SWIFT_STRICT_CONCURRENCY / default actor isolation in Xcode build settings, when a build setting or new dependency raises Sendable / isolation errors at a module boundary, or when asked "should I turn on strict concurrency". Does NOT own deployment targets → apple-platform-targets; fixing the concurrent code itself → apple-skills:guide-swift-concurrency; API reference → apple-skills:swift-concurrency.'
 ---
 
 # Swift 6 / Strict Concurrency
@@ -43,3 +43,5 @@ description: 'Swift 6 language mode with complete concurrency checking from the 
 
 - `apple-platform-targets`: the catalog toolchain is Xcode 26; Swift 6 language mode has been available since Xcode 16, so the language-mode choice does not constrain the deployment floor.
 - `swiftpm-modularization`: `swiftLanguageModes: [.v6]` sets the default for the whole package; individual targets can opt down with `swiftSettings: [.swiftLanguageMode(.v5)]` (available since swift-tools-version 6.0) — useful when migrating a legacy dependency without blocking the rest of the package.
+- `apple-skills:guide-swift-concurrency` (aggregated external): fixing the concurrent code itself — actors, structured concurrency, cancellation, strict-concurrency diagnostics. This skill stops at the build settings and the dependency boundary.
+- `apple-skills:swift-concurrency` (aggregated external): API reference for `async`/`await`, `Task`, `TaskGroup`, `AsyncSequence`.

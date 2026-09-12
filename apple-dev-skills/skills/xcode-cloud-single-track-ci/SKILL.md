@@ -35,7 +35,7 @@ description: 'Use when setting up or changing CI for an Apple-platform project o
 
 - Xcode version in the workflow matches the README / `foundations.md` toolchain line.
 - When bumping Xcode, open a dedicated PR to refresh snapshot baselines.
-- **Xcode Cloud's build environment does not include mise** — Apple documents it as including only Homebrew among third-party tools. Commit a bootstrapped `bin/mise` wrapper (`mise generate bootstrap -l -w bin/mise`, from `mise-tool-management`) and call every tool inside `ci_scripts/` through it (`./bin/mise trust`, `./bin/mise install`, `./bin/mise exec -- <tool> <args>`) instead of a bare `mise` invocation, which fails with "command not found".
+- **Xcode Cloud's build environment does not include mise** — Apple documents it as including only Homebrew among third-party tools. Commit a bootstrapped `bin/mise` wrapper (`mise generate install-script --localize --write bin/mise`, from `mise-tool-management`; the old `mise generate bootstrap` name is deprecated, removal planned for mise 2027.9.0) and call every tool inside `ci_scripts/` through it (`./bin/mise trust`, `./bin/mise install`, `./bin/mise exec -- <tool> <args>`) instead of a bare `mise` invocation, which fails with "command not found".
 - Test environment disables iCloud / Game Center sign-in; all tests go through protocol fakes.
 
 ### Build number & version automation
@@ -43,7 +43,7 @@ description: 'Use when setting up or changing CI for an Apple-platform project o
 | Need | Setting / source | Where it's set | Action |
 |---|---|---|---|
 | User-visible version | `MARKETING_VERSION` (→ `CFBundleShortVersionString`) | Project build settings | Bump deliberately per release |
-| Build number, new app | `CI_BUILD_NUMBER` | Xcode Cloud (sequential integer per build, starting at `1`, independent of `CURRENT_PROJECT_VERSION`) | Nothing — e.g. `1.2.2 (1)` is a valid, unique version+build pair even after a prior manually-numbered `1.2.1 (42)` |
+| Build number, new **iOS** app | `CI_BUILD_NUMBER` | Xcode Cloud (sequential integer per build, starting at `1`, independent of `CURRENT_PROJECT_VERSION`) | Nothing — e.g. `1.2.2 (1)` is a valid, unique version+build pair even after a prior manually-numbered `1.2.1 (42)` (iOS only — Apple's docs call that same pair *invalid* for a Mac app; see next row) |
 | Build number, existing Mac app with a prior higher build | ASC's Xcode Cloud build-number counter | App Store Connect → app → **Xcode Cloud** tab → **Settings** → **Build Number** tab → **Edit** | Set the next build number above your last shipped one (macOS requires the build number to strictly increase *across* versions, not just be unique within one) |
 | Binary must carry the CI build number (e.g. crash-symbolication tooling that reads `CURRENT_PROJECT_VERSION`) | `agvtool new-version -all "$CI_BUILD_NUMBER"` in `ci_post_clone.sh` | Repo | Requires `VERSIONING_SYSTEM = apple-generic` (agvtool enabled) on the target |
 
@@ -107,3 +107,4 @@ When two PRs each pass pre-merge and merge back to back, **their combined result
 - `apple-public-repo-security`: PR CI adds a gitleaks step as the second line of defence.
 - `apple-platform-targets`: Xcode version lock.
 - `asc-api-automation`: release-side `versionString` and changelog automation, once the build exists in ASC — reuses this project's `MARKETING_VERSION` / `CI_BUILD_NUMBER`.
+- `local-archive-export-upload`: the manual fallback when Xcode Cloud is down or its quota is exhausted.

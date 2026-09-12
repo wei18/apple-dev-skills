@@ -1,6 +1,6 @@
 ---
 name: interactive-simulator-ux-audit
-description: Audit an iOS/iPadOS app's live behavior on a booted Simulator by driving it with `idb` (accessibility tree, taps, screenshots) to find bugs a fixed-frame snapshot cannot show — navigation and modal flows, back-stack, completion screens, safe-area / Dynamic Island clipping, offline and signed-out states, Dynamic Type at AX sizes. Use when asked to test the UI, find UX problems, drive the simulator, verify an interactive flow end-to-end, or size a parallel-simulator fleet. Not for scripted CI-run UI tests → host-driven-xcuitest-e2e; not for native macOS apps, which idb cannot target. Requires `udid` and `flow` arguments — the fork has no conversation history.
+description: Audit an iOS/iPadOS app's live behavior on a booted Simulator by driving it with `idb` (accessibility tree, taps, screenshots) to find bugs a fixed-frame snapshot cannot show — navigation and modal flows, back-stack, completion screens, safe-area / Dynamic Island clipping, offline and signed-out states, Dynamic Type at AX sizes. Use when asked to test the UI, find UX problems, drive the simulator to audit a UX flow, verify an interactive flow end-to-end, or size a parallel-simulator fleet. Not for scripted CI-run UI tests → host-driven-xcuitest-e2e; plain build / launch / screenshot → xcode-build-skill:xcode-build or apple-skills:simulator-utils; not for native macOS apps, which idb cannot target. Requires `udid` and `flow` arguments — the fork has no conversation history.
 context: fork
 agent: general-purpose
 argument-hint: "[udid] [flow]"
@@ -37,6 +37,8 @@ to *pin* the fix.
 `context: fork` runs this skill in a subagent with **no access to the conversation
 history** — it can't infer anything from earlier turns, only from the invocation
 arguments and this file. When invoking (matches `argument-hint: "[udid] [flow]"`), supply:
+
+Target simulator UDID: `$0`; flow to audit: `$1`.
 
 - **`udid`** — the target **booted** simulator's identifier (`idb list-targets`). One
   fork drives exactly one simulator; never omit this and let the fork boot/pick one
@@ -229,4 +231,5 @@ doesn't model. Driving the actual Simulator is the only check that covers the se
 - `host-driven-xcuitest-e2e` — turn a finding from this audit into an automated, CI-runnable regression test.
 - `swift-testing-baseline` — the static snapshot-testing layer this skill complements, not replaces.
 - `ios-accessibility-engineering` — Dynamic Type / VoiceOver checks that pair naturally with this audit loop.
-- `mise-tool-management` — the general non-Homebrew tool-install pattern behind the `idb` and `simslim` install steps above.
+- `mise-tool-management` — the general non-Homebrew tool-install pattern behind the `idb` install step above and the `simslim` step in `references/simulator-fleet-sizing.md`.
+- `xcode-build-skill:xcode-build` / `apple-skills:simulator-utils` (aggregated externals) — plain build, launch, and screenshot commands; this skill is the fork-based audit loop on top of a build that already exists.
