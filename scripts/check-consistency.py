@@ -85,22 +85,49 @@ for plugin, expected in PLUGINS.items():
         md = sdir / name / "SKILL.md"
         if not md.is_file(): fail(f"[skill] {plugin}/{name}: no SKILL.md"); continue
         fn = fm_field(md, "name")
-        if fn != name: fail(f"[skill] {plugin}/{name}: frontmatter name={fn!r} != dir")
+        # name is legitimately either bare or quoted YAML — strip matching outer quotes
+        # before comparing so `name: "foo"` isn't misreported as name != dir.
+        fn_bare = fn[1:-1] if fn and len(fn) >= 2 and fn[0] in "'\"" and fn[-1] == fn[0] else fn
+        if fn_bare != name: fail(f"[skill] {plugin}/{name}: frontmatter name={fn!r} != dir")
         # 7. description length budget
         desc = fm_field(md, "description")
         # A block scalar (`description: >`) is already YAML-safe: everything after the
         # indicator is literal text, so `: ` and indicator characters need no quoting.
         block = bool(desc) and desc.startswith(BLOCK_SCALAR)
         if block: desc = desc[len(BLOCK_SCALAR):]
-        if desc is None: fail(f"[skill] {plugin}/{name}: no frontmatter description")
-        elif len(desc) > DESC_MAX:
-            fail(f"[skill] {plugin}/{name}: description {len(desc)} chars > {DESC_MAX}")
-        # 10. description must survive a strict YAML parse — fm_field() returns the
-        # raw value (quotes intact, not stripped), so check quoting directly on it.
-        if desc and not block:
-            quoted = len(desc) >= 2 and desc[0] in "'\"" and desc[-1] == desc[0]
-            if not quoted and (": " in desc or desc[0] in "[]{}&*>|#%@`!"):
-                fail(f"[skill] {plugin}/{name}: description must be quoted (contains ': ' or a YAML indicator)")
+        if desc is None:
+            fail(f"[skill] {plugin}/{name}: no frontmatter description")
+        else:
+            quoted = not block and len(desc) >= 2 and desc[0] in "'\"" and desc[-1] == desc[0]
+            # Length counts the value a consumer actually sees (quotes stripped), matching
+            # check-skills.py's parse_front() — otherwise a quoted description that needs
+            # quoting only because of a ': ' or indicator gets penalized twice for it.
+            desc_len = len(desc[1:-1]) if quoted else len(desc)
+            if desc_len > DESC_MAX:
+                fail(f"[skill] {plugin}/{name}: description {desc_len} chars > {DESC_MAX}")
+            # 10. description must survive a strict YAML parse — fm_field() returns the
+            # raw value (quotes intact, not stripped), so check quoting directly on it.
+            if desc and not block:
+                if not quoted:
+                    if ": " in desc or desc[0] in "[]{}&*>|#%@`!":
+                        fail(f"[skill] {plugin}/{name}: description must be quoted (contains ': ' or a YAML indicator)")
+                    if " #" in desc:
+                        fail(f"[skill] {plugin}/{name}: description must be quoted "
+                             f"(contains ' #' — starts a YAML comment, silently truncating the value)")
+                    if desc.startswith("- "):
+                        fail(f"[skill] {plugin}/{name}: description must be quoted "
+                             f"(starts with '- ' — a YAML block-sequence indicator)")
+                    if desc.endswith(":"):
+                        fail(f"[skill] {plugin}/{name}: description must be quoted "
+                             f"(ends with ':' — a YAML mapping-value indicator)")
+                else:
+                    inner = desc[1:-1]
+                    if desc[0] == '"' and re.search(r'(?<!\\)"', inner):
+                        fail(f"[skill] {plugin}/{name}: description has an unescaped "
+                             f'\'"\' inside a double-quoted value — breaks YAML parsing')
+                    if desc[0] == "'" and "'" in re.sub(r"''", "", inner):
+                        fail(f"[skill] {plugin}/{name}: description has an unescaped "
+                             f"\"'\" inside a single-quoted value (use '' to escape) — breaks YAML parsing")
 
 # helper: scope README Catalog section
 def scoped(text: str, *markers: str) -> str:
