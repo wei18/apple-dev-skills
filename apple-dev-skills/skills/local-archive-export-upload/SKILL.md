@@ -175,8 +175,8 @@ is in `references/evidence.md`.
 - `xcode-cloud-single-track-ci` — the primary CI path this substitutes for;
   restore it once quota/outage clears.
 - `asc-api-automation` — TestFlight/App Store operations once the build lands in ASC.
-- `app-store-review-rejections` — export-compliance (2.5.x) and what has to be
-  true for review to pass.
+- `app-store-review-rejections` — its export-compliance row (an ASC upload
+  step, not a Guideline number) and what has to be true for review to pass.
 - `build-time-secret-injection` / `apple-public-repo-security` — where the
   `.p8` and its issuer/key IDs live and how leaks are prevented.
 - `storekit2-iap-defaults` — this pipeline is how a build carrying that
