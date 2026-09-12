@@ -40,7 +40,7 @@ ASC_KEY_PATH=secrets/AuthKey_2X9R4HXF34.p8
 
 ## Mint the token (CryptoKit, zero dependencies)
 
-Claims (verified against Apple's *Generating tokens for API requests*, 2026-07): header `alg: ES256` (the only accepted algorithm), `kid`, `typ: JWT`; payload `iss` (**Issuer ID**, the UUID from Users and Access → Integrations — not your Team ID), `iat`, `exp` (invalid if more than 20 minutes ahead), `aud: "appstoreconnect-v1"`, optional `scope` (array of allowed requests like `"GET /v1/apps"` — pin single-purpose tokens to single endpoints).
+Claims (verified against Apple's *Generating tokens for API requests*, 2026-07): header `alg: ES256` (the only accepted algorithm), `kid`, `typ: JWT`; payload `iss` (**Issuer ID**, the UUID from Users and Access → Integrations — not your Team ID), `iat`, `exp` (invalid if more than 20 minutes ahead — **exception**: a token carrying `scope` and restricted to GET requests on allow-listed resources can live up to 6 months, per Apple's *Determine the Appropriate Token Lifetime*), `aud: "appstoreconnect-v1"`, optional `scope` (array of allowed requests like `"GET /v1/apps"` — pin single-purpose tokens to single endpoints).
 
 `scripts/mint-asc-token.swift`:
 
@@ -106,15 +106,17 @@ Mint fresh per run; a job that outlives the token re-mints instead of extending 
 | Daily sales report | `GET /v1/salesReports?filter[frequency]=DAILY&filter[reportType]=SALES&filter[reportSubType]=SUMMARY&filter[vendorNumber]=<n>` (+ `filter[reportDate]=YYYY-MM-DD` for a specific day) — response is a **gzipped TSV**, not JSON: `curl -o report.gz` then `gunzip` |
 | App Store analytics | `POST /v1/analyticsReportRequests` (`accessType: "ONGOING"`) once per app, then poll its `reports` → instances → segments for download URLs |
 
-The review-submission flow is the 2022+ `reviewSubmissions` model, which replaced the deprecated one-shot `appStoreVersionSubmissions`.
+The review-submission flow is the `reviewSubmissions` model introduced in App Store Connect API 1.7, which replaced the deprecated one-shot `appStoreVersionSubmissions`.
 
 ## Pre-submission prerequisites the three-call flow doesn't mention
 
 The `POST reviewSubmissions` → `POST reviewSubmissionItems` → `PATCH submitted: true` sequence above assumes the app is already submittable; in practice three preconditions block it and have no REST fix:
 
-- **App pricing must be set first.** Apple's ASC Help confirms pricing has to be configured before submission (*Set a price* / *Overview of submitting for review*, help.apple.com/app-store-connect). A pricing write endpoint does exist — `POST /v1/appPriceSchedules` ("Add a Scheduled Price Change to an App") — but it doesn't help until the Paid Apps Agreement is accepted, which is web-UI-only (see "Steps with no ASC API at all" below). Observed in practice (exact error-code string not found in Apple's published API reference): a `POST reviewSubmissions` on an app with no price configured fails with a pricing-state error. Set the price once — via the API or the web UI — before automating the rest.
-- **An empty `copyright` attribute blocks submission.** Apple's error-code family for a missing required attribute is documented on the developer forums as `ENTITY_ERROR.ATTRIBUTE.REQUIRED` for other required fields (e.g. `companyName`); the same shape is observed in practice for a blank `copyright` on the app/version resource — not confirmed against Apple's official attribute reference, so treat the exact code as observed-in-practice, not documented fact. Fix: always send a non-empty `copyright` string.
-- **A leftover non-`COMPLETE` `reviewSubmissions` blocks a new `POST`, and there is no DELETE.** Apple's API reference publishes `DELETE /v1/appStoreVersionSubmissions/{id}` only for the deprecated pre-2022 model; the current `reviewSubmissions` resource has no DELETE operation. To clear a stuck submission, `PATCH /v1/reviewSubmissions/<id>` with `{"data":{"type":"reviewSubmissions","id":"<id>","attributes":{"canceled":true}}}` — `state` is a read-only response attribute (`ReviewSubmissionUpdateRequest.Data.Attributes` accepts only `canceled` / `submitted` / `platform`); after the PATCH the `state` transitions to `CANCELING`, one of the documented `ReviewSubmission.Attributes.state` values (alongside `READY_FOR_REVIEW`, `WAITING_FOR_REVIEW`, `IN_REVIEW`, `UNRESOLVED_ISSUES`, `COMPLETING`, `COMPLETE`). During `WAITING_FOR_REVIEW`, canceling returns the version to an editable state (observed as `DEVELOPER_REJECTED`, a documented `AppVersionState` value) without leaving an Apple rejection record — this is the withdrawal recipe when a submission needs correcting before Apple starts review.
+| Blocker | Symptom | Fix | Where |
+|---|---|---|---|
+| App pricing not set | `POST reviewSubmissions` fails with a pricing-state error (exact error-code string not found in Apple's published API reference — observed in practice) | Set the price once, via the API (`POST /v1/appPriceSchedules`, "Add a Scheduled Price Change to an App") or the web UI | Needs the Paid Apps Agreement accepted first — web-UI-only (see "Steps with no ASC API at all" below) |
+| Empty `copyright` attribute | An `ENTITY_ERROR.ATTRIBUTE.REQUIRED`-shaped error — documented for other required fields (e.g. `companyName`); the same shape is observed in practice for a blank `copyright`, not confirmed against Apple's official attribute reference | Always send a non-empty `copyright` string | API |
+| Leftover non-`COMPLETE` `reviewSubmissions` | A new `POST /v1/reviewSubmissions` is refused; the resource has no DELETE (unlike the deprecated pre-2022 `appStoreVersionSubmissions`, which did) | `PATCH /v1/reviewSubmissions/<id>` with `{"data":{"type":"reviewSubmissions","id":"<id>","attributes":{"canceled":true}}}` — `state` is read-only and transitions to `CANCELING` in response; during `WAITING_FOR_REVIEW`, canceling returns the version to an editable state (observed as `DEVELOPER_REJECTED`) without leaving an Apple rejection record | API |
 
 ## Steps with no ASC API at all — must be clicked by a human
 
@@ -166,7 +168,7 @@ budget a manual, one-time (or rarely-repeated) click in the ASC web UI.
 ## Common Mistakes
 
 1. **`iss` set to Team ID** — ASC API wants the **Issuer ID** (UUID); Team ID belongs to other Apple JWTs (e.g. APNs). Symptom: 401 `NOT_AUTHORIZED` with a well-formed token.
-2. **`exp` more than 20 minutes ahead** — token rejected outright; also watch local clock skew on `iat`.
+2. **`exp` more than 20 minutes ahead** — token rejected outright (unless it's a `scope`d, GET-only token on allow-listed resources, which can live up to 6 months); also watch local clock skew on `iat`.
 3. **openssl-signed tokens failing** — `openssl dgst` emits a DER-encoded signature; JWT ES256 requires the raw 64-byte r‖s form. CryptoKit's `rawRepresentation` is already correct.
 4. **Uploading the binary via REST** — no such endpoint exists; route builds through Xcode Cloud, `local-archive-export-upload`, Organizer, or Transporter.
 5. **Ignoring pagination** — the default page size silently truncates; always `limit=200` + follow `links.next`.
@@ -179,7 +181,7 @@ budget a manual, one-time (or rarely-repeated) click in the ASC web UI.
 ## Review Checklist
 
 - [ ] Team key with least-privilege role; `.p8` + IDs stored per build-time-secret-injection Layer 2, nothing tracked by git
-- [ ] Token claims: ES256, `kid` header, `iss` = Issuer ID (or `sub: "user"` for individual keys), `exp` ≤ 20 min, `aud` `appstoreconnect-v1`
+- [ ] Token claims: ES256, `kid` header, `iss` = Issuer ID (or `sub: "user"` for individual keys), `exp` ≤ 20 min (or a `scope`d GET-only token, up to 6 months), `aud` `appstoreconnect-v1`
 - [ ] Every collection call sets `limit` and follows `links.next`
 - [ ] 429 handled with backoff; no tight polling loops
 - [ ] Write calls use the JSON:API `{"data": {...}}` wrapper

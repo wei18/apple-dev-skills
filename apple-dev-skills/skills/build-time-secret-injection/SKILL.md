@@ -24,6 +24,12 @@ Do NOT invoke for:
 
 ## The pattern
 
+| Value's consumer | Layer | Storage |
+|---|---|---|
+| Xcode build / Info.plist / `Bundle.main` read | Layer 1 — xcconfig | `Tuist/<Domain>.xcconfig` (gitignored) |
+| CLI tooling (`swift run <CLI>`, shell scripts) | Layer 2 — `.env` | `secrets/.env` (gitignored) |
+| Signing certs, CloudKit server-to-server key, APNs key | Not this skill | → `apple-public-repo-security` |
+
 ### Two storage layers, one mechanism per layer
 
 **Layer 1 — Build-time secrets (consumed by Xcode build process)**
@@ -124,7 +130,7 @@ guard
 else { preconditionFailure("...") }
 ```
 
-A future PR should add a build-phase script that asserts no `$()` literals survived substitution into the built `.app/Info.plist`. Until then, the runtime guard is the catch.
+Consider adding a build-phase script that asserts no `$()` literals survived substitution into the built `.app/Info.plist`; until one exists, the runtime guard above is the only catch.
 
 ## Anti-patterns to refuse
 

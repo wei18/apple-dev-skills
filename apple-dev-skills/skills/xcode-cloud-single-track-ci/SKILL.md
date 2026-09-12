@@ -24,12 +24,12 @@ description: 'Use when setting up or changing CI for an Apple-platform project o
 
 | Workflow | Trigger | Action |
 |---|---|---|
-| **PR CI** | PR open / push (**enable "Merge with base branch before building"**) | Build + Test (unit / integration with fakes / snapshot) |
+| **PR CI** | PR open / push — Pull Request Changes start condition (Xcode Cloud merges the PR with the target branch before building) | Build + Test (unit / integration with fakes / snapshot) |
 | **Main CI** | Merge to `main` | Build + Archive + upload to internal TestFlight; **do not re-run tests** (already verified by PR CI in pre-merged state) |
 | **Release** | git tag `v*` | Build + upload to App Store Connect (manual submission for review) |
 | **Periodic / Manual** | Scheduled + manual trigger | Project-specific batch jobs (nightly export, metadata updates, etc.) |
 
-> **Scheduling granularity caveat**: Xcode Cloud's "On a Schedule" start condition supports **hourly / daily / weekly** granularity only — arbitrary cron expressions are not supported. For monthly-or-longer cadence, schedule weekly and add a script-side date guard inside `ci_post_clone.sh` that early-exits when the date doesn't match the desired condition.
+> **Scheduling granularity caveat**: Xcode Cloud's "On a Schedule" start condition lets you specify the frequency, time, and branch (Apple's own example: "every business day at 10:00 p.m."); it does not expose arbitrary cron expressions. For a cadence the frequency picker can't express directly (e.g. monthly), pick the closest supported frequency and add a script-side date guard inside `ci_post_clone.sh` that early-exits when the date doesn't match the desired condition.
 
 ### Environment lock
 
@@ -40,11 +40,14 @@ description: 'Use when setting up or changing CI for an Apple-platform project o
 
 ### Build number & version automation
 
-- Two build settings, two jobs: `MARKETING_VERSION` (→ `CFBundleShortVersionString`, the SemVer-style version users see) is bumped deliberately per release; `CURRENT_PROJECT_VERSION` (→ `CFBundleVersion`, the build number) increments on every build, including PR builds.
-- **Xcode Cloud manages the build number for you** — it assigns a sequential integer per build starting at `1`, independent of whatever `CURRENT_PROJECT_VERSION` says in the repo, and exposes it to `ci_scripts/` as `CI_BUILD_NUMBER`. For a new app this is enough: e.g. `1.2.2 (1)` is a valid, unique version+build pair even after a prior manually-numbered `1.2.1 (42)`.
-- **Exception — existing Mac apps**: macOS requires the build number to strictly increase *across* versions too, not just be unique within one, so restarting Xcode Cloud's counter at `1` can collide with a prior higher build number. Fix once, on the ASC side: app → **Xcode Cloud** tab → **Settings** → **Build Number** tab → **Edit** → set the next build number above your last shipped one. This is an App Store Connect setting, not a `ci_scripts/` variable.
-- If something in the repo needs `CURRENT_PROJECT_VERSION` itself to reflect Xcode Cloud's build number (e.g. crash-symbolication tooling that reads it from the binary), write it early in `ci_post_clone.sh`: `agvtool new-version -all "$CI_BUILD_NUMBER"` — requires `VERSIONING_SYSTEM = apple-generic` (agvtool enabled) on the target.
-- Release tooling that mints `versionString` for the ASC API (→ `asc-api-automation`) should read this project's `MARKETING_VERSION` rather than track a second version counter — one SemVer source of truth.
+| Need | Setting / source | Where it's set | Action |
+|---|---|---|---|
+| User-visible version | `MARKETING_VERSION` (→ `CFBundleShortVersionString`) | Project build settings | Bump deliberately per release |
+| Build number, new app | `CI_BUILD_NUMBER` | Xcode Cloud (sequential integer per build, starting at `1`, independent of `CURRENT_PROJECT_VERSION`) | Nothing — e.g. `1.2.2 (1)` is a valid, unique version+build pair even after a prior manually-numbered `1.2.1 (42)` |
+| Build number, existing Mac app with a prior higher build | ASC's Xcode Cloud build-number counter | App Store Connect → app → **Xcode Cloud** tab → **Settings** → **Build Number** tab → **Edit** | Set the next build number above your last shipped one (macOS requires the build number to strictly increase *across* versions, not just be unique within one) |
+| Binary must carry the CI build number (e.g. crash-symbolication tooling that reads `CURRENT_PROJECT_VERSION`) | `agvtool new-version -all "$CI_BUILD_NUMBER"` in `ci_post_clone.sh` | Repo | Requires `VERSIONING_SYSTEM = apple-generic` (agvtool enabled) on the target |
+
+Release tooling that mints `versionString` for the ASC API (→ `asc-api-automation`) should read this project's `MARKETING_VERSION` rather than track a second version counter — one SemVer source of truth.
 
 ### Three Xcode Cloud hooks
 
@@ -77,7 +80,7 @@ cd "$CI_PRIMARY_REPOSITORY_PATH"
 
 - PR metadata rules (conventional commits, PR title lint, auto-label / required reviewer)
 - SwiftLint / SwiftFormat or other binary tools running on PR
-- `docs/` link checks, `meetings/` index auto-updates
+- Docs link checks, changelog/index generation, or any job that is cheaper on a Linux runner
 - Wiring up Selective Testing
 - Using `nektos/act` to reproduce non-build jobs locally
 
@@ -92,7 +95,7 @@ When two PRs each pass pre-merge and merge back to back, **their combined result
 ## Verification checklist
 
 - The Xcode version in the Xcode Cloud workflow matches the README / `foundations.md` toolchain line.
-- PR CI has "Merge with base branch before building" enabled.
+- PR CI uses the Pull Request Changes start condition (Xcode Cloud merges the PR with the target branch before building it).
 - `bin/mise` is committed; `ci_post_clone.sh` starts with `cd "$CI_PRIMARY_REPOSITORY_PATH"`, then runs `./bin/mise trust && ./bin/mise install`, not a bare `mise` call.
 - Periodic workflow trigger time is explicit (UTC recommended).
 - Existing Mac apps: Xcode Cloud's next build number (App Store Connect → Xcode Cloud → Settings → Build Number) is set above the last shipped build number.

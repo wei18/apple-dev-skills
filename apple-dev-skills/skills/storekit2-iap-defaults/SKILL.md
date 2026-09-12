@@ -72,8 +72,9 @@ struct LiveStoreKitBridge: StoreKitBridge {
         return ids
     }
     // products(for:) / purchase(productId:) / sync() / transactionUpdates()
-    // follow the same shape: Product.products(for:), Product.purchase(),
-    // AppStore.sync(), Transaction.updates.
+    // follow the same shape: Product.products(for:), Product.purchase(options:)
+    // (visionOS: purchase(confirmIn:options:) instead — purchase(options:)
+    // isn't available there), AppStore.sync(), Transaction.updates.
 }
 ```
 
@@ -142,7 +143,8 @@ it's what enables the last two rows, not a gap in unit-test coverage if absent.
   errors/warnings. *Compiled-verified.*
 - `Transaction.updates`, `.currentEntitlements`, `.finish()`,
   `.revocationDate`, `AppStore.sync()`, `Product.products(for:)`,
-  `.purchase(options:)`, `.PurchaseResult`, `VerificationResult` — each
+  `.purchase(options:)` (iOS/macOS/tvOS/watchOS; visionOS instead uses
+  `.purchase(confirmIn:options:)`), `.PurchaseResult`, `VerificationResult` — each
   symbol's existence/signature confirmed against
   `developer.apple.com/tutorials/data/documentation/storekit/...json`.
   *Apple-doc-verified.*

@@ -16,10 +16,10 @@ description: 'Use when pinning binary CLI / build tools (swiftlint, xcbeautify, 
 ## Default decisions
 
 - **Adopt `mise`** ([mise.jdx.dev](https://mise.jdx.dev/)) to manage binary CLI / build tools.
-- **Dev machine and CI share the same `.mise.toml`**, committed to git.
+- **Dev machine and CI share the same `.mise.toml`**, committed to git. Both `.mise.toml` and `mise.toml` (no leading dot) are valid config filenames — mise's own docs primarily spell it `mise.toml` — but this catalog's convention is the dotfile form.
 - Plugin backend priority: core plugin → `aqua:` → `github:`/`gitlab:` (release assets) → `asdf:` (legacy). `ubi:` is deprecated — mise's own release-backend docs mark it "Legacy release installer (deprecated)".
 - **Xcode Cloud has no mise preinstalled** — its build environment ships only Homebrew, so a `ci_post_clone.sh` that starts with a bare `mise` command fails with "command not found". Xcode Cloud also runs `ci_post_clone.sh` with `ci_scripts/` as the working directory, so the script must `cd "$CI_PRIMARY_REPOSITORY_PATH"` first or `./bin/mise` won't resolve. Commit a bootstrapped `bin/mise` (`mise generate bootstrap -l -w bin/mise`) and call it explicitly: after `cd "$CI_PRIMARY_REPOSITORY_PATH"`, run `./bin/mise trust && ./bin/mise install`; subsequent tool invocations always go through `./bin/mise exec -- <tool> <args>` (see `xcode-cloud-single-track-ci` for the full hook). On a dev machine or any CI runner that already has mise on `PATH`, drop the `./bin/` prefix: `mise exec -- <tool> <args>`.
-- **A freshly cloned repo or a freshly created git worktree starts with `.mise.toml` untrusted** — `mise install` / `mise exec` don't apply the pinned versions until `mise trust` has run once in that directory. Every new agent worktree and every CI checkout hits this; run `mise trust` before the first `mise install`/`mise exec` in each.
+- **A freshly cloned repo or a freshly created git worktree starts with `.mise.toml` untrusted** — `mise install` / `mise exec` hard-error with `Config files in <dir> are not trusted. Trust them with 'mise trust'` until `mise trust` has run once in that directory. Every new agent worktree and every CI checkout hits this; run `mise trust` before the first `mise install`/`mise exec` in each.
 
 ## Rationale
 
@@ -32,7 +32,7 @@ description: 'Use when pinning binary CLI / build tools (swiftlint, xcbeautify, 
 
 ```toml
 [tools]
-swiftlint = "0.54"
+swiftlint = "0.65" # pinned 2026-09
 xcbeautify = "1"
 "aqua:gitleaks/gitleaks" = "8"
 "aqua:evilmartians/lefthook" = "1"
@@ -41,17 +41,22 @@ xcbeautify = "1"
 # ("use MISE_DISABLE_TOOLS instead"; set that env var if you need to
 # suppress a swift entry inherited from a parent .mise.toml).
 # Xcode is NOT pinned here; the toolchain SSOT is README / foundations.md +
-# the Xcode Cloud workflow setting. A mise Xcode plugin is optional.
+# the Xcode Cloud workflow setting. `aqua:XcodesOrg/xcodes` can install
+# Xcode itself, but it's an installer, not a version pin — the actual
+# version lock still lives in the Xcode Cloud workflow Environment.
 ```
 
 ## Deviation considerations
 
 - **Team already uses asdf heavily**: keep it for now, but new repos go to mise; mise can read `.tool-versions` as a transition.
-- **Tool not in mise registry / aqua / ubi**: prefer a non-Homebrew path first. For a Go
-  CLI, `go install <module>@latest` (a Go toolchain can itself come from mise). Otherwise,
-  download the tool's plain GitHub Releases tarball directly for your platform — same
-  install pattern as `idb` in `interactive-simulator-ux-audit`. Homebrew is a last resort;
-  if a project policy bans it, record the exception in *that project's* README.
+- **Tool not in the mise registry / `aqua:` / `github:`/`gitlab:`**: prefer a non-Homebrew path first.
+
+  | Tool available via | Install with | Note |
+  |---|---|---|
+  | mise registry / `aqua:` / `github:`/`gitlab:` | a normal `.mise.toml` row | Default |
+  | Go module only | `go install <module>@latest` | The Go toolchain can itself come from mise |
+  | GitHub Releases binary, no mise backend | Download the plain tarball directly for your platform | Same install pattern as `idb` in `interactive-simulator-ux-audit` |
+  | Homebrew only | Last resort | If a project policy bans Homebrew, record the exception in *that project's* README |
 - **CI runner already has the target version preinstalled**: still run `mise install` to enforce parity; the extra overhead is small.
 - **macOS-only tools on a mixed-OS CI fleet** (Xcode-project generators, macOS
   artifact bundlers — e.g. `tuist`, `LicensePlist`): guard them with an `os`

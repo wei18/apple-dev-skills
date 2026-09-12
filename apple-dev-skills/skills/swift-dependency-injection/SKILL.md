@@ -17,6 +17,19 @@ description: 'Design injectable seams so Swift services can be swapped for fakes
 
 Owns how a seam is shaped and injected (protocol / struct witness / environment / task-local) and how a fake is written. Does NOT own the test framework, snapshot tooling, or where shared fake *types* live → `swift-testing-baseline` (`<Project>KitTesting`).
 
+## Inject via
+
+Three routing decisions, front-loaded (details in the sections below):
+
+| Situation | Inject via |
+|---|---|
+| Logic-heavy type (view model, service) | Constructor |
+| Cross-cutting value deep in a view tree (theme, locale, flags, clock) | `@Environment` |
+| Request-scoped override across an async call tree (trace id, logger) | `@TaskLocal` |
+| Small, stable API surface; want partial fakes | Struct protocol witness |
+| Team wants a shared, macro-driven convention | `pointfreeco/swift-dependencies` |
+| Codebase already registers services in a container | `hmlongco/Factory` |
+
 ## Core principle: one composition root
 
 All concrete implementations are wired in a single place — typically `makeApp(...)` or a `DependencyContainer` struct built in the `@main` entry point. Every layer below receives its dependencies through initialiser parameters, not by reaching up to a global. This makes the entire wiring visible in one screen of code and means tests can substitute any dependency without touching production paths.

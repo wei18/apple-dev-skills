@@ -42,6 +42,10 @@ Example for AdMob (currently shipped):
 - `Sources/<AdsBridge>/LiveAdMobBridge.swift` — sole `import GoogleMobileAds` site
 - `Tests/<AdsBridge>Tests/FakeAdMobBridge.swift` — test seam
 
+### Cross-boundary type invariant
+
+When the live bridge's output crosses into UI or other host code, it must cross as a platform-neutral type (e.g. SwiftUI's `AnyView`), never a raw SDK type — that's what keeps UI targets at zero SDK imports even though they display SDK-provided content. Example: `BannerViewProviding.bannerView(for:) -> AnyView?` returns `AnyView`, not a `GoogleMobileAds` type.
+
 ### Build-time audit (run before every monetization PR merge)
 
 Canonical regex (matches Swift 6 access-level imports too):
@@ -52,11 +56,7 @@ rg '^(internal |private |public |@_implementationOnly |@preconcurrency )*import 
 
 Expected count: **1** (live bridge file).
 
-If > 1: the contract is broken. Either consolidate behind the existing bridge OR file an exception in `docs/foundations.md` documenting WHY a second import site is necessary (with prior reviewer sign-off).
-
-Documentation references:
-- The project's `docs/foundations.md` — the contract text itself
-- The project's plan / readiness doc — audit acceptance criteria and pre-submission audit step
+If > 1: the contract is broken. Either consolidate behind the existing bridge OR file an exception in the project's architecture-decisions doc (`docs/foundations.md` for consumers of `collaboration-skills:spec-phase-orchestration`) documenting WHY a second import site is necessary (with prior reviewer sign-off) — see Documentation pointers below.
 
 ### Conditional compile invariant
 
@@ -92,16 +92,12 @@ A test target for the bridge ships `Fake<SdkName>Bridge` (actor or class). All u
 
 ## Real-world incidents this skill encodes
 
-### AdMob v11 → v13 upgrade (from a real project)
-- Symbol renames landed in **v12.0.0**: the `GAD`-prefixed banner view type and `GADRequest` dropped their prefix for Swift (`BannerView`, `Request`), etc. — Swift code now uses the un-prefixed name; the `GAD`-prefixed spellings remain only in the Objective-C API.
-- Audit broke briefly when migrator missed file boundary; recovered by re-running isolation audit
-
 ### Production ID swap safety
 - A Release build's `bannerAdUnitID` constant first used `fatalError("REPLACE_BEFORE_RELEASE: …")` as a transitional guard; it has since been replaced by xcconfig injection (→ `build-time-secret-injection`), which is the standing solution — the `fatalError` form is not a long-term answer on its own
 - A paired-flip checklist ensures Info.plist `GADApplicationIdentifier` + bridge constant are always updated together
 
 ### Real banner landed + SDK-view-crossing seam
-- The `BannerView` SwiftUI host shipped (the `GAD`-prefixed name is Objective-C-only since v12.0.0; Swift code uses `BannerView`). `import GoogleMobileAds` stays confined to the live bridge file; the live banner crosses into the UI layer via `BannerViewProviding.bannerView(for:) -> AnyView?` — an **`AnyView` (SwiftUI), never a GoogleMobileAds type** — so UI targets import zero SDK. One shared `BannerSlotView` replaced per-app placeholder slots.
+- The `BannerView` SwiftUI host shipped, crossing into the UI layer per the cross-boundary type invariant above. One shared `BannerSlotView` replaced per-app placeholder slots.
 - ID split: `#if DEBUG` forces Google's universal test unit; Release reads the per-app prod id from `Bundle.main` via xcconfig.
 
 ### macOS conditional gating
@@ -119,6 +115,7 @@ A test target for the bridge ships `Fake<SdkName>Bridge` (actor or class). All u
 - **"Macros + canImport are too verbose; let's drop conditional gating for v2"** — NO. macOS build will break the moment a maintainer runs `swift build` on a Mac, blocking PRs.
 - **"Production IDs in source for ease of swap"** — NO. Use build-config injection (`build-time-secret-injection`); a `fatalError` guard is acceptable only as a transitional step before that lands.
 - **"PrivacyInfo.xcprivacy can wait until submission"** — NO. Upload-time checks only catch (a) undeclared required-reason API use and (b) a listed third-party SDK missing its manifest/signature — GoogleMobileAds and UserMessagingPlatform are not on that list, and nothing checks whether the app's tracking declaration matches. The real cost lands later: `NSPrivacyTrackingDomains` gaps break ad requests at runtime, and a mismatched privacy label is a 5.1.x rejection. Update PrivacyInfo BEFORE adding the SDK.
+- **Assuming a Swift symbol name survives a major SDK upgrade unchanged** — NO. AdMob dropped the `GAD` prefix from its Swift API at v12.0.0 (`GADBannerView` → `BannerView`, `GADRequest` → `Request`, etc.; the `GAD`-prefixed spellings remain only in the Objective-C API). Check the SDK's migration guide before a major-version bump instead of assuming old names still resolve, and re-run the isolation audit (Build-time audit above) after — a migration can silently widen the import-site count past 1.
 
 ## Pre-integration checklist
 
@@ -141,7 +138,7 @@ If any field is "TBD" or "?", do NOT proceed — research first.
 
 ## Documentation pointers
 
-- The project's `docs/foundations.md` — the no-3rd-party rule + break-glass exception + isolation contract text
+- The project's architecture-decisions doc (`docs/foundations.md` for consumers of `collaboration-skills:spec-phase-orchestration`) — the no-3rd-party rule + break-glass exception + isolation contract text
 - The project's design doc — monetization design intent
 - The project's plan / readiness doc — AdMob impl phase, isolation acceptance criteria, pre-submission audit step
 - `Sources/<AdsBridge>/<SdkName>Bridge.swift` — protocol seam example
