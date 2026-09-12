@@ -27,7 +27,7 @@
     {
       "name": "apple-skills",
       "source": { "source": "github", "repo": "Prisma-Labs-Dev/apple-skills" },
-      "description": "Aggregated (not authored here). Broad Apple-framework skills — SwiftUI, UIKit, Swift Testing, Concurrency, SwiftData, App Intents, WidgetKit, StoreKit, HealthKit, MapKit, TipKit, and more. By Prisma Labs (vabole), MIT.",
+      "description": "Aggregated (not authored here). Broad Apple-framework skills — SwiftUI, UIKit, Swift Testing, Concurrency, SwiftData, App Intents, WidgetKit, StoreKit, HealthKit, MapKit, TipKit, apple-aso, hig, simulator-utils, xcuitest, and more (a handful more ship disabled by default in disabled-skills/). By Prisma Labs (vabole), MIT.",
       "author": { "name": "Prisma Labs (vabole)" },
       "category": "workflow"
     },
@@ -48,7 +48,7 @@
     {
       "name": "caveman",
       "source": { "source": "github", "repo": "JuliusBrussee/caveman" },
-      "description": "Aggregated (not authored here). Ultra-compressed communication mode that cuts ~75% of tokens, now grown into a 20-skill suite (commit discipline, review, refactor verbs, plus 4 skills — caveman-discover, caveman-manage, caveman-evidence-review, caveman-setup — for the author's hosted Caveman Cloud commercial service). General agent behavior. By JuliusBrussee; skills are MIT, the repo also ships a Business Source License 1.1 engine.",
+      "description": "Aggregated (not authored here). Ultra-compressed communication mode that cuts ~65% of output tokens (author's measurement), now grown into a 20-skill suite (commit discipline, review, refactor verbs, plus 4 skills — caveman-discover, caveman-manage, caveman-evidence-review, caveman-setup — for the author's hosted Caveman Cloud commercial service). Ships SessionStart and UserPromptSubmit hooks (needs node on PATH; runs on every prompt). General agent behavior. By JuliusBrussee; skills are MIT, the repo also ships a Business Source License 1.1 engine.",
       "author": { "name": "JuliusBrussee" },
       "category": "workflow"
     },
