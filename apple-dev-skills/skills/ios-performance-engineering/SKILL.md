@@ -110,26 +110,7 @@ Common traps: eager `CKContainer.default()` on the main thread (hangs until enti
 
 **Footprint vs leaks**: Instruments Allocations shows the heap; use `vmmap` or the Memory Debugger in Xcode to see the full virtual memory map (dirty pages, compressed pages, mapped files). The OS terminates apps that exceed their footprint budget silently — a JetsamEvent log entry whose reason reads `per-process-limit` (or `highwater`). Reduce by:
 
-- **Image downsampling**: never decode a 4K image to display it at 100 pt. Use `ImageIO` with `kCGImageSourceThumbnailMaxPixelSize` or `UIGraphicsImageRenderer` to decode at display resolution.
-
-```swift
-func downsample(imageAt url: URL, to pointSize: CGSize, scale: CGFloat) -> UIImage {
-    let options: [CFString: Any] = [
-        kCGImageSourceShouldCacheImmediately: false,
-        kCGImageSourceShouldCache: false
-    ]
-    let src = CGImageSourceCreateWithURL(url as CFURL, options as CFDictionary)!
-    let maxDim = max(pointSize.width, pointSize.height) * scale
-    let thumbOptions: [CFString: Any] = [
-        kCGImageSourceCreateThumbnailWithTransform: true,
-        kCGImageSourceCreateThumbnailFromImageAlways: true,
-        kCGImageSourceThumbnailMaxPixelSize: maxDim
-    ]
-    let cgImage = CGImageSourceCreateThumbnailAtIndex(src, 0, thumbOptions as CFDictionary)!
-    return UIImage(cgImage: cgImage)
-}
-```
-
+- **Image downsampling**: never decode a 4K image to display it at 100 pt. Use `ImageIO` with `kCGImageSourceThumbnailMaxPixelSize` or `UIGraphicsImageRenderer` to decode at display resolution. For the `downsample(imageAt:to:scale:)` sample, read `references/samples.md`.
 - **`autoreleasepool`** in tight loops that allocate many Objective-C objects (e.g. iterating `NSManagedObject` fetches, calling `UIImage(named:)` in a loop). The pool drains at the end of each `autoreleasepool { }` block rather than at the runloop turn boundary.
 - **Retain cycles**: `[weak self]` in closures stored on `self`; `weak var delegate` in delegation patterns. The Leaks instrument and the Memory Graph Debugger (product menu → Debug Memory Graph) visualise the reference graph and highlight cycles in red.
 
@@ -145,33 +126,7 @@ Large binaries increase download time and App Store review scrutiny. Primary lev
 
 ## MetricKit — field performance telemetry
 
-MetricKit delivers on-device aggregated performance metrics to your app once per day (diagnostic payloads are delivered immediately, with no disconnect-from-Xcode condition, since iOS 15 / macOS 12):
-
-```swift
-import MetricKit
-
-final class MetricKitReceiver: NSObject, MXMetricManagerSubscriber {
-    func didReceive(_ payloads: [MXMetricPayload]) {
-        for payload in payloads {
-            // CPU time, memory, disk, network, display — aggregated over 24 h
-            let cpuTime = payload.cpuMetrics?.cumulativeCPUTime
-            let avgMemory = payload.memoryMetrics?.averageSuspendedMemory
-            // Forward to your telemetry sink
-        }
-    }
-
-    func didReceive(_ payloads: [MXDiagnosticPayload]) {
-        for payload in payloads {
-            // MXHangDiagnostic, MXCrashDiagnostic, MXCPUExceptionDiagnostic
-            let hangs = payload.hangDiagnostics    // call trees for hang events
-            // Persist or upload for analysis
-        }
-    }
-}
-
-// Register at app start — one call, lives for the app lifetime
-MXMetricManager.shared.add(receiver)
-```
+MetricKit delivers on-device aggregated performance metrics to your app once per day (diagnostic payloads are delivered immediately, with no disconnect-from-Xcode condition, since iOS 15 / macOS 12). For the full `MXMetricManagerSubscriber` receiver sample, read `references/samples.md`.
 
 MetricKit data reflects **real user conditions** (actual device, network, battery state), making it the authoritative source for field performance signals. Key metric classes:
 
@@ -190,18 +145,7 @@ Wire MetricKit as a **sink** in your telemetry facade (per `telemetry-facade-pat
 
 ## `XCTMetric` and `measure {}` baselines in CI
 
-```swift
-func testScrollPerformance() {
-    let app = XCUIApplication()
-    app.launch()
-    measure(metrics: [XCTOSSignpostMetric.scrollDecelerationMetric,
-                      XCTMemoryMetric(application: app),
-                      XCTCPUMetric(application: app)]) {
-        // simulate the action
-        app.swipeUp()
-    }
-}
-```
+For the `testScrollPerformance` sample wiring `XCTOSSignpostMetric.scrollDecelerationMetric`, `XCTMemoryMetric`, and `XCTCPUMetric` into `measure {}`, read `references/samples.md`.
 
 `measure {}` runs the block 5 times (by default) and records the mean. On first run, set the baseline via the inline editor in Xcode. Subsequent runs fail on either of two independent thresholds, both configurable per metric: **Max % Relative Standard Deviation** (default 10%) and **Max % Deviation** from the baseline average (default 10%) — exceeding either one fails the test; it is not a single product formula. Commit baselines in `.xcbaseline` files alongside the test file.
 
