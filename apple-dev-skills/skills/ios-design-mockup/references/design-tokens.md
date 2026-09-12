@@ -63,7 +63,8 @@ These are the canonical iOS values. Drop them into the HTML as CSS variables and
 
   /* ===== Typography ===== */
   /* size / line-height / weight */
-  --font-large-title:     34px / 41px / 700;
+  --font-large-title:            34px / 41px / 400;  /* HIG default weight is Regular */
+  --font-large-title-emphasized: 34px / 41px / 700;  /* navigation-bar large titles render Bold */
   --font-title-1:            28px / 34px / 400;  /* HIG default weight is Regular */
   --font-title-1-emphasized: 28px / 34px / 700;
   --font-title-2:            22px / 28px / 400;  /* HIG default weight is Regular */
@@ -123,7 +124,7 @@ These are the canonical iOS values. Drop them into the HTML as CSS variables and
 ```html
 <section>
   <h3>Typography</h3>
-  <div class="type-sample" style="font-size:34px;line-height:41px;font-weight:700">Large Title — 34/41 Bold</div>
+  <div class="type-sample" style="font-size:34px;line-height:41px;font-weight:400">Large Title — 34/41 Regular per HIG (Bold in a navigation bar / when emphasized)</div>
   <div class="type-sample" style="font-size:28px;line-height:34px;font-weight:400">Title 1 — 28/34 Regular (Bold when emphasized)</div>
   <div class="type-sample" style="font-size:22px;line-height:28px;font-weight:400">Title 2 — 22/28 Regular (Bold when emphasized)</div>
   <div class="type-sample" style="font-size:20px;line-height:25px;font-weight:400">Title 3 — 20/25 Regular (Semibold when emphasized)</div>
