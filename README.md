@@ -161,7 +161,7 @@ Pin the marketplace to a released tag directly in `.claude/settings.json` — no
 {
   "extraKnownMarketplaces": {
     "apple-dev-skills": {
-      "source": { "source": "github", "repo": "wei18/apple-dev-skills", "ref": "v1.7.1" }
+      "source": { "source": "github", "repo": "wei18/apple-dev-skills", "ref": "v2.0.0" }
     }
   },
   "enabledPlugins": {
