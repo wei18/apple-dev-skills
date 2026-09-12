@@ -6,19 +6,19 @@ description = "SSOT consistency gate + SKILL.md format gate (two plugins, catalo
 run = ["python3 scripts/check-consistency.py", "python3 scripts/check-skills.py ."]
 
 [tasks.check-skills]
-description = "SKILL.md frontmatter/format gate only (official Agent Skills rules + catalog conventions); fails on any BLOCKER"
+description = "SKILL.md frontmatter/format gate only (official Agent Skills rules + catalog conventions); fails on any BLOCKER or MAJOR"
 run = "python3 scripts/check-skills.py ."
 
 [tasks.readme-zh]
-description = "Regenerate README.zh-Hant.md from README.md (needs claude on PATH)"
+description = "Manual-only fallback: regenerate README.zh-Hant.md from README.md (needs claude on PATH). Default is hand-mirroring — see CONTRIBUTING.md; not run by pre-commit or CI."
 run = "scripts/gen-readme-zh.sh zh-Hant"
 
 [tasks.readme-zh-hans]
-description = "Regenerate README.zh-Hans.md from README.md (needs claude on PATH)"
+description = "Manual-only fallback: regenerate README.zh-Hans.md from README.md (needs claude on PATH). Default is hand-mirroring — see CONTRIBUTING.md; not run by pre-commit or CI."
 run = "scripts/gen-readme-zh.sh zh-Hans"
 
 [tasks.readme-ja]
-description = "Regenerate README.ja.md from README.md (needs claude on PATH)"
+description = "Manual-only fallback: regenerate README.ja.md from README.md (needs claude on PATH). Default is hand-mirroring — see CONTRIBUTING.md; not run by pre-commit or CI."
 run = "scripts/gen-readme-zh.sh ja"
 
 [tasks.bump]

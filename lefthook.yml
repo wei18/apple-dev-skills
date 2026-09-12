@@ -1,14 +1,5 @@
 pre-commit:
   parallel: false
   commands:
-    readme-zh:
-      glob: "README.md"
-      run: mise run readme-zh
-    readme-zh-hans:
-      glob: "README.md"
-      run: mise run readme-zh-hans
-    readme-ja:
-      glob: "README.md"
-      run: mise run readme-ja
     check:
       run: mise run check
