@@ -1,6 +1,6 @@
 ---
 name: apple-three-piece-analytics
-description: 'Choose analytics and metrics sources for a solo / small-team Apple app and decide whether a third-party tracking SDK is justified. Use when picking an analytics SDK; when asked "should I add Firebase / Mixpanel / Amplitude / TelemetryDeck"; when asked what App Store Connect Analytics, MetricKit (`MXMetricPayload`) or Game Center can measure without an SDK; when the analytics choice drives `PrivacyInfo.xcprivacy` or ATT. Does NOT own MetricKit perf wiring (ios-performance-engineering), App Review privacy-label parity (app-store-review-rejections), or sink code (telemetry-facade-pattern).'
+description: 'Choose analytics and metrics sources for a solo / small-team Apple app and decide whether a third-party tracking SDK is justified. Use when picking an analytics SDK; when asked "should I add Firebase / Mixpanel / Amplitude / TelemetryDeck"; when asked what App Store Connect Analytics, MetricKit (`MXMetricPayload`) or Game Center can measure without an SDK; when the analytics choice drives `PrivacyInfo.xcprivacy` or forces ATT. Does NOT own MetricKit perf wiring (ios-performance-engineering), App Review privacy-label parity (app-store-review-rejections), or sink code (telemetry-facade-pattern).'
 ---
 
 # Apple Three-Piece Analytics

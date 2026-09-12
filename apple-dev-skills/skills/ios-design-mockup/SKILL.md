@@ -1,6 +1,6 @@
 ---
 name: ios-design-mockup
-description: 'Generate a single-file HTML iOS design mockup from a written spec (PRD / requirements / user stories) — a designer-style user-flow canvas: iPhone frames, SVG navigation arrows, a design-tokens panel. Use when asked to "turn this spec into a mockup", "show me the screens", "design this", "visualize this app", "make a Figma-like flow", or to communicate iOS designs to PMs/stakeholders without a working prototype. Not a clickable prototype, not Figma files, not SwiftUI/production code. Do NOT fire when merely discussing/planning/reviewing screens conceptually, or when no visual artifact was requested.'
+description: 'Generate a single-file HTML iOS design mockup from a written spec (PRD / requirements / user stories) — a designer-style user-flow canvas: iPhone frames, SVG navigation arrows, a design-tokens panel. Use when asked to "turn this spec into a mockup", "show me the screens", "visualize this app", "make a Figma-like flow", or to communicate iOS designs to PMs/stakeholders without a working prototype. Not a clickable prototype, not Figma files, not SwiftUI/production code. Do NOT fire when merely discussing/planning/reviewing screens conceptually, or when no visual artifact was requested.'
 argument-hint: "[spec-path]"
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: local-archive-export-upload
-description: 'Use when a build must reach TestFlight without Xcode Cloud (quota, outage, CI not wired yet), or when a local `xcodebuild archive` / `-exportArchive -exportOptionsPlist` / `xcrun altool --upload-package` command fails — `ExportOptions.plist` keys (`method`, `destination`, `teamID`, `manageAppVersionAndBuildNumber`), `-authenticationKeyPath` vs `-allowProvisioningUpdates`, `CFBundleVersion` colliding with Xcode Cloud''s counter. Temporary fallback for xcode-cloud-single-track-ci; does NOT cover ASC operations after upload → asc-api-automation, nor `notarytool` notarization.'
+description: 'Use when a build must reach TestFlight without Xcode Cloud (quota, outage, CI not wired yet), or when a local `xcodebuild archive` / `-exportArchive -exportOptionsPlist` / `xcrun altool --upload-package` command fails — `ExportOptions.plist` keys (`method`, `destination`, `teamID`, `manageAppVersionAndBuildNumber`), `-authenticationKeyPath` vs `-allowProvisioningUpdates`, `CFBundleVersion` colliding with Xcode Cloud''s counter. Temporary fallback for xcode-cloud-single-track-ci; does NOT cover ASC operations after upload → asc-api-automation, nor `notarytool` notarization → apple-skills:guide-macos-spm-packaging.'
 allowed-tools: Bash(xcodebuild archive *)
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: asc-api-automation
-description: 'Use when automating App Store Connect from a script or CI via the ASC REST API (`api.appstoreconnect.apple.com`) — ASC API `.p8` key / JWT auth, TestFlight `betaGroups` / `betaBuildLocalizations`, `appStoreVersions` / `releaseType`, `reviewSubmissions`, `salesReports`, `analyticsReportRequests` — or asked "automate TestFlight / submission / release notes", "should I use fastlane", or debugging 401 NOT_AUTHORIZED / 429 RATE_LIMIT_EXCEEDED. API side only: build & upload → xcode-cloud-single-track-ci / local-archive-export-upload; `.p8` storage → build-time-secret-injection.'
+description: 'Use when automating App Store Connect from a script or CI via the ASC REST API (`api.appstoreconnect.apple.com`) — ASC API `.p8` key / JWT auth, TestFlight `betaGroups` / `betaBuildLocalizations`, `appStoreVersions` / `releaseType`, `reviewSubmissions`, `salesReports`, `analyticsReportRequests` — or asked "automate TestFlight / submission / release notes", "should I use fastlane", or debugging 401 NOT_AUTHORIZED / 429 RATE_LIMIT_EXCEEDED, or asked which ASC steps have no API and must be clicked by hand. API side only: build & upload → xcode-cloud-single-track-ci / local-archive-export-upload; `.p8` storage → build-time-secret-injection.'
 ---
 
 # App Store Connect API Automation
@@ -40,7 +40,7 @@ ASC_KEY_PATH=secrets/AuthKey_2X9R4HXF34.p8
 
 ## Mint the token (CryptoKit, zero dependencies)
 
-Claims (verified against Apple's *Generating tokens for API requests*, 2026-07): header `alg: ES256` (the only accepted algorithm), `kid`, `typ: JWT`; payload `iss` (**Issuer ID**, the UUID from Users and Access → Integrations — not your Team ID), `iat`, `exp` (invalid if more than 20 minutes ahead — **exception**: a token carrying `scope` and restricted to GET requests on allow-listed resources can live up to 6 months, per Apple's *Determine the Appropriate Token Lifetime*), `aud: "appstoreconnect-v1"`, optional `scope` (array of allowed requests like `"GET /v1/apps"` — pin single-purpose tokens to single endpoints).
+Claims (verified against Apple's *Generating tokens for API requests*, 2026-07): header `alg: ES256` (the only accepted algorithm), `kid`, `typ: JWT`; payload `iss` (**Issuer ID**, the UUID from Users and Access → Integrations — not your Team ID), `iat`, `exp` (invalid if more than 20 minutes ahead — **exception**: a token carrying `scope` and restricted to GET requests on allow-listed resources can live up to 6 months, per Apple's *Determine the Appropriate Token Lifetime* — but that allow-list is Xcode Cloud / Power-and-Performance resources only (Build Actions, Build Runs, Git References, Issues, macOS Versions, Products, Providers, Power and Performance Metrics and Logs, Pull Requests, Repositories, Test Results, Workflows, Xcode Versions); none of this cookbook's endpoints qualify, so release tooling always mints ≤ 20-minute tokens), `aud: "appstoreconnect-v1"`, optional `scope` (array of allowed requests like `"GET /v1/apps"` — pin single-purpose tokens to single endpoints).
 
 The script is `scripts/mint-asc-token.swift` (CryptoKit, zero dependencies).
 

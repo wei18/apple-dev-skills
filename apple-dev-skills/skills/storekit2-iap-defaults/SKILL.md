@@ -1,6 +1,6 @@
 ---
 name: storekit2-iap-defaults
-description: 'Default StoreKit 2 architecture for a single non-consumable IAP (Remove Ads, Pro Unlock): `StoreKitBridge` isolates `import StoreKit` to one Live file; launch-time `Transaction.updates`; `Transaction.currentEntitlements` for unlock state; `finish()` timing; `AppStore.sync()` restore; `.storekit` + Fake-bridge test seam. Invoke when adding IAP, wiring StoreKit 2, or asked "how do I unlock a purchase / restore purchases / test IAP". Does NOT cover subscriptions or ad SDKs.'
+description: 'Default StoreKit 2 architecture for a single non-consumable IAP (Remove Ads, Pro Unlock): `StoreKitBridge` isolates `import StoreKit` to one Live file; launch-time `Transaction.updates`; `Transaction.currentEntitlements` for unlock state; `finish()` timing; `AppStore.sync()` restore; `.storekit` + Fake-bridge test seam. Invoke when adding IAP, wiring StoreKit 2, or asked "how do I unlock a purchase / restore purchases / test IAP". Does NOT cover subscriptions → apple-skills:storekit, or ad SDKs → monetization-sdk-integration.'
 ---
 
 # StoreKit 2 IAP Defaults
