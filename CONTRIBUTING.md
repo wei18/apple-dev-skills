@@ -16,34 +16,34 @@ mise install && lefthook install
   `mise run check-skills` (`scripts/check-skills.py`), which checks every `SKILL.md` against the
   official Agent Skills / Claude Code frontmatter rules (`name`/`description` limits, known
   frontmatter keys, `context: fork` should name an `agent:` (defaults to general-purpose)) plus this catalog's own conventions
-  (section matrix, `references/` pointers, cross-plugin refs); fails the gate on any BLOCKER.
-- `mise run readme-zh` — regenerate `README.zh-Hant.md` (Catalog heading `## 目錄`) from
-  `README.md` (needs `claude` on PATH; auto-fires in pre-commit when `README.md` changes).
+  (section matrix, `references/` pointers, cross-plugin refs); fails the gate on any BLOCKER or MAJOR.
+- `mise run readme-zh` — manual-only fallback: regenerate `README.zh-Hant.md` (Catalog heading
+  `## 目錄`) from `README.md` (needs `claude` on PATH). Not run by pre-commit or CI — see
+  "README mirrors" below for the default hand-mirror workflow.
 - `mise run readme-zh-hans` — same, for `README.zh-Hans.md` (Catalog heading `## 目录`).
 - `mise run readme-ja` — same, for `README.ja.md` (Catalog heading `## カタログ`).
-  Every mirror listed in `scripts/mirrors.py` has its own task and its own pre-commit
-  trigger; add both when a mirror is added.
+  Every mirror listed in `scripts/mirrors.py` has its own task; add one when a mirror is added.
 
-### README mirrors: hand-mirror by default, regenerate only as fallback
+### README mirrors: hand-mirror only, regenerate is a manual fallback
 
 Full regeneration is non-deterministic — even for a 2-line content fix it rewrites
 ~40 lines of synonym churn (and has previously flipped full-width punctuation to
-half-width), burying the real change in review. So hand-mirroring is the default:
+half-width), burying the real change in review. So hand-mirroring is the default, and
+neither path is wired into pre-commit or CI — `mise run check` only verifies freshness
+(rule 4), it never regenerates:
 
 - **Default — any content change**: hand-mirror the same lines into each mirror in
   `scripts/mirrors.py` (currently `README.zh-Hant.md`, `## 目錄`; `README.zh-Hans.md`,
-  `## 目录`; `README.ja.md`, `## カタログ`), re-stamp each one's freshness marker, and
-  commit with the regen hooks excluded (they would otherwise clobber the hand-mirror
-  with a full regen):
+  `## 目录`; `README.ja.md`, `## カタログ`) and re-stamp each one's freshness marker:
 
   ```bash
   for f in README.zh-Hant.md README.zh-Hans.md README.ja.md; do
     sed -i '' "s/src-sha: [0-9a-f]*/src-sha: $(git hash-object README.md)/" "$f"
   done
   git add README.md README.zh-Hant.md README.zh-Hans.md README.ja.md
-  LEFTHOOK_EXCLUDE=readme-zh,readme-zh-hans,readme-ja git commit -m "..."   # `check` still runs and verifies freshness
+  git commit -m "..."   # `mise run check` still runs and verifies freshness
   ```
-- **Fallback — large / structural changes**: run `mise run readme-zh` for a full
+- **Fallback — large / structural changes**: run `mise run readme-zh` (etc.) for a full
   regeneration, then manually re-check punctuation (full-width vs half-width) and
   wording before committing — regeneration is not a substitute for review.
 
@@ -81,9 +81,14 @@ constant, the matching plugin's `marketplace.json` description count, and README
 "install only the N first-party skills" sentence — then run `mise run check`.
 
 Two gate rules `mise run check` enforces on the frontmatter `description`:
-- Max 800 characters.
-- If it contains `": "`, quote the whole value — an unquoted `": "` breaks strict YAML
-  parsers (see #42).
+- Max 800 characters (measured on the value itself — quotes, if any, don't count).
+- If it isn't a YAML block scalar (`description: >`), quote the whole value when it
+  contains any of: `": "` (see #42), a leading YAML indicator character (`[`, `{`, `&`,
+  `*`, `>`, `|`, `#`, `%`, `@`, `` ` ``, `!`), `" #"` (starts a YAML comment, silently
+  truncating everything after it), a leading `"- "` (block-sequence indicator), or a
+  trailing `":"` (mapping-value indicator) — each of these breaks or silently mis-parses
+  under a strict YAML parser. A quoted value must itself be valid YAML: no unescaped `"`
+  inside a double-quoted value, no unescaped `'` (use `''`) inside a single-quoted value.
 
 ### 3. Report a field note (skill vs reality)
 

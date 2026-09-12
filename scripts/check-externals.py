@@ -91,9 +91,17 @@ def external_entries(mp: dict) -> list[tuple[str, str, str | None]]:
 
 def probe(repo: str, path: str | None) -> dict:
     info = gh_json("api", f"repos/{repo}", "--jq", "{archived: .archived, license: .license.spdx_id}")
-    tree = gh_json("api", f"repos/{repo}/git/trees/HEAD?recursive=1", "--jq", "[.tree[].path]")
+    resp = gh_json("api", f"repos/{repo}/git/trees/HEAD?recursive=1",
+                   "--jq", "{truncated: .truncated, tree: [.tree[].path]}")
+    if resp.get("truncated"):
+        die(f"[check-externals] {repo}: git tree API response is truncated (repo too large for a "
+            f"single recursive listing) — skill_count below would silently undercount; fetch per-directory instead.")
+    tree = resp["tree"]
     prefix = f"{path}/" if path else ""
     manifest_present = f"{prefix}.claude-plugin/plugin.json" in tree
+    # Only `skills/**/SKILL.md` counts — a repo may keep additional SKILL.md files under a
+    # sibling directory (e.g. upstream apple-skills' `disabled-skills/`, which its own README
+    # documents as not loaded by any agent) that must NOT count toward skill_count.
     skills_prefix = f"{prefix}skills/"
     skill_count = sum(1 for t in tree if t.startswith(skills_prefix) and t.endswith("/SKILL.md"))
     return {
