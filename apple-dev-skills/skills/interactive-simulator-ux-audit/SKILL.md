@@ -91,30 +91,10 @@ and already give a usable answer for most cases.
    already saturate the machine, that's the normal case — reduce how many agents/sessions
    run at once until it fits. As a dated, third-party reference point only (not a catalog
    default): on a 16 GB M1 Pro, stock simulators reportedly start thrashing around 5
-   concurrent instances (`simslim/README.md:9`, verified 2026-09-03). If step 1's math
-   already gets you a workable number, stop here — step 3 is optional and unrelated to the
-   rest of this skill.
-3. **Only if still constrained and willing to trade away some background services**, a
-   persistent per-simulator daemon-disable is available via third-party tooling. Gate on
-   `command -v simslim` first — if it's absent, that's fine, stop at step 2, nothing else in
-   this skill depends on it. To install without Homebrew: `go install
-   github.com/mobai-app/simslim/cmd/simslim@latest` (a Go toolchain can be provisioned
-   through `mise`, see `mise-tool-management`); or download the plain release tarball
-   directly, `simslim-v0.8.0-macos-arm64.tar.gz` from
-   `https://github.com/MobAI-App/simslim/releases/download/v0.8.0/` (asset name/version
-   verified via `gh release view MobAI-App/simslim`, 2026-09-03 — simslim's own README
-   documents only Homebrew and `go install`, `simslim/README.md:29-41`, so this direct-tarball
-   path isn't in its docs either). Once present, it's one command per simulator: `simslim on
-   <udid>` to disable, `simslim off <udid>` to revert.
-   - Persistence only survives reboot on iOS 18.5+ runtimes; older runtimes are rejected
-     before anything is touched (`simslim/README.md:303-307`).
-   - Slimming drops Spotlight/in-Settings search, push notifications (`apsd`) and StoreKit
-     testing (`storekitd`), and universal links (`swcd`) unless kept via `--except`/`--keep`
-     (`simslim/README.md:342-347`).
-   - `erase`, delete+recreate, and "Erase All Content and Settings" all revert to stock; the
-     profile must be reapplied (`simslim/README.md:331-336`).
-   - This skill doesn't track simslim's CLI beyond the two commands above — its own README
-     is the source of truth for anything else.
+   concurrent instances (`https://github.com/MobAI-App/simslim`, verified 2026-09-03). If
+   step 1's math already gets you a workable number, stop here — an optional third step
+   (a per-simulator daemon-disable) is in `references/simulator-fleet-sizing.md` and is
+   unrelated to the rest of this skill.
 
 ## Build + install the app under test
 
