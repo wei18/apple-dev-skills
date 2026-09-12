@@ -15,7 +15,7 @@ description: 'Design injectable seams so Swift services can be swapped for fakes
 
 ## Scope
 
-Owns how a seam is shaped and injected (protocol / struct witness / environment / task-local) and how a fake is written. Does NOT own the test framework, snapshot tooling, or where shared fake *types* live → `swift-testing-baseline` (`<Project>KitTesting`).
+Owns how a seam is shaped and injected (protocol / struct witness / environment / task-local) and how a fake is written. Does NOT own the test framework, snapshot tooling, or where shared fake *types* live → `swift-testing-baseline` (`<Project>KitTesting`); nor the target layout that hosts the composition root → `swiftpm-modularization`.
 
 ## Inject via
 

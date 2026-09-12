@@ -198,3 +198,4 @@ signed-in sandbox tester.
 - `local-archive-export-upload` / `xcode-cloud-single-track-ci` — shipping the binary.
 - `swift-dependency-injection` — the general protocol-injection pattern this bridge instantiates.
 - `swift-testing-baseline` — where this bridge's fake fits this catalog's test stack.
+- `apple-skills:storekit` (aggregated external) — StoreKit 2 API reference incl. subscriptions, `SubscriptionStoreView`, renewal state — the part this skill does not cover.

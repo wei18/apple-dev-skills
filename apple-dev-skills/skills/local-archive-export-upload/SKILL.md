@@ -177,6 +177,8 @@ is in `references/evidence.md`.
 - `asc-api-automation` — TestFlight/App Store operations once the build lands in ASC.
 - `app-store-review-rejections` — its export-compliance row (an ASC upload
   step, not a Guideline number) and what has to be true for review to pass.
+- `apple-skills:guide-macos-spm-packaging` (aggregated external) — Developer-ID
+  signing / `notarytool` notarization for outside-the-App-Store distribution.
 - `build-time-secret-injection` / `apple-public-repo-security` — where the
   `.p8` and its issuer/key IDs live and how leaks are prevented.
 - `storekit2-iap-defaults` — this pipeline is how a build carrying that

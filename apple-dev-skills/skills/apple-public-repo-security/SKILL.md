@@ -185,3 +185,4 @@ Every PR review additionally checks:
 - `oslog-logger-defaults`: `.private` interpolation matches the sysdiagnose redaction semantics.
 - `apple-three-piece-analytics`: "no third-party SDK" is one of the public commitments.
 - `build-time-secret-injection`: ship-in-binary identifiers (AdMob IDs via xcconfig) and CLI keys in `secrets/.env` — this skill only owns the leak-prevention lines of defence, not where those values live day to day.
+- `asc-api-automation`: what the ASC API `.p8` is *used* for once it is stored safely.

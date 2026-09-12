@@ -38,6 +38,8 @@ to *pin* the fix.
 history** — it can't infer anything from earlier turns, only from the invocation
 arguments and this file. When invoking (matches `argument-hint: "[udid] [flow]"`), supply:
 
+Target simulator UDID: `$0`; flow to audit: `$1`.
+
 - **`udid`** — the target **booted** simulator's identifier (`idb list-targets`). One
   fork drives exactly one simulator; never omit this and let the fork boot/pick one
   implicitly — see "One booted simulator serializes all driving" under Gotchas, and
@@ -230,3 +232,4 @@ doesn't model. Driving the actual Simulator is the only check that covers the se
 - `swift-testing-baseline` — the static snapshot-testing layer this skill complements, not replaces.
 - `ios-accessibility-engineering` — Dynamic Type / VoiceOver checks that pair naturally with this audit loop.
 - `mise-tool-management` — the general non-Homebrew tool-install pattern behind the `idb` install step above and the `simslim` step in `references/simulator-fleet-sizing.md`.
+- `xcode-build-skill:xcode-build` / `apple-skills:simulator-utils` (aggregated externals) — plain build, launch, and screenshot commands; this skill is the fork-based audit loop on top of a build that already exists.

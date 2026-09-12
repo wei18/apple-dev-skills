@@ -160,4 +160,4 @@ Read `html-structure.md` before drawing your first screen. Read the other two as
 
 - `swiftui-navigation-architecture` — once a flow sketched here is approved, this is where the real navigation gets implemented; that skill produces working SwiftUI code, this one produces a static visual mockup only.
 
-Pre-code visual only. Auditing a built app → `interactive-simulator-ux-audit`; spec-level screen contracts → the user's spec skill.
+Pre-code visual only. Auditing a built app → `interactive-simulator-ux-audit`; spec-level screen contracts → a screen-contract / spec skill if the project has one, otherwise `collaboration-skills:spec-phase-orchestration` §What.

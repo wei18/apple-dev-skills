@@ -107,3 +107,4 @@ When two PRs each pass pre-merge and merge back to back, **their combined result
 - `apple-public-repo-security`: PR CI adds a gitleaks step as the second line of defence.
 - `apple-platform-targets`: Xcode version lock.
 - `asc-api-automation`: release-side `versionString` and changelog automation, once the build exists in ASC — reuses this project's `MARKETING_VERSION` / `CI_BUILD_NUMBER`.
+- `local-archive-export-upload`: the manual fallback when Xcode Cloud is down or its quota is exhausted.

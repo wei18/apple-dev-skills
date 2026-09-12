@@ -65,7 +65,8 @@ public struct NoOpTrackingSink: TelemetrySink {
 
 For the five composition-root wiring traps (existing-but-unwired sinks, sink
 ordering, blocking I/O on the gameplay path, late-binding, and sink-fired vs
-terminal-call-succeeded), read `references/wiring-traps.md`.
+terminal-call-succeeded — `GKLeaderboard.submitScore` / `GKAchievement.report`
+never reached), read `references/wiring-traps.md`.
 
 ## Rationale
 
