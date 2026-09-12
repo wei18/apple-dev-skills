@@ -105,9 +105,10 @@ repeatedly without asking anyone.
 ## Live-run gotchas
 
 1. **`save-token` takes the token as a positional argument, not piped stdin.** Non-interactive
-   stdin piping fails with an "interaction was required" style error. Brief command-line
-   argv exposure of the token is the tradeoff; purge it from the keychain store immediately
-   after (see the `trap` note above).
+   stdin piping fails with `Error: Interaction was required while running in non-interactive
+   mode (CKTOOL_NO_PROMPT=1 or not running in an interactive terminal).` (verified locally,
+   cktool 1.0.23001). Brief command-line argv exposure of the token is the tradeoff; purge it
+   from the keychain store immediately after (see the `trap` note above).
 2. **`validate-schema` requires `--environment` explicitly** — omitting it is a hard error, not
    a default.
 3. **`import-schema` only ever targets Development.** Don't assume a script that "runs
@@ -132,6 +133,12 @@ repeatedly without asking anyone.
    no Dashboard clicking, no live seed build required. Use one `export`'s output as the syntax
    template (it includes the system `"___*"` fields and the `GRANT` block a hand-written file
    also needs).
+
+Other existing `cktool` subcommands/flags worth knowing about, not required for the core loop
+above: `import-schema --validate` combines steps 3+4 into one call; `export-schema
+--output-file <path>` writes directly to a file instead of shell-redirecting stdout;
+`reset-schema` resets a container's Development environment to match Production **and deletes
+all Development data** — a "start clean and re-seed" tool, not part of the routine loop.
 
 ## Idempotency
 

@@ -2,6 +2,18 @@
 
 These are the canonical iOS values. Drop them into the HTML as CSS variables and the tokens panel.
 
+## Contents
+
+- [CSS variables (paste into `:root`)](#css-variables-paste-into-root)
+- [Typography samples (paste into tokens panel)](#typography-samples-paste-into-tokens-panel)
+- [Button variants](#button-variants)
+- [NavBar (iOS 26 Liquid Glass)](#navbar-ios-26-liquid-glass)
+- [TabBar (iOS 26 Liquid Glass — floating, not edge-to-edge)](#tabbar-ios-26-liquid-glass--floating-not-edge-to-edge)
+- [List row (grouped style)](#list-row-grouped-style)
+- [TextField](#textfield)
+- [SwiftUI name reference](#swiftui-name-reference)
+- [Dark Mode (only if requested)](#dark-mode-only-if-requested)
+
 ## CSS variables (paste into `:root`)
 
 ```css

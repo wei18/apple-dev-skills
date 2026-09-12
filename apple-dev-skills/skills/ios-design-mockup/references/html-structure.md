@@ -2,6 +2,17 @@
 
 This file gives you the skeleton, CSS variables, and the SVG arrow technique. Copy and adapt — don't reinvent.
 
+## Contents
+
+- [Top-level structure](#top-level-structure)
+- [iPhone frame component](#iphone-frame-component)
+- [Flow grouping](#flow-grouping)
+- [SVG arrows](#svg-arrows)
+- [Header strip](#header-strip)
+- [Tokens panel](#tokens-panel)
+- [Print styles](#print-styles)
+- [Tips](#tips)
+
 ## Top-level structure
 
 ```html
@@ -106,7 +117,7 @@ Each screen frame is a `.phone` element. Give it an `id` so arrows can reference
 
 .status-bar {
   position: relative;
-  height: 54px;
+  height: 54px; /* canvas approximation, not an Apple-published value — the safe-area top on Dynamic Island devices is 59pt */
   display: flex;
   justify-content: space-between;
   align-items: center;
