@@ -43,16 +43,27 @@ def is_quoted_example(body, start, end):
     after = body[end:line_end]
     return bool(re.search(r'"[^"]*$', before)) and bool(re.search(r'^[^"]*"', after))
 
-skills = {}
-for plugin, sub in PLUGINS.items():
-    for d in sorted(glob.glob(os.path.join(ROOT, sub, "*"))):
-        if os.path.isfile(os.path.join(d, "SKILL.md")):
-            skills[os.path.basename(d)] = (plugin, d)
-
 findings = []   # (severity, skill, rule, detail)
 matrix = {}
 def add(sev, skill, rule, detail): findings.append((sev, skill, rule, detail))
 
+skills = {}
+for plugin, sub in PLUGINS.items():
+    for d in sorted(glob.glob(os.path.join(ROOT, sub, "*"))):
+        if os.path.isfile(os.path.join(d, "SKILL.md")):
+            base = os.path.basename(d)
+            if base in skills and skills[base][0] != plugin:
+                add("BLOCKER", base, "duplicate skill name across plugins",
+                    f"{skills[base][0]}/{skills[base][1]} vs {plugin}/{d}")
+            skills[base] = (plugin, d)
+
+if not skills:
+    print(f"ERROR: 0 skills found under repo-root {ROOT!r} (looked for */SKILL.md under "
+          f"{list(PLUGINS.values())}) — wrong <repo-root> argument? "
+          f"Usage: python3 check-skills.py <repo-root> [--md out.md]", file=sys.stderr)
+    sys.exit(1)
+
+total_desc_chars = 0
 for name, (plugin, d) in skills.items():
     path = os.path.join(d, "SKILL.md")
     text = open(path, encoding="utf-8").read()
@@ -70,6 +81,7 @@ for name, (plugin, d) in skills.items():
         add("MINOR", name, "name reserved word", f"{n} (only blocks the claude.ai upload path, not Claude Code)")
     # --- official description rules
     desc = fm.get("description","")
+    total_desc_chars += len(desc)
     if not desc: add("BLOCKER", name, "description empty", "")
     L = len(desc) + len(fm.get("when_to_use",""))
     if len(desc) > 1024: add("BLOCKER", name, "description<=1024 (API)", f"{len(desc)}")
@@ -136,6 +148,18 @@ out = []
 out.append(f"# Skill gate report — {len(skills)} skills\n")
 counts = {s: sum(1 for f in findings if f[0]==s) for s in sev_order}
 out.append(f"BLOCKER {counts['BLOCKER']} · MAJOR {counts['MAJOR']} · MINOR {counts['MINOR']}\n")
+# Description budget WARN (not gated): the official `skillListingBudgetFraction` setting
+# defaults to 0.01 of a model's context window — for a 200k-token model that's ~2000 tokens
+# reserved for the always-on skill listing shown before any skill is invoked. Estimate
+# tokens as chars/4 (no tokenizer dependency); warn only, never fail the gate on this.
+DESC_BUDGET_TOKENS = 2000
+CHARS_PER_TOKEN = 4
+est_tokens = total_desc_chars / CHARS_PER_TOKEN
+if est_tokens > DESC_BUDGET_TOKENS:
+    out.append(f"WARN: {len(skills)} descriptions total {total_desc_chars} chars "
+               f"(~{est_tokens:.0f} tokens at ~{CHARS_PER_TOKEN} chars/token) > default "
+               f"skillListingBudgetFraction budget (~{DESC_BUDGET_TOKENS} tokens for a 200k-token "
+               f"model) — not gated\n")
 out.append("## Findings\n\n| sev | skill | rule | detail |\n|---|---|---|---|")
 for s, n, r, dt in findings:
     dt = dt.replace("|", "&#124;")
@@ -152,5 +176,5 @@ report = "\n".join(out)
 if "--md" in sys.argv: open(sys.argv[sys.argv.index("--md")+1], "w").write(report)
 print(report if "--md" not in sys.argv else f"wrote report; {counts}")
 
-if counts["BLOCKER"] > 0:
+if counts["BLOCKER"] > 0 or counts["MAJOR"] > 0:
     sys.exit(1)
