@@ -93,34 +93,9 @@ After translation, set that locale's `stringUnit.state` to `translated` — `tra
 
 ### Step 3 — Tricky-case review (locale-specific gotchas)
 
-Lessons captured from real translation passes. Apply these as a second-pass review after the bulk AI fan-out.
-
-**Japanese (`ja`):**
-- Prefer **semantic** over literal. "Pencil" (notes / candidate input) → メモ, NOT 鉛筆. The literal kanji confuses Japanese users; the semantic UI term is correct.
-- Drop politeness markers (`です` / `ます`) in button labels and short UI strings — Japanese app UIs are typically declarative/imperative, not polite.
-- 漢字 vs かな: prefer 漢字 for nouns, ひらがな for particles, カタカナ for loanwords. Don't romanize unless the source is romanized.
-
-**Thai (`th`):**
-- **No politeness markers** (`ครับ` / `ค่ะ`) in UI strings unless the app's voice is deliberately conversational. Calm/neutral apps drop them.
-- Compound nouns: "leaderboard" → กระดานผู้นำ (no single-word equivalent). Accept the multi-word form.
-- Thai has **no word boundaries** — sentence length affects line break behavior. UI strings >24 chars need spot-check rendering.
-
-**Korean (`ko`):**
-- Use **informal-formal** style (해요체) for app UI by default — neither too casual (반말) nor overly formal (합쇼체).
-- 한자 should be avoided unless disambiguation is needed; pure 한글 is the modern default.
-- Postpositions (조사) change based on preceding character's final consonant; AI usually handles this, but spot-check `을/를`, `이/가`, `은/는`.
-
-**Spanish (`es`):**
-- Default to **neutral Latin American Spanish** unless the project explicitly targets Spain (`es-ES`). Avoid `vosotros` forms; use `ustedes`.
-- Gender agreement: nouns referring to the user (e.g., "completed") need gender-neutral phrasing if the user's gender is unknown.
-
-**Simplified Chinese (`zh-Hans`):**
-- Convert from `zh-Hant` (not from `en`) for terminology consistency; the AI still needs to substitute Mainland-preferred terms (软件 vs 軟體, 移动 vs 行動, 视频 vs 影片).
-- DON'T just run `tongwen` character conversion — phrase choice differs (e.g., zh-Hant 「設定」 → zh-Hans 「设置」, not 「設定 → 设定」).
-
-**English (`en`):**
-- US English by default. UK spellings (`colour`, `centre`, `analyse`) only if explicitly targeted.
-- Sentence case for buttons and UI; Title Case only for proper nouns and app section headers.
+Lessons captured from real translation passes, to apply as a second-pass review after the bulk
+AI fan-out — per-locale gotchas for `ja`, `th`, `ko`, `es`, `zh-Hans`, and `en` are in
+`references/locale-gotchas.md`.
 
 ### Step 4 — Visual / glossary consistency
 
@@ -150,28 +125,9 @@ Verification gates before merging a translation pass:
 
 If the repo has a per-key completeness gate (recommended, see Step 5), it checks **per-key
 locale completeness**: every key present in a catalog has all declared locales, no `<TRANSLATE>`.
-Two things it does **NOT** catch — both have shipped English-fallback bugs in real projects:
-
-1. **A required key being *absent* entirely.** The gate validates keys that
-   exist; it cannot know a newly-activated capability *needs* a key that no
-   catalog has. When an app adopts a shared feature (audio settings, ATT primer,
-   reminders), its catalog can ship missing keys → the UI renders raw dotted keys
-   or English literals, and the gate stays green. After wiring any shared-UI
-   capability into a new app, **diff its catalog's key set against an app that
-   already has the feature** (real-world: a new game adopted shared audio-settings
-   UI without copying the required catalog keys; another adopted an ATT primer
-   and the raw dotted keys appeared at runtime — both passed the gate).
-2. **Multi-app repos sharing UI modules only:** a key referenced from shared UI code
-   but absent from an app's catalog. Per-key completeness alone will NOT catch this
-   — the gate only validates keys that already exist in a catalog, so a key
-   referenced from a shared UI module that the app's own catalog never declares
-   renders raw at runtime while the gate stays green. **Build a shared-code
-   dotted-key gate:** every dotted-namespace key (e.g. `leave.game.close`,
-   `att.primer.title`) referenced from a shared UI module (SharedUI / SettingsUI /
-   any shared UI module) must exist in **every** app catalog or CI fails. Scope it
-   to *dotted* keys to avoid app-conditional English-phrase false positives —
-   English-phrase shared keys are a separate, harder case (no dotted namespace to
-   anchor on; track them with a dedicated audit rather than this gate).
+For the two blind spots it does **NOT** catch (a required key being absent entirely, and
+multi-app repos sharing UI modules only) — both have shipped English-fallback bugs in real
+projects — read `references/l10n-gates.md`.
 
 ### xcstrings editing footgun
 
@@ -184,10 +140,7 @@ buries the real change. Splicing keeps a clean, reviewable diff (real example:
 
 ### Tooling notes
 
-- xcstrings is JSON; parse with any JSON library. Schema: `{"version": "1.0", "sourceLanguage": "en", "strings": {<key>: {"localizations": {<locale>: {"stringUnit": {"state": "translated", "value": "..."}}}}}}`. The top-level `"version"` field auto-bumps to `1.1` when Xcode 26's type-safe symbol generation or AI-generated comments touch the catalog — preserve it verbatim when splicing (see the splice footgun above).
-- Plural variations use `{"variations": {"plural": {<cldr-form>: {"stringUnit": {...}}}}}` instead of a single `stringUnit`.
-- When fanning out via an LLM, send a single key + source + glossary in the prompt; don't batch hundreds at once (latency wins less than accuracy loses).
-- For ASC metadata (App Store description, keywords, "what's new"), use the **same flow** but route to the ASC API endpoints rather than xcstrings. The translation principles (length budget, register, gotchas) apply identically.
+For the xcstrings JSON schema (including the `"version"` field and plural variations) and LLM fan-out / ASC-metadata tooling notes, read `references/xcstrings-format.md`.
 
 ## Verification checklist
 
