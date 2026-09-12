@@ -81,7 +81,7 @@ REJECT must cite specific evidence (API doc, prior decision, design constraint);
 ## Verification checklist
 
 - Every absence claim ("not defined", "no coverage") in a review finding cites the grep/search command and its zero-hit output — otherwise it doesn't count as a finding.
-- Each round has an explicit dispatch prompt (all 5 elements present).
+- Each round has an explicit dispatch prompt (all 5 items of §Dispatch contract for Code Reviewer present, on top of the 6 elements from `leader-developer-handoff-contract`).
 - Each review finding has an explicit accept / reject label + reason.
 - When limit(N) is reached without convergence, pause; don't keep iterating indefinitely.
 - Cosmetic fixes are inline-edited by the Leader; don't burn a round on them.
@@ -95,6 +95,6 @@ For the full sweep procedure, command, disposition rule, and anti-pattern, read 
 
 ## Related skills
 
-- `leader-developer-handoff-contract`: details the 5 elements of each sub-agent dispatch.
+- `leader-developer-handoff-contract`: details the 6 required elements of every dispatch prompt.
 - `spec-phase-orchestration`: review cycles are usually embedded in the spec phase.
 - `methodology-pattern-extractor`: "round-1 cosmetic inline edit" is a codifiable pattern.
