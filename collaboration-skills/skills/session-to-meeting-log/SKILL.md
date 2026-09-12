@@ -38,7 +38,7 @@ One JSON event per line; common `type` fields:
 | `assistant` | Assistant response (incl. tool_use blocks) |
 | `system`, `attachment`, `file-history-snapshot`, … | Harness metadata (queue state, mode, cost, permission state); skip anything that is not `user`/`assistant`. There is no top-level `tool_result` or `summary` type. |
 
-Key fields: `timestamp`, `message.content`, `message.role`, `uuid`, `parentUuid`. Sub-agent transcripts live in a separate file, `<sessionId>/subagents/agent-*.jsonl`, not inline in the main log.
+Key fields: `timestamp`, `message.content`, `message.role`, `uuid`, `parentUuid`. Also present but not narrative content: `isSidechain` and `isMeta` boolean flags — a line with either set to `true` is harness-internal bookkeeping, not a primary user/assistant turn; filter it out the same way as the non-`user`/`assistant` types above. Sub-agent transcripts live in a separate file, `<sessionId>/subagents/agent-*.jsonl`, not inline in the main log — combined with the two flags, "no subagent noise" becomes a mechanical filter rather than a judgment call.
 
 ## Output
 

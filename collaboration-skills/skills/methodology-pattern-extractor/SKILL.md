@@ -69,7 +69,14 @@ Example:
 
 ## Anti-patterns (also worth recording)
 
-The same section may include §Anti-patterns: practices tried but found unsuitable. Bar for entry is lower: **a single significant misstep with a clear lesson** is enough.
+`docs/methodology.md` also carries a `§Anti-patterns` section (sibling of `§Patterns`) for
+practices tried but found unsuitable. The three sections have different entry bars:
+
+| Section | Entry bar |
+|---|---|
+| `§Patterns` | ≥ 3 sightings in different meeting logs |
+| `§Anti-patterns` | 1 significant misstep with a clear lesson |
+| `§Backlog` (candidate pattern) | 1–2 sightings, annotated with the count |
 
 ## Verification checklist
 

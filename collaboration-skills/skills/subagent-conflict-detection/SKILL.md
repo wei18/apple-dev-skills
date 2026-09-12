@@ -26,13 +26,16 @@ Skip when: dispatching the first subagent in a session, or all prior subagents h
 ### Step 1 — inventory in-flight subagents
 
 ```bash
-git worktree list
+git worktree list --porcelain | awk '/^worktree /{print $2}' | tail -n +2
 ```
 
-Skip the entry marked `[main]` (or `[<default-branch>]`) — every other line is an
-in-flight worktree. For each worktree path, capture (run from inside that path,
-not via `-C`, so the commands match the `Bash(git status *)` / `Bash(git log *)`
-rules the way this skill's `allowed-tools` writes them):
+Plain `git worktree list` is fine for a human to eyeball, but don't parse it: filtering
+on `[main]` breaks when the default branch isn't named `main`, and splitting on
+whitespace breaks on a path containing a space. `--porcelain` sidesteps both — `tail -n
++2` drops the first (main-checkout) `worktree` line. For each remaining worktree path,
+capture (run from inside that path, not via `-C`, so the commands match the
+`Bash(git status *)` / `Bash(git log *)` rules the way this skill's `allowed-tools`
+writes them):
 - Branch checked out
 - Dirty files: `(cd <path> && git status --short)`
 - Most recent commit subject: `(cd <path> && git log -1 --format=%s)`
@@ -62,25 +65,9 @@ share a simulator (see `apple-dev-skills:interactive-simulator-ux-audit` for the
 
 ## Pre-dispatch base correctness (verify the worktree base before you dispatch)
 
-`isolation: "worktree"` does **not** always branch from your current local HEAD. The base is
-decided by `worktree.baseRef`:
-
-- **`"fresh"` (the default)** — branches from the repository's **default branch on the
-  remote** (typically `origin/main`), not your local HEAD. Any commit you haven't pushed yet
-  is invisible to the worktree. If the dispatched work depends on your in-progress local
-  branch, push first, or set `worktree.baseRef: "head"` in settings.
-- **`"head"`** — branches from your local HEAD **commit**; uncommitted working-tree edits are
-  NOT carried over — commit first (gitignored files can be copied via `.worktreeinclude`).
-  Dispatching right after a merge without syncing HEAD first branches from the pre-merge base
-  (see the incident below). Confirm with `git log --oneline -3` before dispatching.
-
-Two fallbacks worth knowing: with no remote configured, or when `origin/HEAD` isn't cached
-locally and can't be fetched, `"fresh"` falls back to your current local HEAD. And **before
-v2.1.208**, `"fresh"` used whatever `origin/HEAD` was already cached locally, without fetching
-a current one. Official docs:
-https://code.claude.com/docs/en/worktrees#choose-the-base-branch
-
-**Before dispatching, confirm the base:**
+`isolation: "worktree"` does **not** always branch from your current local HEAD — the base
+depends on `worktree.baseRef` (`"fresh"` vs `"head"`), and a resumed agent can drift off its
+starting branch. **Before dispatching, confirm the base:**
 
 ```bash
 git rev-parse --abbrev-ref HEAD          # on the branch you think you are?
@@ -88,17 +75,9 @@ git log --oneline -3                     # does it include the commit/PR this wo
 git merge-base --is-ancestor <dep-sha> HEAD && echo "base OK" || echo "STALE BASE"
 ```
 
-If the work depends on a just-merged PR, sync first (`git checkout main && git fetch && git reset --hard origin/main` — `reset --hard` discards uncommitted local changes, so commit them to a WIP commit or `git stash push -u -m <tag>` first — never a bare `git stash`/`pop` in a worktree session, since the stash stack is shared across worktrees) THEN dispatch. To restore a tagged stash afterward: find its current `stash@{n}` by tag with `git stash list --format='%H %gs'`, restore with `git stash apply <sha>` (not `pop`), then `git stash drop <sha>` once you've confirmed the apply succeeded. `<dep-sha>` above is the commit your work depends on (e.g. the merged PR's commit on `main`). State the expected base SHA in the dispatch prompt and tell the agent to verify it (`git log --oneline -5`; confirm a key file/symbol exists) before coding.
-
-> Real incident (pre-v2.1.208 / local-HEAD-fallback behavior): a DEBUG test-hook subagent was dispatched right after a fix merged to `main`, but the dispatching HEAD was a pre-merge commit. The worktree branched from the stale base, so the new code referenced an `init` parameter and a file that only existed post-merge → 2 compile errors that the agent's own package build hadn't surfaced. Cost a full cherry-pick-onto-correct-base + rebuild cycle.
-
-## Two traps specific to resuming an agent
-
-- **A resumed agent isn't necessarily still where you think it is.** Don't trust that a
-  resumed subagent is on the directory/branch it started on — verify `pwd` + `git rev-parse
-  --abbrev-ref HEAD` before trusting its next commit.
-- **A worktree's index can hold ghost entries pointing at pruned objects.** This surfaces as
-  `invalid object … Error building trees` on commit. Recover with `git read-tree origin/main`.
+For the `baseRef` decision table, the sync-before-dispatch recovery recipe, the real incident
+that motivated this check, and the two resumed-agent traps (stale `pwd`/branch, ghost index
+entries), see `references/worktree-base-and-recovery.md`.
 
 ## Coexisting with another live agent / session on the same repo
 
@@ -137,13 +116,13 @@ Options:
 
 ## Anti-patterns this prevents
 
-- **Parallel-dispatch race** (methodology.md §Anti-patterns): Two subagents on isolated worktrees edit the same file. `--force-with-lease` does NOT silently overwrite — it rejects the push when the remote ref has moved since the client last fetched. The real footgun is a different one: worktree B rebases onto a stale base (e.g. the main SHA from before worktree A pushed), producing a divergent history; resolving it then requires a force-push that can drop worktree A's commits. Prevent this by serializing or carving scopes before dispatch.
+- **Parallel-dispatch race**: Two subagents on isolated worktrees edit the same file. `--force-with-lease` does NOT silently overwrite — it rejects the push when the remote ref has moved since the client last fetched. The real footgun is a different one: worktree B rebases onto a stale base (e.g. the main SHA from before worktree A pushed), producing a divergent history; resolving it then requires a force-push that can drop worktree A's commits. Prevent this by serializing or carving scopes before dispatch.
 - **Lost-work on worktree wipe**: Subagent A's worktree wipes without commit; subagent B's dispatch reuses the path or branch name; A's work is unrecoverable.
 - **Code Reviewer confusion**: CR sees a PR whose diff includes changes from a parallel subagent that's not yet merged; verdict is on wrong baseline.
 
 ## Pre-flight discipline this skill adds
 
-A Leader's pre-dispatch pre-flight typically includes "kill orphan procs", "rebase WIP onto main", and "mise trust" — this skill adds the conflict-detection step before those. For why `mise trust` is required before `mise install`/`mise exec` take effect in a fresh worktree or CI checkout, see `apple-dev-skills:mise-tool-management`.
+If your Leader runs a pre-dispatch pre-flight (process cleanup, rebase onto main, tool trust), insert this conflict-detection step before it. For why `mise trust` is required before `mise install`/`mise exec` take effect in a fresh worktree or CI checkout, see `apple-dev-skills:mise-tool-management`.
 
 ## False-positive handling
 

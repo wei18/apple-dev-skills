@@ -16,7 +16,7 @@ description: Structure a multi-round Leader / Developer / Code-Reviewer review o
 | Role | Job |
 |---|---|
 | **Leader** (main agent) | Dispatch, integrate review results, accept / reject, communicate with the user |
-| **Developer** (subagent) | Draft / revise document sections; works after Leader replies with rejection. (The Developer role is often dispatched as a Software Architect sub-agent type when the task is architectural in nature, but the role name remains "Developer".) |
+| **Developer** (subagent) | Draft / revise document sections; works after Leader replies with rejection. (May be dispatched as any implementer-type subagent when the task is architectural in nature; the role name in this skill remains "Developer".) |
 | **Code Reviewer** (subagent) | Audits Developer output for technical / API correctness and logic gaps; CLI is forbidden for probing API/runtime behavior (build, run, simctl, trial-and-error); read-only search (grep, rg, git log, git show) is allowed |
 
 The Leader **never** writes the implementation / drafts a section directly — that's the Developer's job. The Leader **never** does the review either — that's the Code Reviewer's job.
@@ -39,12 +39,13 @@ round N:
 
 ## The "round-1 cosmetic" pragmatic rule
 
-If a round-1 result has **only spelling / formatting / paragraph order / string typo** cosmetic-grade fixes left:
-- **Leader applies inline edits directly** instead of dispatching round 2 to the Developer
-- Still record these fixes in the meeting log
-- Reasoning: "limit is an upper bound, not a requirement"; burning a whole round just for typos is uneconomical
+| Signal | Leader inline-edits | Dispatch round N+1 to Developer |
+|---|---|---|
+| Fix scope | Spelling / formatting / paragraph order / string typo only | Any semantic or content change |
+| Time to fix | ≤ 5 minutes | > 5 minutes |
+| New decisions required | None | Any |
 
-Criteria: the fix can be completed by the Leader in ≤ 5 minutes and involves **no new decisions**.
+Still record inline fixes in the meeting log. Reasoning: "limit is an upper bound, not a requirement"; burning a whole round just for typos is uneconomical.
 
 ## Dispatch contract for Code Reviewer
 
