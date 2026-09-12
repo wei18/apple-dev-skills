@@ -35,7 +35,7 @@ description: 'Use when setting up or changing CI for an Apple-platform project o
 
 - Xcode version in the workflow matches the README / `foundations.md` toolchain line.
 - When bumping Xcode, open a dedicated PR to refresh snapshot baselines.
-- **Xcode Cloud's build environment does not include mise** — Apple documents it as including only Homebrew among third-party tools. Commit a bootstrapped `bin/mise` wrapper (`mise generate bootstrap -l -w bin/mise`, from `mise-tool-management`) and call every tool inside `ci_scripts/` through it (`./bin/mise trust`, `./bin/mise install`, `./bin/mise exec -- <tool> <args>`) instead of a bare `mise` invocation, which fails with "command not found".
+- **Xcode Cloud's build environment does not include mise** — Apple documents it as including only Homebrew among third-party tools. Commit a bootstrapped `bin/mise` wrapper (`mise generate install-script --localize --write bin/mise`, from `mise-tool-management`; the old `mise generate bootstrap` name is deprecated, removal planned for mise 2027.9.0) and call every tool inside `ci_scripts/` through it (`./bin/mise trust`, `./bin/mise install`, `./bin/mise exec -- <tool> <args>`) instead of a bare `mise` invocation, which fails with "command not found".
 - Test environment disables iCloud / Game Center sign-in; all tests go through protocol fakes.
 
 ### Build number & version automation
