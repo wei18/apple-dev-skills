@@ -40,6 +40,7 @@ Every dispatch prompt must contain:
 - List the skill names the sub-agent should invoke (with plugin prefix).
 - Don't assume the sub-agent will guess.
 - Example: "invoke `apple-dev-skills:swift6-concurrency`, `apple-dev-skills:swiftpm-modularization`, `apple-dev-skills:swift-testing-baseline`; review-style dispatches also list `collaboration-skills:subagent-review-cycles`".
+- When the dispatch target is a custom agent (`.claude/agents/` or a plugin's `agents/`), list them in that agent's `skills:` frontmatter instead — Claude Code preloads those at startup (the full skill content is injected, not only the description), so the prompt only needs to name skills the agent definition doesn't already carry. See https://code.claude.com/docs/en/sub-agents.
 
 ### 4. Expected return format
 
