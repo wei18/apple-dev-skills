@@ -43,36 +43,13 @@ hardcoded in tooling.
 
 ## Workflow
 
-```bash
-# Load credentials for this shell session only.
-set -a; source secrets/.env; set +a
+1. Authenticate `cktool` for this session (positional arg — see gotcha 1 below).
+2. Export the live Development schema to the committed source-of-truth file (seed step first: run a debug build once so the app's JIT schema provisions the Development container, THEN export).
+3. Pre-flight: validate the committed `.ckdb` against the live container before importing.
+4. Deploy to Development — freely runnable and reversible.
+5. Always clear the token from `cktool`'s keychain store when done (via a shell `trap ... EXIT` around steps 1–4, so it's purged even if a step fails midway).
 
-# 1. Authenticate cktool for this session (positional arg — see gotcha 1 below).
-xcrun cktool save-token --type management --force "$CK_MANAGEMENT_TOKEN"
-
-# 2. Export the live Development schema to the committed source-of-truth file.
-#    Seed step first: run a debug build once so the app's JIT schema provisions
-#    the Development container, THEN export.
-xcrun cktool export-schema \
-  --team-id "$CK_TEAM_ID" --container-id "$CK_CONTAINER_ID" \
-  --environment development > cloudkit/myapp.ckdb
-
-# 3. Pre-flight: validate the committed .ckdb against the live container before importing.
-xcrun cktool validate-schema \
-  --team-id "$CK_TEAM_ID" --container-id "$CK_CONTAINER_ID" \
-  --environment development --file cloudkit/myapp.ckdb
-
-# 4. Deploy to Development — freely runnable and reversible.
-xcrun cktool import-schema \
-  --team-id "$CK_TEAM_ID" --container-id "$CK_CONTAINER_ID" \
-  --environment development --file cloudkit/myapp.ckdb
-
-# 5. Always clear the token from cktool's keychain store when done.
-xcrun cktool remove-token --type management --force
-```
-
-Run step 5 in a shell `trap ... EXIT` around steps 1–4 so the token is purged even if a step
-fails midway.
+Runnable as `scripts/ck-schema-dev.sh` — see that file for the exact `cktool` invocations and flags.
 
 ## Inputs / outputs
 

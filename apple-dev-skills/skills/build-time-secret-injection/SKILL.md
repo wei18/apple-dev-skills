@@ -81,30 +81,7 @@ Wrap multiple xcconfigs via a `Config-{Debug,Release}.xcconfig` that `#include?`
 
 ### Multi-app dispatch in `ci_post_clone.sh`
 
-When one repo ships multiple app schemes (e.g. AppA + AppB), XCC sets `$CI_PRODUCT` and `$CI_XCODE_SCHEME` per workflow. Case-switch on the scheme to pick the right env-var prefix:
-
-```bash
-case "${CI_XCODE_SCHEME:-${CI_PRODUCT:-}}" in
-  AppA)
-    APP_ID="${APP_A_ADMOB_APP_ID:?missing APP_A_ADMOB_APP_ID}"
-    BANNER_UNIT_ID="${APP_A_ADMOB_BANNER_UNIT_ID:?missing APP_A_ADMOB_BANNER_UNIT_ID}"
-    ;;
-  AppB)
-    APP_ID="${APP_B_ADMOB_APP_ID:?missing APP_B_ADMOB_APP_ID}"
-    BANNER_UNIT_ID="${APP_B_ADMOB_BANNER_UNIT_ID:?missing APP_B_ADMOB_BANNER_UNIT_ID}"
-    ;;
-  *)
-    echo "Unknown CI_XCODE_SCHEME: ${CI_XCODE_SCHEME:-}" >&2
-    exit 1
-    ;;
-esac
-cat > Tuist/AdMob.xcconfig <<EOF
-ADMOB_APP_ID = ${APP_ID}
-ADMOB_BANNER_UNIT_ID = ${BANNER_UNIT_ID}
-EOF
-```
-
-Run **before** `tuist generate` so the per-target xcconfig reference resolves.
+When one repo ships multiple app schemes (e.g. AppA + AppB), XCC sets `$CI_PRODUCT` and `$CI_XCODE_SCHEME` per workflow. For the case-switch that picks the right env-var prefix per scheme, read `references/multi-app-ci-dispatch.md`.
 
 ### Non-Tuist projects
 
@@ -150,31 +127,20 @@ Consider adding a build-phase script that asserts no `$()` literals survived sub
 
 8. **Tuist `tuist generate` silently clobbering unmanaged xcconfigs.** If `Tuist/<Domain>.xcconfig` exists but is NOT referenced in `Project.swift`'s `.settings(configurations:)`, Tuist regen drops it from the project. Verify Project.swift wiring before assuming xcconfig is active.
 
-## Checklist when adding a new secret value
+## Verification checklist
 
-1. Decide layer:
-   - Consumed by Xcode build / Info.plist / Bundle.main read → Layer 1 xcconfig
-   - Consumed by `swift run` / CLI scripts / shell → Layer 2 `.env`
-2. Add KEY to appropriate `.example` file with sandbox/test default value
-3. Add inline comment in `.example` describing purpose + where to find the real one (name the out-of-repo vault entry — password manager / team vault — NEVER the literal value)
-4. If Layer 1: add `$(KEY)` substitution to `Info.plist`; add reading code via `Bundle.main` with guard (cover nil / empty / `$(...)` literal); add smoke test for key presence in source plist
-5. If Layer 1 CI path: extend `ci_post_clone.sh` to write the new KEY from XCC env var with `${VAR:?missing message}` fail-fast; if multi-app, branch on `$CI_XCODE_SCHEME`
-6. Run `grep -r "<real-prod-value>" .` (excluding gitignored dirs) — must return zero hits
-7. Record the real values in the out-of-repo secret store (password manager / team vault) and note which entry holds them — never in a tracked file
+Use this both when adding a new secret value and when auditing an existing implementation.
 
-## Verification checklist (audit existing implementations)
-
-- [ ] Root `.gitignore` has `Tuist/*.xcconfig` + `!Tuist/*.xcconfig.example`
-- [ ] `secrets/.gitignore` inner deny-list present (`* / !*.example / !README.md / !example/ / !example/**`); `git check-ignore -v secrets/example/README.md` reports nothing
+- [ ] Decide the layer: Xcode build / Info.plist / `Bundle.main` read → Layer 1 xcconfig; `swift run` / CLI scripts / shell → Layer 2 `secrets/.env`
+- [ ] Root `.gitignore` has `Tuist/*.xcconfig` + `!Tuist/*.xcconfig.example`; `secrets/.gitignore` inner deny-list present (`* / !*.example / !README.md / !example/ / !example/**`) — `git check-ignore -v secrets/example/README.md` reports nothing
+- [ ] KEY is added to the appropriate `.example` file with a sandbox/test default value, with an inline comment naming the out-of-repo vault entry that holds the real value (password manager / team vault) — never the literal value
 - [ ] `Project.swift` per-target `.settings(configurations:)` references the xcconfig
-- [ ] `Info.plist` uses `$(KEY)` substitution for each secret
-- [ ] App code reads via `Bundle.main.object(forInfoDictionaryKey:)` with guard (NOT `as!`)
-- [ ] Runtime guard rejects `nil`, empty, and `$(...)` literal
-- [ ] Smoke test reads source plist for key-presence assertion
-- [ ] `ci_post_clone.sh` writes xcconfig BEFORE `tuist generate`
-- [ ] Multi-app: `case` on `$CI_XCODE_SCHEME` selects per-app env vars
+- [ ] Layer 1: `Info.plist` uses `$(KEY)` substitution for each secret; app code reads via `Bundle.main.object(forInfoDictionaryKey:)` with a guard (NOT `as!`) that rejects `nil`, empty, and the `$(...)` literal
+- [ ] Smoke test reads the source plist for a key-presence assertion
+- [ ] `ci_post_clone.sh` writes the xcconfig from the XCC env var (`${VAR:?missing message}`) BEFORE `tuist generate`; if multi-app, `case` on `$CI_XCODE_SCHEME` selects per-app env vars — see `references/multi-app-ci-dispatch.md`
 - [ ] XCC Workflow Environment Variables UI lists each KEY (per scheme if multi-app), marked Secret
-- [ ] `grep -r "<real-prod-value>" .` returns zero hits across all tracked files
+- [ ] `grep -r "<real-prod-value>" .` (excluding gitignored dirs) returns zero hits across all tracked files
+- [ ] The real value is recorded in the out-of-repo secret store, noting which entry holds it — never in a tracked file
 
 ## Related skills
 
