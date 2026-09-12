@@ -1,6 +1,6 @@
 ---
 name: ios-performance-engineering
-description: Measure and fix iOS/macOS performance with Instruments (Time Profiler, Allocations, Hangs, App Launch), `xctrace` in CI, `OSSignposter`, MetricKit field telemetry (`MXMetricManager`, `MXHangDiagnostic`), `XCTMetric` baselines, launch time, memory footprint, and binary size. Use when diagnosing hangs or hitches measured with Instruments or MetricKit, high memory, slow launch, or a large binary, wiring MetricKit, or setting CI perf baselines. SwiftUI-specific hitch triage from code review → apple-skills:guide-swiftui-performance-audit or swiftui-expert's `.trace` toolchain; this skill owns measurement and the system-level surface.
+description: Measure and fix iOS/macOS performance with Instruments (Time Profiler, Allocations, Hangs, App Launch), `xctrace` in CI, `OSSignposter`, MetricKit field telemetry (`MXMetricManager`, `MXHangDiagnostic`), `XCTMetric` baselines, launch time, memory footprint, binary size, and crash triage / symbolication (`MXCrashDiagnostic`, dSYM, `atos`). Use when diagnosing hangs or hitches measured with Instruments or MetricKit, high memory, slow launch, or a large binary, reading or symbolicating a crash report, wiring MetricKit, or setting CI perf baselines. SwiftUI-specific hitch triage from code review → apple-skills:guide-swiftui-performance-audit or swiftui-expert's `.trace` toolchain; this skill owns measurement and the system-level surface.
 ---
 
 # iOS Performance Engineering
@@ -73,7 +73,7 @@ xctrace record --template 'Time Profiler' --output trace.trace --time-limit 30s 
 
 ## Hangs and hitches
 
-The system classifies a main-thread block of **250 ms or more** as a hang and surfaces it in the Organizer → Hang Reports (Xcode 14+) and via MetricKit's `MXDiagnosticPayload.hangDiagnostics` (an array of `MXHangDiagnostic` — there is no `MXHangDiagnosticPayload` type). The scroll hitch budget depends on display refresh rate (see above).
+The system classifies a main-thread block of **250 ms or more** as a hang and surfaces it in the Organizer → Hang Reports (Xcode 14+) and via MetricKit's `MXDiagnosticPayload.hangDiagnostics` (an array of `MXHangDiagnostic` — there is no `MXHangDiagnosticPayload` type). The scroll hitch budget depends on display refresh rate (see above). A hang that the watchdog ends (`EXC_CRASH (SIGKILL)`, code `0x8badf00d`) arrives as a crash, not a hang report — triage it via `references/crash-triage.md`.
 
 **Moving work off `@MainActor`:**
 
@@ -138,7 +138,7 @@ MetricKit data reflects **real user conditions** (actual device, network, batter
 | `MXAnimationMetric` | `scrollHitchTimeRatio` — field-measured ratio of hitch time while scrolling (the hitch signal) |
 | `MXDiskIOMetric` | Cumulative logical write bytes |
 | `MXHangDiagnostic` | Call tree for a main-thread hang > 250 ms |
-| `MXCrashDiagnostic` | Crash reason + call tree |
+| `MXCrashDiagnostic` | Crash reason + call tree — for intake channels, symbolication and the exception-type cheat sheet, read `references/crash-triage.md` |
 | `MXCPUExceptionDiagnostic` | CPU runaway above system threshold |
 
 Wire MetricKit as a **sink** in your telemetry facade (per `telemetry-facade-pattern`) — a `MetricKitSink` that subscribes to `MXMetricManager.shared` and broadcasts payloads as `TelemetryEvent` instances. This keeps MetricKit wiring out of `AppDelegate` and testable via protocol injection. Note that MetricKit complements but does not replace the analytics tracking covered in `apple-three-piece-analytics`: MetricKit is system-generated aggregate performance data, not user behaviour events.
