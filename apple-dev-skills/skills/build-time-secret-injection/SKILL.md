@@ -44,7 +44,7 @@ Tuist/
 
 - xcconfig holds `KEY = VALUE` pairs
 - `Project.swift` declares per-target `settings(configurations: [.debug(name:, xcconfig:), .release(name:, xcconfig:)])` pointing at the file
-- Info.plist uses `$(KEY)` substitution to embed values at compile time — e.g. `ADMOB_APP_ID = ca-app-pub-XXXX~YYYY` in the xcconfig and `<key>GADApplicationIdentifier</key><string>$(ADMOB_APP_ID)</string>` in Info.plist (`GADApplicationIdentifier` is the key the Google Mobile Ads SDK reads at startup; `ADMOB_APP_ID` / `ADMOB_BANNER_UNIT_ID` are this project's own xcconfig names)
+- Info.plist uses `$(KEY)` substitution to embed values at compile time — e.g. `ADMOB_APP_ID = ca-app-pub-<publisher-id>~<app-id>` in the xcconfig and `<key>GADApplicationIdentifier</key><string>$(ADMOB_APP_ID)</string>` in Info.plist (`GADApplicationIdentifier` is the key the Google Mobile Ads SDK reads at startup; `ADMOB_APP_ID` / `ADMOB_BANNER_UNIT_ID` are this project's own xcconfig names)
 - App code reads via `Bundle.main.object(forInfoDictionaryKey: "...")` — guarded against nil / empty / unresolved `$()` token
 - **CI side** (`ci_scripts/ci_post_clone.sh`): reads XCC env vars (stored as Secrets in ASC → Xcode Cloud → Workflow → Environment Variables) and generates the xcconfig file before `tuist generate` runs
 
