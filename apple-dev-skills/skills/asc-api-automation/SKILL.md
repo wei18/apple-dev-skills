@@ -42,38 +42,7 @@ ASC_KEY_PATH=secrets/AuthKey_2X9R4HXF34.p8
 
 Claims (verified against Apple's *Generating tokens for API requests*, 2026-07): header `alg: ES256` (the only accepted algorithm), `kid`, `typ: JWT`; payload `iss` (**Issuer ID**, the UUID from Users and Access → Integrations — not your Team ID), `iat`, `exp` (invalid if more than 20 minutes ahead — **exception**: a token carrying `scope` and restricted to GET requests on allow-listed resources can live up to 6 months, per Apple's *Determine the Appropriate Token Lifetime*), `aud: "appstoreconnect-v1"`, optional `scope` (array of allowed requests like `"GET /v1/apps"` — pin single-purpose tokens to single endpoints).
 
-`scripts/mint-asc-token.swift`:
-
-```swift
-#!/usr/bin/env swift
-import CryptoKit
-import Foundation
-
-let env = ProcessInfo.processInfo.environment
-guard let keyID = env["ASC_KEY_ID"], let issuerID = env["ASC_ISSUER_ID"],
-      let keyPath = env["ASC_KEY_PATH"] else {
-    FileHandle.standardError.write(Data("Set ASC_KEY_ID / ASC_ISSUER_ID / ASC_KEY_PATH (source secrets/.env)\n".utf8))
-    exit(1)
-}
-
-func b64url(_ data: Data) -> String {
-    data.base64EncodedString()
-        .replacingOccurrences(of: "+", with: "-")
-        .replacingOccurrences(of: "/", with: "_")
-        .replacingOccurrences(of: "=", with: "")
-}
-
-let now = Int(Date().timeIntervalSince1970)
-let header = #"{"alg":"ES256","kid":"\#(keyID)","typ":"JWT"}"#
-// Apple rejects exp > 20 min ahead; 10 min leaves slack for clock skew.
-let payload = #"{"iss":"\#(issuerID)","iat":\#(now),"exp":\#(now + 600),"aud":"appstoreconnect-v1"}"#
-let signingInput = b64url(Data(header.utf8)) + "." + b64url(Data(payload.utf8))
-
-let pem = try String(contentsOfFile: keyPath, encoding: .utf8)
-let key = try P256.Signing.PrivateKey(pemRepresentation: pem)
-let signature = try key.signature(for: Data(signingInput.utf8))  // ECDSA + SHA-256 = ES256
-print(signingInput + "." + b64url(signature.rawRepresentation))  // rawRepresentation = r‖s, the JWT wire format
-```
+The script is `scripts/mint-asc-token.swift` (CryptoKit, zero dependencies).
 
 ```bash
 source secrets/.env
@@ -122,30 +91,9 @@ The `POST reviewSubmissions` → `POST reviewSubmissionItems` → `PATCH submitt
 
 The three prerequisites above are gaps in an otherwise-scriptable flow. These are different:
 Apple publishes no REST resource for them at all, so no amount of scripting closes the gap —
-budget a manual, one-time (or rarely-repeated) click in the ASC web UI.
-
-- **Verified ✓ — Agreements, Tax, and Banking (including accepting the Paid Apps Agreement).**
-  Apple's App Store Connect API topic index (`developer.apple.com/tutorials/data/documentation/AppStoreConnectAPI.md`,
-  checked 2026-09) lists every automatable area — App Store, TestFlight, Game Center,
-  Provisioning, Xcode Cloud, Webhooks, Reporting, Users and Access, Alternative App
-  Distribution — and "Agreements, Tax, and Banking" is absent from all of them; no
-  `agreements`/`taxForms`/`bankAccounts`-shaped resource exists anywhere in the reference.
-  ASC Help's *Schedule price changes for apps* page confirms the practical consequence for
-  this skill's pricing prerequisite above: "If you've accepted the Paid Apps Agreement and
-  submitted your app for review, you can schedule price changes for your app" — the
-  Agreement is accepted only in ASC's *Manage Agreements* section, by the Account Holder, in
-  the browser. This is the actual gate behind the "app pricing must be set first" prerequisite
-  above, not a scriptable pricing endpoint being missing (as of 2026, `POST /v1/appPriceSchedules`
-  does exist for pricing itself — but it 404s/403s until the Agreement is accepted, and the
-  Agreement has no API path).
-- **Verified ✓ — App promo codes (whole-app free-download codes, Apps → \<App\> → Promo Codes).**
-  ASC Help's *Request and manage promo codes* page (`developer.apple.com/help/app-store-connect/offer-promo-codes/request-and-manage-promo-codes`)
-  documents only the web click-path ("In Apps, select the app you want to view. In the
-  sidebar, click Promo Codes. The Promo Code page opens with Generate selected.") with no
-  REST alternative mentioned; no `promoCodes`-shaped resource appears in the API topic index
-  either. Don't confuse this with **Subscription Offer Codes**, which do have a documented API
-  (`POST /v1/subscriptionOfferCodeCustomCodes` and siblings under *Subscription Offer Codes*)
-  — the API gap is specific to whole-app promo codes, not offer codes in general.
+budget a manual, one-time (or rarely-repeated) click in the ASC web UI. For the two verified
+cases (Agreements/Tax/Banking, and whole-app Promo Codes vs Subscription Offer Codes) and their
+sourcing, read `references/no-api-steps.md`.
 
 ## Release automation: SemVer, changelog, and explicit releaseType
 
