@@ -5,13 +5,14 @@
 >
 > 言語：[English](README.md) · [繁體中文](README.zh-Hant.md) · [简体中文](README.zh-Hans.md) · [日本語](README.ja.md)
 
-apple-dev-skillsは、アイデアをApp Storeへのリリースまで導く個人開発者や小規模チームのための
-**マーケットプレイス**です。ファーストパーティのスキルは大きく二つに分かれています。作って
-いるものそのものを担う**Apple/Swift**スキルと、Claude Code自体の操り方——計画、レビュー、
-リリース——を担う**harness engineering**スキルです。どのスキルも実際にリリースまで漕ぎ着けた
-実戦のエピソードに裏打ちされた、立場のある既定値であり、一貫性ゲートによって守られています。
-あわせて、他に類を見ない**外部**スキルプラグインを**参照という形で集約**し——ここでは書かず、
-リンクと著者クレジットのみで——決してコピーせずに並べています。
+apple-dev-skillsは、**iOS 26 / macOS 26を下限**とした新規（greenfield）アプリを、アイデアから
+App Storeへのリリースまで導く個人開発者や小規模チームのための**マーケットプレイス**です。
+ファーストパーティのスキルは大きく二つに分かれています。作っているものそのものを担う
+**Apple/Swift**スキルと、**harness engineering**スキル（Claude Code自体の操り方——ディスパッチ、
+レビュー、リリース）です。どのスキルも実際にリリースまで漕ぎ着けた実戦のエピソードに裏打ち
+された、立場のある既定値であり、一貫性ゲートによって守られています。あわせて、他に類を
+見ない**外部**スキルプラグインを**参照という形で集約**し——ここでは書かず、リンクと著者
+クレジットのみで——決してコピーせずに並べています。
 
 ## クイックスタート
 
@@ -23,11 +24,15 @@ Claude Codeのsession内で実行します。
 ```
 /plugin marketplace add wei18/apple-dev-skills
 /plugin install apple-dev-skills@apple-dev-skills          # 26 Apple/Swift skills
-/plugin install collaboration-skills@apple-dev-skills      # 12 agent-collaboration skills
+/plugin install collaboration-skills@apple-dev-skills      # 12 harness-engineering skills
 ```
 
-インストール結果に`Run /reload-plugins to activate.`と表示されたら実行してください——古い
-クライアントでは常に必要な手順です。
+インストールするたびに詳細ペインが開きます——**User**スコープを選んでください。形式は
+`plugin@marketplace`で、このmarketplaceはたまたま最初のpluginと同じ名前です。
+
+インストール結果に`Run /reload-plugins to activate.`と表示された場合、Claude Codeが自動的に
+実行します。次のメッセージで会話を再読み込みすると警告された場合は、`/reload-plugins --force`
+を実行してください。
 
 どちらか一方でも両方でもインストール可能です。外部プラグインも同じ方法でインストールできます。
 例：`/plugin install swiftui-expert@apple-dev-skills`。
@@ -43,9 +48,13 @@ Claude Codeのsession内で実行します。
 `/apple-dev-skills:swift6-concurrency`。`/skills`でインストール済みのスキル一覧と、それぞれが
 どのプラグイン由来かを確認できます。
 
-> 新しくインストールされたスキルは、Claude Codeのスキル一覧のcontext予算が溢れたときに
-> 最初に説明文を失います。`/doctor`で一覧のコストを確認してください。厳しい場合はsettingsで
-> `skillListingBudgetFraction` / `skillOverrides`を調整してください。
+> 両方のプラグインをインストールすると、ファーストパーティの説明文が全38件——約5,500
+> トークン——読み込まれます。これはデフォルトの1%スキル一覧予算（200kコンテキストモデルで
+> 2,000トークン）の約2.7倍で、外部プラグインを含めない数字です。スキル一覧の予算はcontext
+> windowの1%です。溢れると、Claude Codeは呼び出し頻度が低いスキルから順に説明文を落とし
+> ます——新しくインストールしたスキルはその筆頭です。`/doctor`で一覧のコストを確認し、
+> 厳しければ`skillListingBudgetFraction`（例：`0.02`）を上げるか、使わないpluginを
+> `/plugin`から無効化してください。
 
 ## カタログ
 
@@ -63,7 +72,7 @@ Claude Codeのsession内で実行します。
 | Skill | 一言でいうと |
 |---|---|
 | `swift6-concurrency` | Swift 6言語モード + 完全なconcurrencyチェック；デフォルトのactor isolationは`MainActor`、`nonisolated` / actorへ跨る箇所のみSendableが必要 |
-| `apple-platform-targets` | デフォルトはiOS 26 / macOS 26、Xcode 26.x；既存ユーザーが旧バージョンの場合のみ18 / 15へ下げる |
+| `apple-platform-targets` | デフォルトはiOS 26 / macOS 26、Xcode 26.x；既存ユーザーが旧バージョンの場合のみiOS 18 / macOS 15（または17 / 14）へ下げる |
 | `swiftpm-modularization` | 単一Package、マルチtarget、薄いApp、DI composition root、テストは1対1 |
 | `swift-testing-baseline` | swift-testing + pointfreeco snapshot；protocol fake；厳格/寛容なsnapshotゲート |
 | `xcode-cloud-single-track-ci` | シングルトラックのXcode Cloud；PR / Main / Release / Periodic；merge前のPR CI |
@@ -87,24 +96,26 @@ Claude Codeのsession内で実行します。
 | `ios-design-mockup` | specから単一HTMLファイルのiOSデザインモックアップを生成——iPhoneフレーム + トークン |
 | `interactive-simulator-ux-audit` | `idb`（tap/describe/screenshot）で起動中のSimulatorを操作し、スナップショットでは見つからないナビゲーション／モーダル／safe-areaのバグを検出 |
 | `host-driven-xcuitest-e2e` | Tuist経由でアプリを起動しXCUITest E2Eを実行——専用scheme配線 + macOSウィンドウ座標でのクリック操作 |
-| `cloudkit-schema-source-of-truth` | バージョン管理された`.ckdb` + `cktool`によるDevelopmentへのexport／validate／deploy；ProductionはConsoleのみのユーザー管理ゲート |
+| `cloudkit-schema-source-of-truth` | バージョン管理された`.ckdb` + `cktool`によるDevelopmentへのexport／validate／import；ProductionはConsoleのみのユーザー管理ゲート |
 
 ### collaboration-skills（12）—— harness engineering：ディスパッチ、レビュー、リリース
 
 | Skill | 一言でいうと |
 |---|---|
 | `spec-phase-orchestration` | 実装前のドキュメントパイプライン；セクションごとの承認 |
-| `subagent-review-cycles` | Leader / Developer / Code-Reviewerのトライアド；1ラウンド目の外観上の指摘はinlineで即対応；limit(N) |
+| `subagent-review-cycles` | Leader / Developer / Code-Reviewerのトライアド；ラウンド数と却下の基準 |
 | `leader-developer-handoff-contract` | sub-agentへのディスパッチ時に必須の6要素 |
-| `agent-impl-notes-log` | sub-agentタスク進行中のリアルタイムimpl-notes——意思決定、逸脱、未解決の疑問 |
+| `agent-impl-notes-log`† | sub-agentタスク進行中のリアルタイムimpl-notes——意思決定、逸脱、未解決の疑問 |
 | `subagent-conflict-detection` | 新しいsub-agentの作業対象が進行中のworktreeと重複していないか確認 |
-| `methodology-pattern-extractor` | 会議記録から3回以上繰り返されるパターンを抽出 |
-| `session-to-meeting-log` | Claude Codeのsessionを会議記録にまとめる；逐語録ではなく要約 |
+| `methodology-pattern-extractor`† | 会議記録から3回以上繰り返されるパターンを抽出 |
+| `session-to-meeting-log`† | Claude Codeのsessionを会議記録にまとめる；逐語録ではなく要約 |
 | `pr-diff-verification` | push／PR作成前に`git show --stat --summary HEAD`がcommitの主張と一致することを確認 |
-| `backlog-routing-by-topic` | 散発的なアイデアをトピックごとに対応するspecファイルの§Backlogへ振り分け |
-| `claude-skill-plugin-packaging` | Claude Codeスキルの配布／インストール——depth-1ルール、plugin + marketplace、集約 |
+| `backlog-routing-by-topic`† | 散発的なアイデアをトピックごとに対応するspecファイルの§Backlogへ振り分け |
+| `claude-skill-plugin-packaging` | Claude Codeスキルの配布／インストール——depth-1ルール、plugin + marketplace、プロジェクト単位で固定インストール、参照による集約 |
 | `skill-authoring-patterns` | `superpowers:writing-skills`の上に重なるApple/Swiftカタログ層——routerの説明文、bookendセクション、二層のreferences、エビデンスベースのCR |
-| `github-contribution-workflow` | gh-CLIによるコントリビューションループ——PR、issue、GitHubファイル操作、secrets、コントリビューションフローのrepo設定；規約 + merge前のCLEAN |
+| `github-contribution-workflow` | gh-CLIによるコントリビューションループ——PR、issue、GitHubファイル操作、secrets、コントリビューションフローのrepo設定；規約 |
+
+† `spec-phase-orchestration`のドキュメント構成（`design.md` / `plan.md` / `meetings/`）を前提とします。
 
 ### 外部プラグイン集約（7）—— 参照によるクレジット付き集約
 
@@ -119,12 +130,12 @@ APIです、Xはこう作ります」。ファーストパーティのスキル�
 OSLogのみ、避けるべき既知の実行時バグ）。トピックが重なる箇所でも、両者は重複ではなく、
 答える詳細度のレベルが違うだけです。
 
-| Plugin | Author | Covers |
+| Plugin | 作者 | 対象範囲 |
 |---|---|---|
-| [`apple-skills`](https://github.com/Prisma-Labs-Dev/apple-skills) | Prisma Labs (vabole), MIT | 幅広いAppleフレームワーク——SwiftUI、SwiftData、App Intents、WidgetKit、StoreKit、HealthKit……に加え、SwiftUIパフォーマンス監査ガイド（コードファースト、view-update要因）も収録。`ios-performance-engineering` のInstruments / MetricKit計測と相補的 |
+| [`apple-skills`](https://github.com/Prisma-Labs-Dev/apple-skills) | Prisma Labs (vabole), MIT | 幅広いAppleフレームワーク——SwiftUI、SwiftData、App Intents、WidgetKit、StoreKit、HealthKit、`apple-aso`、`hig`……に加え、SwiftUIパフォーマンス監査ガイドも収録。`ios-performance-engineering`のInstruments / MetricKit計測と相補的。さらに`simulator-utils`と`xcuitest`も収録（このカタログのSimulator／XCUITestスキルとの役割分担は下記参照）。一部のスキルは`disabled-skills/`に置かれており、リポジトリには残るもののagentには読み込まれません |
 | [`swiftui-expert`](https://github.com/AvdLee/SwiftUI-Agent-Skill) | Antoine van der Lee (MIT) | SwiftUIパターン、Swift Charts、Liquid Glass、Instrumentsツールチェーン |
 | [`swiftui-pro`](https://github.com/twostraws/SwiftUI-Agent-Skill) | Paul Hudson (MIT) | SwiftUIの落とし穴、非推奨APIのウォッチリスト、iOS 26 / Liquid Glass |
-| [`caveman`](https://github.com/JuliusBrussee/caveman) | JuliusBrussee (MIT) | 超圧縮されたコミュニケーションモード——トークンを約75%削減（汎用的なagentの振る舞い） |
+| [`caveman`](https://github.com/JuliusBrussee/caveman) | JuliusBrussee (MIT) | 超圧縮されたコミュニケーションモード——出力トークンを約65%削減（著者による計測）。`SessionStart`／`UserPromptSubmit`フックを追加インストール（PATH上に`node`が必要、毎回のプロンプトで実行）（汎用的なagentの振る舞い） |
 | [`ponytail`](https://github.com/DietrichGebert/ponytail) | DietrichGebert (MIT) | 「怠け者のシニア開発者」モード——最もシンプルで最短の解法を強制する（汎用的なagentの振る舞い） |
 | [`i-have-adhd`](https://github.com/ayghri/i-have-adhd) | Ayoub G. (MIT) | 常時ONのADHDフレンドリーな出力モード——番号付きステップ、毎ターン状態を再掲示（汎用的なagentの振る舞い） |
 | [`xcode-build-skill`](https://github.com/pzep1/xcode-build-skill) | pz (MIT) | `xcodebuild`/`xcrun simctl` CLIチートシート——scheme → simulator → build → install → launch → screenshot |
@@ -132,19 +143,22 @@ OSLogのみ、避けるべき既知の実行時バグ）。トピックが重な
 `caveman`のライセンス：skills自体はMIT、repoにはBSL-1.1ライセンスのengineも含まれています。
 `caveman`はその後20スキルからなるスイートへと成長しました。そのうち4つ（`caveman-discover`、
 `caveman-manage`、`caveman-evidence-review`、`caveman-setup`）は、著者自身がホストする商用
-サービスCaveman Cloudについて説明したものです（汎用的なagentの振る舞い）。
+サービスCaveman Cloudについて説明したものです。
 
 `i-have-adhd`は`caveman`（トークン圧縮）や`ponytail`（解法の単純化）とは異なり、構造を
 形作ります。
 
-`xcode-build-skill`はCLI駆動で、`interactive-simulator-ux-audit`（idb駆動のインタラクティブ
-UX監査）や`host-driven-xcuitest-e2e`（Tuist scheme配線のXCUITest E2E）とは別物です——三者は
-重複しません。
+`xcode-build-skill`（`xcodebuild`/`simctl`のループ）と`apple-skills:simulator-utils`
+（`simctl`の単発操作）はCLIリファレンスです。`interactive-simulator-ux-audit`は探索的な監査
+のために`idb`を操作し、`host-driven-xcuitest-e2e`はCI向けにTuist schemeを配線します——
+`apple-skills:xcuitest`はそれが前提とするAPIリファレンスです。
 
 `apple-skills`は`vabole`の個人アカウントから`Prisma-Labs-Dev`organizationへ移管されました。
 この表には移管後のrepoを掲載しています。
 
 ## 他のインストール方法
+
+（Aは上記のクイックスタートです。）
 
 ### B —— チーム向けの固定バージョン
 
@@ -166,8 +180,10 @@ UX監査）や`host-driven-xcuitest-e2e`（Tuist scheme配線のXCUITest E2E）�
 ```
 
 これをcommitしておけば、コラボレーターがそのプロジェクトフォルダを信頼した時点で、追加の
-確認なしに自動的にこのmarketplaceが使えるようになります。それでもClaude Codeがあるプラグイン
-を未インストールと報告する場合は、表示された`/plugin install`コマンドを一度実行してください。
+確認なしに自動的にこのmarketplaceが使えるようになります。2つのファーストパーティプラグイン
+は相対パスのエントリなので、この時点でインストール済みです。外部プラグインはGitHubソース
+のため、`enabledPlugins`は他の人には自動インストールされません——各コラボレーターは、
+Claude Codeが表示する`claude plugin install …`の行を一度実行する必要があります。
 
 ### C —— `npx skills`（フラット、プラグイン不使用）
 
@@ -205,4 +221,4 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 `docs/superpowers/`にありました——現在は廃止され、git履歴として保存されています。
 `git log -- docs/`で見つけることができます。MIT——[LICENSE](LICENSE)を参照してください。
 
-<!-- src-sha: 92addee1cd524bf074406c50bf882691f565f7a8 -->
+<!-- src-sha: 717b9af19a42afc699c85476dae674477abc3726 -->

@@ -4,11 +4,12 @@
 >
 > 語言：[English](README.md) · [繁體中文](README.zh-Hant.md) · [简体中文](README.zh-Hans.md) · [日本語](README.ja.md)
 
-apple-dev-skills 是一個 **marketplace**，服務對象是正在把一個點子做到 App Store 上架的
-獨立開發者與小型團隊。第一方技能分成兩組：**Apple/Swift** 技能對應你正在打造的東西，
-**harness engineering** 技能對應你怎麼駕馭 Claude Code 本身 —— 規劃、審查、出貨。每一支
-技能都是帶立場的預設值，背後有實際上架的戰場故事，並受一道一致性把關。旁邊另以引用方式
-彙整同類最佳的**外部**技能 plugin —— 並非在此撰寫，僅連結並標註原作者，絕不複製。
+apple-dev-skills 是一個 **marketplace**，服務對象是要在 **iOS 26 / macOS 26 底線**上打造全新
+（greenfield）App —— 從點子做到 App Store 上架 —— 的獨立開發者與小型團隊。第一方技能分成
+兩組：**Apple/Swift** 技能對應你正在打造的東西，**harness engineering** 技能（你怎麼駕馭
+Claude Code 本身 —— 派工、審查、出貨）。每一支技能都是帶立場的預設值，背後有實際上架的
+戰場故事，並受一道一致性把關。旁邊另以引用方式彙整同類最佳的**外部**技能 plugin —— 並非
+在此撰寫，僅連結並標註原作者，絕不複製。
 
 ## 快速開始
 
@@ -19,10 +20,14 @@ apple-dev-skills 是一個 **marketplace**，服務對象是正在把一個點�
 ```
 /plugin marketplace add wei18/apple-dev-skills
 /plugin install apple-dev-skills@apple-dev-skills          # 26 Apple/Swift skills
-/plugin install collaboration-skills@apple-dev-skills      # 12 agent-collaboration skills
+/plugin install collaboration-skills@apple-dev-skills      # 12 harness-engineering skills
 ```
 
-若安裝摘要顯示 `Run /reload-plugins to activate.`，就執行它 —— 較舊版的 client 一定需要這步。
+每次安裝都會開一個詳情面板 —— 選 **User** scope。格式是 `plugin@marketplace`；這個
+marketplace 剛好跟它第一個 plugin 同名。
+
+若安裝摘要顯示 `Run /reload-plugins to activate.`，Claude Code 會自動幫你執行；如果它警告
+你下一則訊息會重讀整個對話，就手動跑 `/reload-plugins --force`。
 
 裝一個或兩個都可以。外部 plugin 的安裝方式相同，例如 `/plugin install swiftui-expert@apple-dev-skills`。
 
@@ -36,9 +41,11 @@ apple-dev-skills 是一個 **marketplace**，服務對象是正在把一個點�
 要指定某一支，用它的 slash command：`/apple-dev-skills:swift6-concurrency`。`/skills` 會列出
 已安裝的全部技能，以及每一支來自哪個 plugin。
 
-> 新安裝的技能最容易在 Claude Code 的技能清單 context 預算爆量時第一個失去描述。執行
-> `/doctor` 檢查清單的成本；若太吃緊，可在 settings 調整 `skillListingBudgetFraction` /
-> `skillOverrides`。
+> 兩個 plugin 一起裝，會載入全部 38 條第一方描述 —— 約 5,500 tokens，是預設 1% 技能清單
+> 預算（200k context 模型下是 2,000 tokens）的約 2.7 倍，還沒算外部 plugin。技能清單預算是
+> context window 的 1%；爆量時 Claude Code 會從最少被呼叫的技能開始砍描述 —— 新安裝的技能
+> 通常排最前面。執行 `/doctor` 檢查清單成本，太吃緊就調高 `skillListingBudgetFraction`
+> （例如 `0.02`），或透過 `/plugin` 停用不想用的 plugin。
 
 ## 目錄
 
@@ -56,7 +63,7 @@ apple-dev-skills 是一個 **marketplace**，服務對象是正在把一個點�
 | Skill | 一句話說明 |
 |---|---|
 | `swift6-concurrency` | Swift 6 語言模式 + 完整 concurrency 檢查；預設 actor isolation 為 `MainActor`，只有跨進 `nonisolated` / actor 的程式碼才需要 Sendable |
-| `apple-platform-targets` | 預設 iOS 26 / macOS 26、Xcode 26.x；只有既有使用者仍在舊版時才降到 18 / 15 |
+| `apple-platform-targets` | 預設 iOS 26 / macOS 26、Xcode 26.x；只有既有使用者仍在舊版時才降到 iOS 18 / macOS 15（或 17 / 14） |
 | `swiftpm-modularization` | 單一 Package、多 target、薄 App、DI composition root、測試一對一 |
 | `swift-testing-baseline` | swift-testing + pointfreeco snapshot；protocol fake；嚴格/寬鬆 snapshot 把關 |
 | `xcode-cloud-single-track-ci` | 單軌 Xcode Cloud；PR / Main / Release / Periodic；merge 前的 PR CI |
@@ -80,24 +87,26 @@ apple-dev-skills 是一個 **marketplace**，服務對象是正在把一個點�
 | `ios-design-mockup` | 從 spec 產出單檔 HTML iOS 設計 mockup —— iPhone 外框 + tokens |
 | `interactive-simulator-ux-audit` | 用 `idb`（tap/describe/screenshot）驅動已開機的 Simulator，抓 snapshot 抓不到的導航／modal／safe-area bug |
 | `host-driven-xcuitest-e2e` | 透過 Tuist 啟動 App 跑 XCUITest E2E —— 專用 scheme 接線 + macOS 視窗座標點擊驅動 |
-| `cloudkit-schema-source-of-truth` | 納入版控的 `.ckdb` + `cktool` 匯出／驗證／部署到 Development；Production 是使用者自持、僅限 Console 的關卡 |
+| `cloudkit-schema-source-of-truth` | 納入版控的 `.ckdb` + `cktool` 匯出／驗證／匯入到 Development；Production 是使用者自持、僅限 Console 的關卡 |
 
 ### collaboration-skills（12）—— harness engineering：派工、審查、出貨
 
 | Skill | 一句話說明 |
 |---|---|
 | `spec-phase-orchestration` | 實作前的文件流水線；逐節核可 |
-| `subagent-review-cycles` | Leader / Developer / Code-Reviewer 三角；第一輪外觀問題直接 inline；limit(N) |
+| `subagent-review-cycles` | Leader / Developer / Code-Reviewer 三角；跑幾輪、什麼算駁回 |
 | `leader-developer-handoff-contract` | 派工 sub-agent 時必備的 6 個元素 |
-| `agent-impl-notes-log` | Sub-agent 任務進行中的即時 impl-notes —— 決策、偏離、未決問題 |
+| `agent-impl-notes-log`† | Sub-agent 任務進行中的即時 impl-notes —— 決策、偏離、未決問題 |
 | `subagent-conflict-detection` | 檢查新 sub-agent 的目標不與進行中的 worktree 重疊 |
-| `methodology-pattern-extractor` | 從會議記錄中萃取重複出現 ≥3 次的模式 |
-| `session-to-meeting-log` | 把一場 Claude Code session 整併成會議記錄；是摘要，不是逐字稿 |
+| `methodology-pattern-extractor`† | 從會議記錄中萃取重複出現 ≥3 次的模式 |
+| `session-to-meeting-log`† | 把一場 Claude Code session 整併成會議記錄；是摘要，不是逐字稿 |
 | `pr-diff-verification` | Push／開 PR 前，確認 `git show --stat --summary HEAD` 與 commit 宣稱的內容相符 |
-| `backlog-routing-by-topic` | 依主題把零散點子路由到對應 spec 檔的 §Backlog |
-| `claude-skill-plugin-packaging` | 發佈／安裝 Claude Code 技能 —— depth-1 規則、plugin + marketplace、彙整 |
+| `backlog-routing-by-topic`† | 依主題把零散點子路由到對應 spec 檔的 §Backlog |
+| `claude-skill-plugin-packaging` | 發佈／安裝 Claude Code 技能 —— depth-1 規則、plugin + marketplace、依專案釘版安裝、以引用方式彙整 |
 | `skill-authoring-patterns` | 疊在 `superpowers:writing-skills` 之上的 Apple/Swift 目錄層 —— router 描述、bookend 段落、兩層式 references、證據導向 CR |
-| `github-contribution-workflow` | gh-CLI 貢獻循環 —— PR、issue、GitHub 檔案操作、secrets、貢獻流程的 repo 設定；慣例 + merge 前 CLEAN |
+| `github-contribution-workflow` | gh-CLI 貢獻循環 —— PR、issue、GitHub 檔案操作、secrets、貢獻流程的 repo 設定；慣例 |
+
+† 需要 `spec-phase-orchestration` 的文件版型（`design.md` / `plan.md` / `meetings/`）。
 
 ### 彙整之外部 plugin（7）—— 以引用方式收錄，完整標註
 
@@ -111,28 +120,32 @@ swift-testing + snapshot、只用 OSLog、已知的執行期 bug 要避開）。
 
 | Plugin | 作者 | 涵蓋範圍 |
 |---|---|---|
-| [`apple-skills`](https://github.com/Prisma-Labs-Dev/apple-skills) | Prisma Labs (vabole), MIT | 廣泛的 Apple 框架 —— SwiftUI、SwiftData、App Intents、WidgetKit、StoreKit、HealthKit……以及一份 SwiftUI 效能稽核指南（程式碼優先、view-update 成因），與 `ios-performance-engineering` 的 Instruments / MetricKit 量測互補 |
+| [`apple-skills`](https://github.com/Prisma-Labs-Dev/apple-skills) | Prisma Labs (vabole), MIT | 廣泛的 Apple 框架 —— SwiftUI、SwiftData、App Intents、WidgetKit、StoreKit、HealthKit、`apple-aso`、`hig`……以及一份 SwiftUI 效能稽核指南，與 `ios-performance-engineering` 的 Instruments / MetricKit 量測互補；另外還有 `simulator-utils` 與 `xcuitest`（與本目錄 Simulator／XCUITest 技能的分工見下方說明）。有一小部分技能放在 `disabled-skills/` —— 留在 repo 裡但不會被 agent 載入 |
 | [`swiftui-expert`](https://github.com/AvdLee/SwiftUI-Agent-Skill) | Antoine van der Lee (MIT) | SwiftUI 模式、Swift Charts、Liquid Glass、Instruments 工具鏈 |
 | [`swiftui-pro`](https://github.com/twostraws/SwiftUI-Agent-Skill) | Paul Hudson (MIT) | SwiftUI 陷阱、deprecated API 觀察清單、iOS 26 / Liquid Glass |
-| [`caveman`](https://github.com/JuliusBrussee/caveman) | JuliusBrussee (MIT) | 極度壓縮的溝通模式 —— 省下約 75% token（通用 agent 行為） |
+| [`caveman`](https://github.com/JuliusBrussee/caveman) | JuliusBrussee (MIT) | 極度壓縮的溝通模式 —— 省下約 65% 輸出 token（作者自測）；會裝上 `SessionStart`／`UserPromptSubmit` hook（需要 PATH 上有 `node`，每則 prompt 都會執行）（通用 agent 行為） |
 | [`ponytail`](https://github.com/DietrichGebert/ponytail) | DietrichGebert (MIT) | 「懶惰資深工程師」模式 —— 逼出最簡單、最短的解法（通用 agent 行為） |
 | [`i-have-adhd`](https://github.com/ayghri/i-have-adhd) | Ayoub G. (MIT) | 常駐的 ADHD 友善輸出模式 —— 編號步驟、每一輪重述狀態（通用 agent 行為） |
 | [`xcode-build-skill`](https://github.com/pzep1/xcode-build-skill) | pz (MIT) | `xcodebuild`/`xcrun simctl` CLI 小抄 —— scheme → 模擬器 → build → install → launch → 截圖 |
 
 `caveman` 的授權：技能本身 MIT；repo 另外還有一個 BSL-1.1 授權的 engine。`caveman` 之後已
 長成 20 個技能的套件；其中 4 個（`caveman-discover`、`caveman-manage`、
-`caveman-evidence-review`、`caveman-setup`）在講作者自家托管的 Caveman Cloud 商業服務
-（通用 agent 行為）。
+`caveman-evidence-review`、`caveman-setup`）在講作者自家托管的 Caveman Cloud 商業服務。
 
-`i-have-adhd` 相對於 `caveman`（token 壓縮）與 `ponytail`（解法簡化），這個塑形的是結構。
+`i-have-adhd` 與 `caveman`（token 壓縮）、`ponytail`（解法簡化）不同，它塑形的是每次回答的
+**結構**。
 
-`xcode-build-skill` 是 CLI 驅動的，與 `interactive-simulator-ux-audit`（idb 驅動的互動式 UX
-稽核）、`host-driven-xcuitest-e2e`（Tuist scheme 接線的 XCUITest E2E）不同 —— 三者不重疊。
+`xcode-build-skill`（`xcodebuild`／`simctl` 迴圈）與 `apple-skills:simulator-utils`（`simctl`
+單次操作）是 CLI 參考手冊；`interactive-simulator-ux-audit` 用 `idb` 做探索式稽核；
+`host-driven-xcuitest-e2e` 接 Tuist scheme 跑 CI —— `apple-skills:xcuitest` 是它假設你已具備
+的 API 參考。
 
 `apple-skills` 已從 `vabole` 的個人帳號移轉到 `Prisma-Labs-Dev` 組織；此表列出的是組織版
 repo。
 
 ## 其他安裝方式
+
+（A 就是上面的快速開始。）
 
 ### B —— 團隊固定版本
 
@@ -152,8 +165,10 @@ repo。
 }
 ```
 
-commit 它 —— 協作者信任該專案資料夾之後就會自動拿到這個 marketplace，不會有額外提示。若
-Claude Code 仍回報某個 plugin 未安裝，照它顯示的 `/plugin install` 指令跑一次即可。
+commit 它 —— 協作者信任該專案資料夾之後就會自動拿到這個 marketplace，不會有額外提示。兩支
+第一方 plugin 是相對路徑條目，到這步就已裝好；外部 plugin 是 GitHub 來源，`enabledPlugins`
+不會幫別人自動安裝 —— 每位協作者仍要自己跑一次 Claude Code 印出的 `claude plugin install …`
+指令。
 
 ### C —— `npx skills`（平鋪，不走 plugin）
 
@@ -185,4 +200,4 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 此處僅以引用方式呈現。催生本 repo 雙 plugin 結構的設計 spec 與計畫原本放在 `docs/superpowers/`
 —— 已退役、改由 git 歷史保存；用 `git log -- docs/` 可以找回。MIT —— 見 [LICENSE](LICENSE)。
 
-<!-- src-sha: 92addee1cd524bf074406c50bf882691f565f7a8 -->
+<!-- src-sha: 717b9af19a42afc699c85476dae674477abc3726 -->
