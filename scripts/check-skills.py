@@ -123,7 +123,7 @@ for name, (plugin, d) in skills.items():
     # is a routing pointer / negative boundary, which the doctrine allows; only arrows that
     # chain non-skill words (`archive → export → upload`) count as a workflow summary.
     # A `plugin:skill` target (any prefix, incl. aggregated externals) is routing by form alone.
-    routing = re.compile(r"→\s*`?(?:(?P<prefix>[a-z0-9-]+):)?(?P<skill>[a-z0-9-]+)`?")
+    routing = re.compile(r"→\s*[`*_]*(?:(?P<prefix>[a-z0-9-]+):)?(?P<skill>[a-z0-9-]+)[`*_]*")
     def is_routing(m):
         r = routing.match(desc, m.start())
         return bool(r) and (r.group("prefix") is not None or r.group("skill") in skills)
