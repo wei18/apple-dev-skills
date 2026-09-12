@@ -42,6 +42,7 @@ listing cap for unrelated reasons.
 - **Embed the framework symbols / APIs that should trigger it** — `Sendable`, `@MainActor`, `MetricKit`, `AccessibilityFocusState`. This is the highest-leverage delta for *framework* skills: an agent routing on "I'm getting a Sendable error" only lands here if `Sendable` is in the description.
 - **Chain trigger scenarios** as a short list ("Use when … ; when … ; when …").
 - **Add a negative boundary when over-firing is a real risk** (e.g. "discussing screens" vs "generate a mockup") — name when NOT to fire.
+- **If the trigger is really *a file type*** (`*.xcstrings`, `Package.swift`), prefer the official `paths:` frontmatter over a prose file trigger — it takes glob patterns, and Claude then loads the skill automatically only when working with matching files. `mise run check` flags prose file-triggers as `candidate for paths:`.
 - Routing is the model's judgment, not literal string matching — write for a reader deciding "is this my situation?", not for a regex.
 
 ```
@@ -73,7 +74,7 @@ gaps in the "today" column are historical debt, not evidence the convention is o
 | `## Rationale` | *why* this default was chosen. Unique to this catalog. | Not retrofitted | 20/38 |
 | `## Deviation considerations` | *when to override* the default, and the cost (e.g. "Drop to iOS 18 when an existing user base still runs it — every Liquid Glass API then needs an availability guard, and the pre-26 chrome must be snapshot-tested separately"). Also ours. | Not retrofitted | 22/38 |
 | `## Common Mistakes` | concrete, anti-pattern-named items ("Using `DateFormatter()` in `body`"), as many as are real — do not pad to a number. | Not retrofitted; older skills express this as inline anti-pattern sections instead. | 10/38 |
-| `## Review Checklist` | a `- [ ]` list at the **end**, runnable top-to-bottom. | Not retrofitted; older skills use a prose `## Verification checklist` instead. | 25/38 (incl. the older prose form; `mise run check`'s section matrix) |
+| `## Review Checklist` | a `- [ ]` list at the **end**, runnable top-to-bottom. | Not retrofitted; older skills use a prose `## Verification checklist` instead. | 26/38 (incl. the older prose form; `mise run check`'s section matrix) |
 
 - **`## Related skills`** — siblings by name.
 

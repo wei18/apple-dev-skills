@@ -17,6 +17,13 @@ argument-hint: "[session-id-or-path] [topic]"
 
 ## Inputs
 
+### Arguments
+
+- `$0` — `[session-id-or-path]`: the session id, or a full path to the `.jsonl`. Required.
+- `$1` — `[topic]`: kebab-case topic for `meetings/{YYYY-MM-DD}_{topic}.md`. Optional — when
+  no second argument is passed the placeholder stays as literal `$1`; derive the topic from
+  the session's dominant subject instead.
+
 ### Locating the session file
 
 - Default location: `~/.claude/projects/<encoded-project-path>/<sessionId>.jsonl`

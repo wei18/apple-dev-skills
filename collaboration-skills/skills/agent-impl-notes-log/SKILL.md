@@ -14,7 +14,6 @@ The phase meeting log (`meetings/{date}_{topic}.md`) is summative — written af
 
 Subagent MUST invoke this skill at the start of any dispatch matching ANY of:
 
-- Touches more than 3 files in production code.
 - Implements behavior whose spec has known ambiguity (e.g., `// UNCONFIRMED` markers, "Unconfirmed ?" prerequisites).
 - Introduces a new dependency, target, or module.
 - Refactors existing code beyond a one-line fix.
