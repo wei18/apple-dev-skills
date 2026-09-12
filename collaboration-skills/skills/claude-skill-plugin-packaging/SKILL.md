@@ -160,8 +160,11 @@ cd .claude/skills/their-plugin && git checkout v0.1.0 && cd -
 On the next session (after the project-scope trust dialog), it self-loads as
 `their-plugin@skills-dir` — no marketplace, no install step, no settings.json edit.
 Caveats: only resolves when Claude Code is launched from the session's primary working
-directory (no walk-up), and code-running components (hooks, MCP servers) inside a
-skills-dir plugin are restricted. **This repo's own root has only `marketplace.json`,
+directory (no walk-up); and because a project-scope skills-dir plugin's content comes
+from the repository, its code-running components are gated further — MCP servers it
+declares go through the same per-server approval as a project `.mcp.json`, LSP servers
+start only after you trust the workspace, and background monitors do not load
+(personal-scope `~/.claude/skills/` plugins have none of these restrictions). **This repo's own root has only `marketplace.json`,
 not `plugin.json`, so a bare submodule of *this* repo does not self-load this way — use
 B1 or B2.**
 
@@ -201,8 +204,11 @@ submodule only when you need to **vendor + pin** another repo's content into you
 - **Marketplace state is per-user** (`~/.claude/plugins/known_marketplaces.json`), but the **committed project `.claude/settings.json` declaration** is what makes it reproducible for everyone on trust. Marketplace names are checked against a reserved list (`claude-code-marketplace`, `anthropic-marketplace`, `agent-skills`, …) on every load — a name collision silently stops that marketplace from loading.
 - **Token cost**: every enabled skill's description is always-on context — for the exact
   mechanism see the listing-budget reference doc under `skill-authoring-patterns`. `/doctor`
-  and `/skill-doctor` show the actual per-session cost; `skillOverrides: "name-only"` can
-  demote a low-priority plugin to save budget.
+  and `/skill-doctor` show the actual per-session cost. `skillOverrides: "name-only"` only
+  demotes personal/project skills — it does **not** apply to plugin skills ("Plugin skills
+  are not affected by `skillOverrides`. Manage those through `/plugin` instead."); for a
+  plugin the only levers are disabling it via `/plugin`, or raising the consumer's
+  `skillListingBudgetFraction`.
 - **Relative marketplace paths resolve for both git-based and local-directory marketplaces**
   — they fail only when the marketplace was added by a direct URL to `marketplace.json`. A
   `directory` source resolves against the *containing* repo's main checkout (including from
