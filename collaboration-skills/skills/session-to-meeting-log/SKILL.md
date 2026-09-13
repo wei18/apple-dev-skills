@@ -19,7 +19,8 @@ argument-hint: "[session-id-or-path] [topic]"
 
 ### Arguments
 
-- `$0` — `[session-id-or-path]`: the session id, or a full path to the `.jsonl`. Required.
+- `$0` — `[session-id-or-path]`: the session id, or a full path to the `.jsonl`. Strongly recommended — see the fallback
+  under "Locating the session file" when it is missing (the placeholder stays as literal `$0`).
 - `$1` — `[topic]`: kebab-case topic for `meetings/{YYYY-MM-DD}_{topic}.md`. Optional — when
   no second argument is passed the placeholder stays as literal `$1`; derive the topic from
   the session's dominant subject instead.
@@ -31,10 +32,15 @@ argument-hint: "[session-id-or-path] [topic]"
   character); locate the file by id instead: `ls ~/.claude/projects/*/<sessionId>.jsonl`.
 - `<sessionId>`: a UUID-like string, passed as the first argument. `context: fork` runs
   this skill in a subagent with no conversation history and no way to ask the user to
-  confirm a guess — the **invoker** (not this fork) must run `echo $CLAUDE_CODE_SESSION_ID`
+  confirm a guess — so the **invoker** should run `echo $CLAUDE_CODE_SESSION_ID`
   before dispatching (set automatically in Bash tool subprocesses) and pass the result as
-  `[session-id-or-path]`. If the argument is missing, fail immediately and print this
-  instruction rather than guessing from directory mtime.
+  `[session-id-or-path]`.
+- Missing argument fallback: read `$CLAUDE_CODE_SESSION_ID` in this fork's own Bash tool and
+  accept it only if `ls ~/.claude/projects/*/<that-id>.jsonl` finds exactly one file. The docs
+  don't say whether a fork sees the invoker's id or its own, and a fork's own transcript lives
+  under `<sessionId>/subagents/`, so a wrong id fails this check instead of silently picking
+  another session. If the variable is empty or the check doesn't find exactly one file, fail
+  immediately and print the invoker instruction above rather than guessing from directory mtime.
 
 ### JSONL structure
 
