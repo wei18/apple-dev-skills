@@ -5,6 +5,14 @@
 description = "SSOT consistency gate + SKILL.md format gate (two plugins, catalog, counts, zh-Hant/zh-Hans/ja freshness, frontmatter/format BLOCKERs)"
 run = ["python3 scripts/check-consistency.py", "python3 scripts/check-skills.py ."]
 
+[tasks.validate]
+description = "Official `claude plugin validate --strict` on the marketplace and both plugins (plugin.json + skills/ frontmatter). Needs the Claude Code CLI on PATH, so it is not part of `mise run check` or pre-commit; CI installs a pinned CLI and runs it."
+run = [
+  "claude plugin validate . --strict",
+  "claude plugin validate ./apple-dev-skills --strict",
+  "claude plugin validate ./collaboration-skills --strict",
+]
+
 [tasks.check-skills]
 description = "SKILL.md frontmatter/format gate only (official Agent Skills rules + catalog conventions); fails on any BLOCKER or MAJOR"
 run = "python3 scripts/check-skills.py ."
