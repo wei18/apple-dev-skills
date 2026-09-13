@@ -6,14 +6,19 @@ A separate close-the-loop activity that fires **once per phase** (not once per r
 the commit/branch the phase started from, e.g. `main` or the phase's starting SHA):
 
 ```
-git diff --name-only <base>..HEAD | xargs -r rg -n --no-heading -e 'TODO|FIXME|XXX|HACK|stub|placeholder'
+git diff -z --name-only --diff-filter=d <base>...HEAD | xargs -0 -r rg -n --no-heading -e 'TODO|FIXME|XXX|HACK|stub|placeholder'
 ```
 
 If `rg` isn't installed (it isn't pinned in this repo's `.mise.toml`), use the `grep` fallback:
 
 ```
-git diff --name-only <base>..HEAD | xargs -r grep -rnE 'TODO|FIXME|XXX|HACK|stub|placeholder'
+git diff -z --name-only --diff-filter=d <base>...HEAD | xargs -0 -r grep -rnE 'TODO|FIXME|XXX|HACK|stub|placeholder'
 ```
+
+`<base>...HEAD` (three dots) diffs against the merge base, so commits landed on `<base>`
+after the phase branched off don't leak into the sweep. `--diff-filter=d` excludes deleted
+paths (a deleted file has nothing left to grep). `-z` / `xargs -0` keep filenames containing
+spaces intact.
 
 Add your own project's phase-marker string to the pattern if it has one (e.g. `|Phase [0-9]+ Part` for a project that labels work-in-progress chunks that way).
 

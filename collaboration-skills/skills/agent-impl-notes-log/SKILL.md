@@ -17,7 +17,7 @@ Subagent MUST invoke this skill at the start of any dispatch matching ANY of:
 - Implements behavior whose spec has known ambiguity (e.g., `// UNCONFIRMED` markers, "Unconfirmed ?" prerequisites).
 - Introduces a new dependency, target, or module.
 - Refactors existing code beyond a one-line fix.
-- Any M- or L-size task under `ai-collaboration-mode` (touches ≥2 files, adds new behavior, or gets a spec/plan before code).
+- Any M- or L-size task by your workflow's task-sizing convention, if it has one (touches ≥2 files, adds new behavior, or gets a spec/plan before code).
 
 Subagent MAY skip this skill for trivial one-line fixes, pure typo corrections, or documentation copy edits.
 

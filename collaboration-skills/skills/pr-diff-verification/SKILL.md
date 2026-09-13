@@ -31,9 +31,14 @@ For the HEAD commit (or all commits on the branch since base), extract concrete 
 
 ```bash
 git show --stat --summary HEAD                    # for single commit
-git diff --stat --summary origin/main..HEAD       # for branch cumulative
+git diff --stat --summary origin/main...HEAD      # for branch cumulative
 git log --oneline origin/main..HEAD               # for commit count
 ```
+
+`git diff` takes three dots (`origin/main...HEAD`, diff against the merge base — otherwise
+commits landed on `origin/main` since the branch forked also show up in the stat);
+`git log --oneline` keeps two dots (`origin/main..HEAD`, commits reachable from HEAD but not
+from `origin/main`).
 
 Plain `--stat` only prints `path | N +-` per file; the `create mode` / `delete mode` /
 `rename A => B (NN%)` lines only appear with `--summary` added.
@@ -84,7 +89,7 @@ Subagent returns: "3 commits, 11 files, +265/-272 LOC, all 7 wiring tests pass"
 
 Leader runs:
   git log --oneline origin/main..HEAD   # should show 3 commits
-  git diff --stat origin/main..HEAD     # should show ~11 files, ±540 line tags
+  git diff --stat origin/main...HEAD    # should show ~11 files, ±540 line tags
 
 If git log shows 1 commit (subagent squashed without saying) → OK if intentional
 If git log shows 0 commits (commits lost to worktree wipe) → STOP, recover, re-push

@@ -26,8 +26,9 @@ argument-hint: "[session-id-or-path] [topic]"
 
 ### Locating the session file
 
-- Default location: `~/.claude/projects/<encoded-project-path>/<sessionId>.jsonl`
-- `<encoded-project-path>`: replace every `/` and `.` in the absolute path with `-`, e.g. `/Users/alice/GitHub/MyOrg/my-project` → `-Users-alice-GitHub-MyOrg-my-project`, and `/Users/alice/.claude-mem/observer-sessions` → `-Users-alice--claude-mem-observer-sessions`.
+- Default location: `~/.claude/projects/<encoded-project-path>/<sessionId>.jsonl` — don't
+  compute `<encoded-project-path>` (the encoding rule is unofficial and unverified for every
+  character); locate the file by id instead: `ls ~/.claude/projects/*/<sessionId>.jsonl`.
 - `<sessionId>`: a UUID-like string, passed as the first argument. `context: fork` runs
   this skill in a subagent with no conversation history and no way to ask the user to
   confirm a guess — the **invoker** (not this fork) must run `echo $CLAUDE_CODE_SESSION_ID`
@@ -45,7 +46,7 @@ One JSON event per line; common `type` fields:
 | `assistant` | Assistant response (incl. tool_use blocks) |
 | `system`, `attachment`, `file-history-snapshot`, … | Harness metadata (queue state, mode, cost, permission state); skip anything that is not `user`/`assistant`. There is no top-level `tool_result` or `summary` type. |
 
-Key fields: `timestamp`, `message.content`, `message.role`, `uuid`, `parentUuid`. Also present but not narrative content: `isSidechain` and `isMeta` boolean flags — a line with either set to `true` is harness-internal bookkeeping, not a primary user/assistant turn; filter it out the same way as the non-`user`/`assistant` types above. Sub-agent transcripts live in a separate file, `<sessionId>/subagents/agent-*.jsonl`, not inline in the main log — combined with the two flags, "no subagent noise" becomes a mechanical filter rather than a judgment call.
+Key fields: `timestamp`, `message.content`, `message.role`, `uuid`, `parentUuid`. Also present but not narrative content: `isSidechain`, `isMeta`, and `isCompactSummary` boolean flags (observed in local transcripts, not officially documented) — a line with any of these set to `true` is harness-internal bookkeeping or an auto-generated compaction summary, not a primary user/assistant turn; filter it out the same way as the non-`user`/`assistant` types above (use it as background context at most, never as a source for Decisions). Sub-agent transcripts live in a separate file, `<sessionId>/subagents/agent-*.jsonl`, not inline in the main log — combined with these flags, "no subagent noise" becomes a mechanical filter rather than a judgment call.
 
 ## Output
 
