@@ -27,12 +27,12 @@ Owns the source-selection decision and its PrivacyInfo/ATT consequence. Does NOT
 | **MetricKit, iOS / macOS 27+** (`MetricManager().metricReports` / `.diagnosticReports`, `for await`) | Same coverage; `MXMetricManager` / `MXMetricPayload` / `MXMetricManagerSubscriber` are deprecated starting iOS / macOS 27 | Same — catalog default is iOS 26, so no forced migration yet |
 | **Game Center** (if it's a game) | Leaderboards / achievement completion / peer-player comparison | Game Center API / Game Center app |
 
-> **macOS caveat**: macOS 12–15 only send `MXDiagnosticPayload`; macOS 26 and later send a daily `MXMetricPayload` just like iOS. Only a deployment target below macOS 26 needs to fall back to App Store Connect Analytics + targeted `OSSignposter` traces.
+> **macOS caveat**: Apple's API lists `MXMetricManagerSubscriber` on macOS 12 and later; which payloads a Mac actually delivers is not documented. Verify delivery on a device at your macOS floor, and fall back to App Store Connect Analytics + targeted `OSSignposter` traces if payloads don't arrive.
 
 ### Privacy / Manifest
 
 - **`PrivacyInfo.xcprivacy` is a required deliverable** (hard App Store submission requirement since 2024-05-01 for any app using a required-reason API).
-- **No third-party SDK doesn't mean a minimal manifest.** The required-reason API rule applies to the App's own code, not just third-party SDKs: using `UserDefaults`, file-modification timestamps, system boot time, disk-space APIs, or active-keyboards APIs each requires a declared entry in `NSPrivacyAccessedAPITypes` (e.g. `UserDefaults` → reason `CA92.1`) or ASC upload is rejected (ITMS-91053). Almost every app uses `UserDefaults`, so the manifest needs at least that entry plus `NSPrivacyTracking: false`.
+- **No third-party SDK doesn't mean a minimal manifest.** The required-reason API rule applies to the App's own code, not just third-party SDKs: using `UserDefaults`, file-modification timestamps, system boot time, disk-space APIs, or active-keyboards APIs each requires a declared entry in `NSPrivacyAccessedAPITypes` (e.g. `UserDefaults` → reason `CA92.1`); otherwise Apple sends a missing-reason email, and since 2024-05-01 such uploads aren't accepted by App Store Connect (details in `app-store-review-rejections`'s privacy-manifest reference). Almost every app uses `UserDefaults`, so the manifest needs at least that entry plus `NSPrivacyTracking: false`.
 - **No ATT prompt needed** (no IDFA use case).
 - CloudKit / Game Center's user-facing privacy notices are handled at the system layer by Apple; the App only needs to declare data usage in PrivacyInfo.
 

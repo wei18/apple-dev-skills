@@ -1,6 +1,6 @@
 # Apple HIG Design Tokens
 
-These are the canonical iOS values. Drop them into the HTML as CSS variables and the tokens panel.
+These are iOS reference values; the system colors follow the HIG Color table as of 2025-06-09 (iOS 26). The HIG notes that documented color values are for reference during design and may change between releases. Drop them into the HTML as CSS variables and the tokens panel.
 
 ## Contents
 
@@ -41,14 +41,14 @@ These are the canonical iOS values. Drop them into the HTML as CSS variables and
   --color-separator-opaque: #C6C6C8;
 
   /* ===== System colors (default Light values) ===== */
-  --color-system-blue:   #007AFF;  /* default tint */
+  --color-system-blue:   #0088FF;  /* default tint */
   --color-system-green:  #34C759;
-  --color-system-indigo: #5856D6;
-  --color-system-orange: #FF9500;
+  --color-system-indigo: #6155F5;
+  --color-system-orange: #FF8D28;
   --color-system-pink:   #FF2D55;
-  --color-system-purple: #AF52DE;
-  --color-system-red:    #FF3B30;
-  --color-system-teal:   #30B0C7;
+  --color-system-purple: #CB30E0;
+  --color-system-red:    #FF383C;
+  --color-system-teal:   #00C3D0;
   --color-system-yellow: #FFCC00;
 
   --color-system-gray:   #8E8E93;
@@ -156,7 +156,7 @@ These are the canonical iOS values. Drop them into the HTML as CSS variables and
 <button style="
   height: 50px;
   padding: 0 20px;
-  background: rgba(0,122,255,0.15);
+  background: rgba(0,136,255,0.15);
   color: var(--color-tint);
   border: none;
   border-radius: 12px;
@@ -332,12 +332,12 @@ When labeling colors in the tokens panel, use these SwiftUI names so iOS enginee
 
 | Hex / value | SwiftUI |
 |---|---|
-| `#007AFF` (default tint) | `Color.accentColor` / `Color.blue` |
-| `#FF3B30` | `Color.red` |
+| `#0088FF` (default tint) | `Color.accentColor` / `Color.blue` |
+| `#FF383C` | `Color.red` |
 | `#34C759` | `Color.green` |
-| `#FF9500` | `Color.orange` |
+| `#FF8D28` | `Color.orange` |
 | `#FFCC00` | `Color.yellow` |
-| `#AF52DE` | `Color.purple` |
+| `#CB30E0` | `Color.purple` |
 | `#FF2D55` | `Color.pink` |
 | `#8E8E93` | `Color.gray` |
 | Label primary | `Color.primary` / `Color(.label)` |
@@ -374,8 +374,8 @@ If the spec calls for Dark Mode, swap these in a second `:root[data-theme="dark"
 --color-bg-grouped: #000000;
 --color-bg-grouped-secondary: #1C1C1E;
 --color-separator: rgba(84,84,88,0.65);
---color-system-blue: #0A84FF;
---color-system-red:  #FF453A;
+--color-system-blue: #0091FF;
+--color-system-red:  #FF4245;
 --color-system-green:#30D158;
---color-system-orange:#FF9F0A;
+--color-system-orange:#FF9230;
 ```

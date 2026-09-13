@@ -31,6 +31,7 @@ Then, per screen rather than per project: `swiftui-navigation-architecture`, `io
 - **iOS 26 / macOS 26** as the default minimum deployment target.
 - Toolchain: **Xcode 26.x** (Swift 6.2+ compiler). Language mode is decided in `swift6-concurrency`, not here — Xcode 26 builds Swift 6 mode for any floor, so the floor is a product decision, not a toolchain one.
 - Do not auto-bump with each Xcode major — bumping requires an explicit decision recorded in `foundations.md` (`collaboration-skills:spec-phase-orchestration` layout).
+- That no-auto-bump rule covers the **deployment floor**, not the toolchain: the toolchain line must move ahead of Apple's App Store Connect SDK minimum (since April 28, 2026: Xcode 26; from April 2027: the 27 SDKs), in one PR that updates the README / `foundations.md` toolchain line and the Xcode Cloud workflow (`xcode-cloud-single-track-ci`). Xcode 27 installs and runs only on Apple silicon Macs with macOS Tahoe 26.6 or later.
 - Keep `Package.swift` `platforms: [.iOS(.v26), .macOS(.v26)]` **aligned** with every App target's `IPHONEOS_DEPLOYMENT_TARGET` / `MACOSX_DEPLOYMENT_TARGET`; no skew. `.v26` requires `// swift-tools-version: 6.2` (6.0 / 6.1 report `'v26' is unavailable`).
 
 ## Rationale
@@ -38,7 +39,7 @@ Then, per screen rather than per project: `swiftui-navigation-architecture`, `io
 - iOS 26 / macOS 26 is the first OS pair with Liquid Glass: on a 26 floor the system chrome (toolbars, tab bars, sheets, `.glassEffect()`) is one design language, with no `#available` fork and no legacy-look branch to test.
 - The floor no longer buys toolchain features — Xcode 26 compiles Swift 6 mode and the Swift 6.2 concurrency additions for older floors too. What a lower floor costs is a second UI generation to maintain; what it buys is users who haven't updated.
 - Solo / small projects have no installed base to protect, and Apple's adoption curve puts the current major on the large majority of active devices within months of release, so the compatibility tax is small.
-- Locking out auto-bumps prevents blindly chasing each Xcode major (the next is iOS 27 / macOS 27) and cutting off users mid-cycle.
+- Locking out auto-bumps prevents blindly chasing each Xcode major (each new major, e.g. iOS 27 / macOS 27) and cutting off users mid-cycle.
 
 ## Deviation considerations
 
@@ -58,7 +59,7 @@ Then, per screen rather than per project: `swiftui-navigation-architecture`, `io
 
 - **Trigger**: an API that exists only in the newest major.
 - **Conditions**: brand-new App with no user base, or a personal / showcase project willing to cut off the previous major.
-- **Cost**: TestFlight testers and App Review devices must be on the newest major; the catalog's other skills are written against the 26 baseline.
+- **Cost**: TestFlight testers and App Review devices must be on the newest major; the catalog's other skills are written against the 26 baseline; `.v27` needs `// swift-tools-version: 6.4` (Xcode 27+).
 - **How to record**: same `foundations.md` note.
 
 ## Verification checklist when locking targets

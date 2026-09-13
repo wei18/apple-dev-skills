@@ -6,12 +6,16 @@
   a 0-byte file ("Cannot parse a NULL or zero-length data"); remove the file
   first and let `PlistBuddy Add` create it fresh. *Practice observed* — the
   actual first-run failure on a real project's local-upload script.
-- **Export-compliance can silently gate a build in "Processing."** Declaring
-  `ITSAppUsesNonExemptEncryption` (`false` if you ship no custom encryption)
-  once means every future upload skips ASC's interactive compliance question;
-  a new app without it isn't blocked outright but holds pending a human answer
-  in the ASC web UI (see `app-store-review-rejections`'s export-compliance
-  row — an ASC upload step, not a Guideline number). *Practice observed.*
+- **A missing export-compliance answer marks a build "Missing Compliance."**
+  Declaring `ITSAppUsesNonExemptEncryption` (`false` if you use no encryption or
+  only exempt encryption) once means every future upload skips ASC's export
+  compliance questionnaire; without it the build is marked Missing Compliance
+  until the questions are answered in ASC or via `PATCH /v1/builds/{id}` with
+  `usesNonExemptEncryption`. A human upload is needed only when non-exempt
+  encryption requires documentation (see `app-store-review-rejections`'s
+  export-compliance row — an ASC upload step, not a Guideline number).
+  *Doc-verified* (ASC Help "Provide export compliance information for beta
+  builds"; `ITSAppUsesNonExemptEncryption`; `BuildUpdateRequest`).
 - **`app-store` → `app-store-connect` rename** — the deprecation note
   ("app-store (deprecated: use app-store-connect)") is confirmed in
   `xcodebuild -help` on Xcode 26.5. The Xcode version the rename landed in is

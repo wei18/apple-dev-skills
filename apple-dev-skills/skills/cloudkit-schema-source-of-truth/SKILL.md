@@ -49,7 +49,7 @@ hardcoded in tooling.
 4. Deploy to Development — freely runnable and reversible.
 5. Always clear the token from `cktool`'s keychain store when done (via a shell `trap ... EXIT` around steps 1–4, so it's purged even if a step fails midway).
 
-Runnable as `scripts/ck-schema-dev.sh` — see that file for the exact `cktool` invocations and flags.
+Runnable as `${CLAUDE_SKILL_DIR}/scripts/ck-schema-dev.sh` (the `scripts/` folder next to this SKILL.md) — run it by that path or copy it into your repo's `scripts/`; see that file for the exact `cktool` invocations and flags.
 
 ## Inputs / outputs
 
@@ -71,8 +71,10 @@ Console:
 2. Console → your container → environment **Development** → Schema → **"Deploy Schema Changes
    to Production…"** → review the generated field/index diff → confirm the deploy.
 
-CloudKit Production fields and indexes are **add-only** by Apple's own rule — once deployed
-they can never be removed or renamed, only added to. Restricting the promotion path to the
+CloudKit Production record types and fields are **add-only** by Apple's own rule — once
+deployed they can't be deleted or renamed, only added to. Indexes are different: they can be
+added and removed in Production (WWDC21 "Automate CloudKit tests with cktool and declarative
+schema"). Restricting the promotion path to the
 Console keeps it naturally user-owned: automation prepares and validates the `.ckdb` and the
 Development deploy; a human clicks the actual Production button.
 
@@ -103,9 +105,9 @@ repeatedly without asking anyone.
    call actually surfaces its error instead of discarding it.
 5. **JIT marks every field it creates `QUERYABLE SEARCHABLE SORTABLE`.** A hand-authored
    `.ckdb` should declare the **minimal** index set the app's actual queries need instead
-   (e.g. only the one field a specific equality query filters on, as `QUERYABLE`) — because
-   Production indexes are add-only, starting minimal and extending later is reversible; starting
-   maximal is not.
+   (e.g. only the one field a specific equality query filters on, as `QUERYABLE`) — every index
+   adds query/storage cost and noise to the `.ckdb` diff, so start minimal and add indexes as
+   real queries need them.
 6. **`import-schema` is a declarative import**, so a `.ckdb` can be hand-authored from scratch —
    no Dashboard clicking, no live seed build required. Use one `export`'s output as the syntax
    template (it includes the system `"___*"` fields and the `GRANT` block a hand-written file
@@ -154,7 +156,8 @@ correspondingly irreversible, deliberately manual approval step.
 4. **Hand-editing `.ckdb` opportunistically** without re-validating against the live
    Development container before importing.
 5. **Over-indexing a hand-authored `.ckdb`** (marking every field `QUERYABLE SEARCHABLE
-   SORTABLE` out of caution) when Production indexes can only be added to later, never removed.
+   SORTABLE` out of caution) — every extra index adds query/storage cost and noise to the
+   `.ckdb` diff; declare only what the app's queries need and add more later.
 6. **Never diffing Production's actual schema against the code's write surface** — the
    missing-field write returns a `CKError` that many apps never surface anywhere visible, so
    the failure mode is only caught by an explicit audit, not by normal testing.
