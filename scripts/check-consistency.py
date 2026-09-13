@@ -14,7 +14,7 @@ Checks
   5. All plugin/marketplace JSON parse; the two subdir plugin sources resolve to dirs;
      marketplace.json lists exactly the 9 plugins (2 local + 7 externals).
   6. The `"ref": "v<semver>"` marketplace pin in README.md and every mirror ==
-     marketplace.json metadata.version (drifted silently before as a
+     marketplace.json top-level version (drifted silently before as a
      `git checkout v<semver>` string: v1.2.0 → #17).
   7. Each SKILL.md frontmatter description <= DESC_MAX chars (descriptions are
      always-on context for every consumer session; keeps Lens-3 compression durable).
@@ -26,7 +26,9 @@ Checks
   10. Each SKILL.md frontmatter description that is not quoted must not contain
       ": " or start with a YAML indicator character (PR #42: an unquoted value
       containing ": " breaks strict YAML parsers). A block scalar (`description: >`)
-      is exempt: everything after the indicator is literal text.
+      is exempt: everything after the indicator is literal text. Indented continuation
+      lines count as part of the value; a value that opens a quote must close it, with
+      nothing after the closing quote but an optional ` # comment`.
   11. Every skill named in the Catalog's journey anchor list (above the tables)
       exists — rule 2 only checks the missing direction, so a rename would leave a
       dead pointer there while the tables below stayed correct.
@@ -63,15 +65,30 @@ def fm_field(p: Path, field: str):
     m = re.search(rf"^{field}:\s*(.*?)\s*$", fm, re.MULTILINE)
     if not m: return None
     head = m.group(1).strip()
+    # The value continues on the indented lines that follow (a block scalar's body, or
+    # a multi-line plain / quoted scalar) up to the next non-indented line.
+    body = []
+    for ln in fm[m.end():].splitlines():
+        if ln.strip() and not ln.startswith((" ", "\t")): break
+        body.append(ln.strip())
+    cont = " ".join(x for x in body if x)
     if head and head[0] in "|>":
-        # YAML block scalar: the value is the indented block that follows.
-        lines = fm[m.end():].splitlines()
-        body = []
-        for ln in lines:
-            if ln.strip() and not ln.startswith((" ", "\t")): break
-            body.append(ln.strip())
-        return BLOCK_SCALAR + " ".join(x for x in body if x)
-    return head
+        return BLOCK_SCALAR + cont
+    # Plain / quoted scalars fold line breaks into spaces: return the whole value, so
+    # rule 10 also sees a continuation line (e.g. one containing ': ').
+    return f"{head} {cont}" if cont else head
+
+def closing_quote(v: str):
+    """Index of the quote that closes v's opening quote, or None if it never closes.
+    Double-quoted: a backslash escapes the next char. Single-quoted: '' is a literal '."""
+    q, i = v[0], 1
+    while i < len(v):
+        if q == '"' and v[i] == "\\": i += 2; continue
+        if v[i] == q:
+            if q == "'" and v[i + 1:i + 2] == "'": i += 2; continue
+            return i
+        i += 1
+    return None
 
 # 1. skill dirs + frontmatter
 all_skills: set[str] = set()
@@ -98,7 +115,22 @@ for plugin, expected in PLUGINS.items():
         if desc is None:
             fail(f"[skill] {plugin}/{name}: no frontmatter description")
         else:
-            quoted = not block and len(desc) >= 2 and desc[0] in "'\"" and desc[-1] == desc[0]
+            opens_quote = not block and bool(desc) and desc[0] in "'\""
+            quoted = False
+            if opens_quote:
+                close = closing_quote(desc)
+                if close is None:
+                    fail(f"[skill] {plugin}/{name}: description opens a {desc[0]} quote that "
+                         f"never closes — breaks YAML parsing")
+                elif re.fullmatch(r"(\s+#.*)?\s*", desc[close + 1:]):
+                    # A ` # comment` after the closing quote is legal YAML. Strip it only
+                    # here, once the quote has closed — never on an unquoted value, where
+                    # ` #` silently truncates (checked below).
+                    desc, quoted = desc[:close + 1], True
+                else:
+                    fail(f"[skill] {plugin}/{name}: description has text after its closing "
+                         f"{desc[0]} quote (unescaped quote inside, or a partly quoted value) "
+                         f"— breaks YAML parsing")
             # Length counts the value a consumer actually sees (quotes stripped), matching
             # check-skills.py's parse_front() — otherwise a quoted description that needs
             # quoting only because of a ': ' or indicator gets penalized twice for it.
@@ -107,27 +139,20 @@ for plugin, expected in PLUGINS.items():
                 fail(f"[skill] {plugin}/{name}: description {desc_len} chars > {DESC_MAX}")
             # 10. description must survive a strict YAML parse — fm_field() returns the
             # raw value (quotes intact, not stripped), so check quoting directly on it.
-            if desc and not block:
-                if not quoted:
-                    if ": " in desc or desc[0] in "[]{}&*>|#%@`!":
-                        fail(f"[skill] {plugin}/{name}: description must be quoted (contains ': ' or a YAML indicator)")
-                    if " #" in desc:
-                        fail(f"[skill] {plugin}/{name}: description must be quoted "
-                             f"(contains ' #' — starts a YAML comment, silently truncating the value)")
-                    if desc.startswith("- "):
-                        fail(f"[skill] {plugin}/{name}: description must be quoted "
-                             f"(starts with '- ' — a YAML block-sequence indicator)")
-                    if desc.endswith(":"):
-                        fail(f"[skill] {plugin}/{name}: description must be quoted "
-                             f"(ends with ':' — a YAML mapping-value indicator)")
-                else:
-                    inner = desc[1:-1]
-                    if desc[0] == '"' and re.search(r'(?<!\\)"', inner):
-                        fail(f"[skill] {plugin}/{name}: description has an unescaped "
-                             f'\'"\' inside a double-quoted value — breaks YAML parsing')
-                    if desc[0] == "'" and "'" in re.sub(r"''", "", inner):
-                        fail(f"[skill] {plugin}/{name}: description has an unescaped "
-                             f"\"'\" inside a single-quoted value (use '' to escape) — breaks YAML parsing")
+            # A value that opens a quote was fully checked by closing_quote() above (an
+            # unescaped quote inside closes it early and leaves trailing text).
+            if desc and not block and not opens_quote:
+                if ": " in desc or desc[0] in "[]{}&*>|#%@`!":
+                    fail(f"[skill] {plugin}/{name}: description must be quoted (contains ': ' or a YAML indicator)")
+                if " #" in desc:
+                    fail(f"[skill] {plugin}/{name}: description must be quoted "
+                         f"(contains ' #' — starts a YAML comment, silently truncating the value)")
+                if desc.startswith("- "):
+                    fail(f"[skill] {plugin}/{name}: description must be quoted "
+                         f"(starts with '- ' — a YAML block-sequence indicator)")
+                if desc.endswith(":"):
+                    fail(f"[skill] {plugin}/{name}: description must be quoted "
+                         f"(ends with ':' — a YAML mapping-value indicator)")
 
 # helper: scope README Catalog section
 def scoped(text: str, *markers: str) -> str:
@@ -218,7 +243,8 @@ for mirror_name in MIRRORS:
     cur = subprocess.run(["git", "hash-object", "README.md"], cwd=ROOT,
                          capture_output=True, text=True, check=True).stdout.strip()
     if not m: fail(f"[{mirror_name}] no embedded src-sha")
-    elif m.group(1) != cur: fail(f"[{mirror_name}] stale — run `mise run {task}` (src-sha != README.md)")
+    elif m.group(1) != cur: fail(f"[{mirror_name}] stale (src-sha != README.md) — hand-mirror the changed "
+                                 f"lines + re-stamp src-sha (CONTRIBUTING §README mirrors)")
 
 # 5. marketplace JSON + subdir sources
 mp = ROOT / ".claude-plugin" / "marketplace.json"
@@ -250,8 +276,8 @@ try:
             fail(f"[manifest] {plugin} version missing — plugin.json={pj_v!r}, marketplace.json={mp_v!r}")
         elif pj_v != mp_v:
             fail(f"[manifest] {plugin} plugin.json version {pj_v!r} != marketplace.json plugins[].version {mp_v!r} — run `mise run bump`")
-    # 6. README marketplace-pin == marketplace metadata.version
-    mp_version = d.get("metadata", {}).get("version", "")
+    # 6. README marketplace-pin == marketplace top-level version
+    mp_version = d.get("version", "")
     for readme_name in ("README.md", *MIRRORS):
         text = (ROOT / readme_name).read_text(encoding="utf-8") if (ROOT / readme_name).is_file() else ""
         pins = re.findall(r'"ref":\s*"v(\d+\.\d+\.\d+)"', text)
@@ -259,7 +285,7 @@ try:
             fail(f'[readme] {readme_name}: no \'"ref": "v<semver>"\' pin found')
         for pin in pins:
             if pin != mp_version:
-                fail(f"[readme] {readme_name}: Install pin v{pin} != marketplace metadata.version {mp_version} — run `mise run bump`")
+                fail(f"[readme] {readme_name}: Install pin v{pin} != marketplace.json version {mp_version} — run `mise run bump`")
 except Exception as e:
     fail(f"[marketplace] invalid: {e}")
 

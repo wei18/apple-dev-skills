@@ -41,11 +41,12 @@ marketplace 剛好跟它第一個 plugin 同名。
 要指定某一支，用它的 slash command：`/apple-dev-skills:swift6-concurrency`。`/skills` 會列出
 已安裝的全部技能，以及每一支來自哪個 plugin。
 
-> 兩個 plugin 一起裝，會載入全部 38 條第一方描述 —— 約 5,500 tokens，是預設 1% 技能清單
-> 預算（200k context 模型下是 2,000 tokens）的約 2.7 倍，還沒算外部 plugin。技能清單預算是
-> context window 的 1%；爆量時 Claude Code 會從最少被呼叫的技能開始砍描述；實務上通常
+> 兩個 plugin 一起裝，會載入全部 38 條第一方描述 —— 超過 5,000 tokens，約是預設 1% 技能清單
+> 預算（200k context 模型下是 2,000 tokens）的 3 倍，還沒算外部 plugin。技能清單預算是
+> context window 的 1%（1M context 模型約 10,000 tokens，光裝兩個第一方 plugin 放得下 ——
+> 但外部 plugin 與你自己的技能也共用這份預算）；爆量時 Claude Code 會從最少被呼叫的技能開始砍描述；實務上通常
 > 就是還沒有呼叫紀錄的新安裝技能。執行 `/doctor` 檢查清單成本，太吃緊就調高 `skillListingBudgetFraction`
-> （例如 `0.02`），或透過 `/plugin` 停用不想用的 plugin。
+> （例如 200k context 模型設 `0.04` —— 光這 38 支的名稱加描述就略超過 `0.03`），或透過 `/plugin` 停用不想用的 plugin。
 
 ## 目錄
 
@@ -200,4 +201,4 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 此處僅以引用方式呈現。催生本 repo 雙 plugin 結構的設計 spec 與計畫原本放在 `docs/superpowers/`
 —— 已退役、改由 git 歷史保存；用 `git log -- docs/` 可以找回。MIT —— 見 [LICENSE](LICENSE)。
 
-<!-- src-sha: 7924a7df00ae1716dc63a5f4079753769dc081f2 -->
+<!-- src-sha: deff685dbe95f8a66be28ddf1a5cb66ce95870ab -->

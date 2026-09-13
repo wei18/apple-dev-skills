@@ -1,6 +1,7 @@
 #!/bin/sh
-# Path C (flat, no plugin) for the WHOLE catalog: `npx skills` scans a repo for
-# SKILL.md folders and never reads marketplace.json, so `npx skills add
+# Path C (flat, no plugin) for the WHOLE catalog: `npx skills` reads this repo's
+# marketplace.json / plugin.json but only resolves local ./ skill paths — it does not
+# fetch the externals' remote `github` / `git-subdir` sources — so `npx skills add
 # wei18/apple-dev-skills` yields only the first-party skills and silently skips
 # the aggregated externals. This script walks marketplace.json (the SSOT) and
 # adds every plugin source, externals included, from their authors' repos.

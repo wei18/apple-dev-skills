@@ -7,7 +7,7 @@ is the single source of truth.
 ## Setup
 
 ```bash
-mise install && lefthook install
+mise install && mise exec -- lefthook install
 ```
 
 ## Tasks (always via mise — never call the scripts directly)
@@ -80,6 +80,15 @@ the plugin's `plugin.json` description count, `scripts/check-consistency.py`'s `
 constant, the matching plugin's `marketplace.json` description count, and README.md's
 "install only the N first-party skills" sentence — then run `mise run check`.
 
+Three more edit sites that list leaves out:
+- **README mirrors**: hand-mirror the Catalog row and `(N)` count into each mirror and
+  re-stamp its src-sha — see [README mirrors](#readme-mirrors-hand-mirror-only-regenerate-is-a-manual-fallback).
+- **Quickstart comments**: the `# N` count on README.md's `/plugin install` lines (gate
+  rule 3b), and the same comments in each mirror.
+- **Literals no gate checks**: README.md's "loads all 38 first-party descriptions"
+  (listing-budget note) and, when an external is added, Path C's "the 7 externals" —
+  plus the matching sentences in the three mirrors.
+
 Two gate rules `mise run check` enforces on the frontmatter `description`:
 - Max 800 characters (measured on the value itself — quotes, if any, don't count).
 - If it isn't a YAML block scalar (`description: >`), quote the whole value when it
@@ -87,8 +96,10 @@ Two gate rules `mise run check` enforces on the frontmatter `description`:
   `*`, `>`, `|`, `#`, `%`, `@`, `` ` ``, `!`), `" #"` (starts a YAML comment, silently
   truncating everything after it), a leading `"- "` (block-sequence indicator), or a
   trailing `":"` (mapping-value indicator) — each of these breaks or silently mis-parses
-  under a strict YAML parser. A quoted value must itself be valid YAML: no unescaped `"`
-  inside a double-quoted value, no unescaped `'` (use `''`) inside a single-quoted value.
+  under a strict YAML parser. A quoted value must itself be valid YAML: its opening quote
+  must close, with nothing after the closing quote but an optional ` # comment`; no
+  unescaped `"` inside a double-quoted value, no unescaped `'` (use `''`) inside a
+  single-quoted value. Indented continuation lines are checked as part of the value.
 
 ### 3. Report a field note (skill vs reality)
 

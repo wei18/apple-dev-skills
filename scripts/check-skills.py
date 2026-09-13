@@ -7,7 +7,7 @@ ROOT = sys.argv[1] if len(sys.argv) > 1 else "."
 PLUGINS = {"apple-dev-skills": "apple-dev-skills/skills", "collaboration-skills": "collaboration-skills/skills"}
 OFFICIAL_KEYS = {"name","description","when_to_use","argument-hint","arguments","disable-model-invocation",
                  "user-invocable","allowed-tools","disallowed-tools","model","effort","context","agent","background","paths",
-                 "shell","hooks","license","metadata","compatibility","version"}
+                 "shell","hooks","license","metadata","compatibility"}
 SECTIONS = ["When to invoke","Scope","Rationale","Deviation considerations","Common Mistakes",
             "Review Checklist|Verification checklist","Related skills"]
 FIRST_PERSON = re.compile(r"\b(I can|I help|I will|I'll|I provide|we can|we help)\b", re.I)
@@ -74,7 +74,8 @@ for name, (plugin, d) in skills.items():
     n = fm.get("name","")
     if n != name: add("BLOCKER", name, "name==dir", f"name={n!r}")
     if len(n) > 64: add("BLOCKER", name, "name<=64", f"{len(n)} chars")
-    if not re.fullmatch(r"[a-z0-9-]+", n): add("BLOCKER", name, "name charset", n)
+    if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", n):
+        add("BLOCKER", name, "name format (lowercase/digits, single inner hyphens)", n)
     # Claude Code itself doesn't enforce this — only the claude.ai upload path
     # (and package_skill.py) hard-errors on "anthropic"/"claude" in `name`.
     if re.search(r"anthropic|claude", n):
@@ -90,6 +91,8 @@ for name, (plugin, d) in skills.items():
     if re.search(r"<[a-zA-Z/][^>]*>", desc): add("BLOCKER", name, "description XML tag", desc[:80])
     if FIRST_PERSON.search(desc): add("MAJOR", name, "description first person", FIRST_PERSON.search(desc).group(0))
     if not re.search(r"\b(when|use for|query|invoke)\b", desc, re.I): add("MAJOR", name, "description lacks trigger phrase", desc[:80])
+    if len(fm.get("compatibility","")) > 500:
+        add("BLOCKER", name, "compatibility<=500", f"{len(fm['compatibility'])}")
     # --- unknown frontmatter keys
     for k in fm:
         if k not in OFFICIAL_KEYS: add("MAJOR", name, "unknown frontmatter key", k)
