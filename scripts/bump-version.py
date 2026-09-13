@@ -2,7 +2,7 @@
 """Bump release versions across every surface the gate checks, in one shot.
 
 Surfaces (previously a 4-file manual dance, see v1.3.1 / PR #16):
-  --marketplace X.Y.Z  -> marketplace.json metadata.version
+  --marketplace X.Y.Z  -> marketplace.json top-level version
                           + `"ref": "vX.Y.Z"` marketplace pin in README.md AND every
                             mirror in scripts/mirrors.py
                           + re-stamp each mirror's src-sha (pin line is hand-mirrored;
@@ -72,8 +72,9 @@ def precheck_marketplace_mirrors():
 
 def set_marketplace_version(version: str):
     MP.write_text(sub_once(MP.read_text(encoding="utf-8"),
-                           r'("metadata"\s*:\s*\{[^}]*?"version"\s*:\s*")' + SEMVER + r'(")',
-                           rf"\g<1>{version}\g<2>", "marketplace metadata"), encoding="utf-8")
+                           # top-level "version" (2-space indent; plugins[] entries sit deeper)
+                           r'(?m)^(  "version"\s*:\s*")' + SEMVER + r'(")',
+                           rf"\g<1>{version}\g<2>", "marketplace top-level version"), encoding="utf-8")
     for name in ("README.md", *MIRRORS):
         p = ROOT / name
         text, n = re.subn(r'"ref":\s*"v' + SEMVER + r'"', f'"ref": "v{version}"',
@@ -87,7 +88,7 @@ def set_marketplace_version(version: str):
         mirror.write_text(sub_once(mirror.read_text(encoding="utf-8"),
                                r"(<!-- src-sha: )[0-9a-f]+( -->)", rf"\g<1>{sha}\g<2>",
                                f"{mirror_name} src-sha"), encoding="utf-8")
-    print(f"  marketplace metadata + README pins: -> {version} (mirror src-sha re-stamped)")
+    print(f"  marketplace version + README pins: -> {version} (mirror src-sha re-stamped)")
 
 
 def main():

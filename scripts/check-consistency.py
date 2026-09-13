@@ -14,7 +14,7 @@ Checks
   5. All plugin/marketplace JSON parse; the two subdir plugin sources resolve to dirs;
      marketplace.json lists exactly the 9 plugins (2 local + 7 externals).
   6. The `"ref": "v<semver>"` marketplace pin in README.md and every mirror ==
-     marketplace.json metadata.version (drifted silently before as a
+     marketplace.json top-level version (drifted silently before as a
      `git checkout v<semver>` string: v1.2.0 → #17).
   7. Each SKILL.md frontmatter description <= DESC_MAX chars (descriptions are
      always-on context for every consumer session; keeps Lens-3 compression durable).
@@ -275,8 +275,8 @@ try:
             fail(f"[manifest] {plugin} version missing — plugin.json={pj_v!r}, marketplace.json={mp_v!r}")
         elif pj_v != mp_v:
             fail(f"[manifest] {plugin} plugin.json version {pj_v!r} != marketplace.json plugins[].version {mp_v!r} — run `mise run bump`")
-    # 6. README marketplace-pin == marketplace metadata.version
-    mp_version = d.get("metadata", {}).get("version", "")
+    # 6. README marketplace-pin == marketplace top-level version
+    mp_version = d.get("version", "")
     for readme_name in ("README.md", *MIRRORS):
         text = (ROOT / readme_name).read_text(encoding="utf-8") if (ROOT / readme_name).is_file() else ""
         pins = re.findall(r'"ref":\s*"v(\d+\.\d+\.\d+)"', text)
@@ -284,7 +284,7 @@ try:
             fail(f'[readme] {readme_name}: no \'"ref": "v<semver>"\' pin found')
         for pin in pins:
             if pin != mp_version:
-                fail(f"[readme] {readme_name}: Install pin v{pin} != marketplace metadata.version {mp_version} — run `mise run bump`")
+                fail(f"[readme] {readme_name}: Install pin v{pin} != marketplace.json version {mp_version} — run `mise run bump`")
 except Exception as e:
     fail(f"[marketplace] invalid: {e}")
 

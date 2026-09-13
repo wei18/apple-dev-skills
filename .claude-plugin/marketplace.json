@@ -1,10 +1,8 @@
 {
   "name": "apple-dev-skills",
   "owner": { "name": "Wei18" },
-  "metadata": {
-    "description": "A curated catalog of skills for AI coding agents — first-party Apple/Swift and agent-collaboration skills, plus aggregated best-of-breed external plugins (credited to their authors)",
-    "version": "2.0.0"
-  },
+  "description": "A curated catalog of skills for AI coding agents — first-party Apple/Swift and agent-collaboration skills, plus aggregated best-of-breed external plugins (credited to their authors)",
+  "version": "2.0.0",
   "plugins": [
     {
       "name": "apple-dev-skills",
