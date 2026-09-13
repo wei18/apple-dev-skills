@@ -7,7 +7,7 @@ is the single source of truth.
 ## Setup
 
 ```bash
-mise install && lefthook install
+mise install && mise exec -- lefthook install
 ```
 
 ## Tasks (always via mise — never call the scripts directly)

@@ -1,5 +1,5 @@
 [tools]
-"aqua:evilmartians/lefthook" = "1"
+"aqua:evilmartians/lefthook" = "2"
 
 [tasks.check]
 description = "SSOT consistency gate + SKILL.md format gate (two plugins, catalog, counts, zh-Hant/zh-Hans/ja freshness, frontmatter/format BLOCKERs)"
