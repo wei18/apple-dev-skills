@@ -80,6 +80,15 @@ the plugin's `plugin.json` description count, `scripts/check-consistency.py`'s `
 constant, the matching plugin's `marketplace.json` description count, and README.md's
 "install only the N first-party skills" sentence — then run `mise run check`.
 
+Three more edit sites that list leaves out:
+- **README mirrors**: hand-mirror the Catalog row and `(N)` count into each mirror and
+  re-stamp its src-sha — see [README mirrors](#readme-mirrors-hand-mirror-only-regenerate-is-a-manual-fallback).
+- **Quickstart comments**: the `# N` count on README.md's `/plugin install` lines (gate
+  rule 3b), and the same comments in each mirror.
+- **Literals no gate checks**: README.md's "loads all 38 first-party descriptions"
+  (listing-budget note) and, when an external is added, Path C's "the 7 externals" —
+  plus the matching sentences in the three mirrors.
+
 Two gate rules `mise run check` enforces on the frontmatter `description`:
 - Max 800 characters (measured on the value itself — quotes, if any, don't count).
 - If it isn't a YAML block scalar (`description: >`), quote the whole value when it
