@@ -44,7 +44,7 @@ description: 'Localization scope and AI-translation execution for Apple-platform
   - In-app strings
   - Game Center leaderboard / achievement names (for games)
   - App Store metadata (title / description / keywords / what's new)
-  - Description text inside the Privacy Manifest
+  - Info.plist purpose strings (`NS…UsageDescription`, incl. `NSUserTrackingUsageDescription`) in `InfoPlist.xcstrings` — the privacy manifest itself has no localizable text
 - Every time strings are added / modified, run another round of the AI translation flow; the diff lands in a PR.
 
 ### Catalog format
@@ -117,6 +117,7 @@ Verification gates before merging a translation pass:
 - `stringUnit.state: new` count = 0 across all locales (nothing left untranslated).
 - `extractionState: stale` count = 0 (no orphaned keys left in the catalog that the source code no longer references).
 - Per-key locale coverage = 100% (parse xcstrings JSON; every `localizations` dict has every declared locale).
+- Same coverage for `InfoPlist.xcstrings`: every purpose string (`NS…UsageDescription`, incl. `NSUserTrackingUsageDescription`) has every shipped locale — the purpose-string rules themselves are in `app-store-review-rejections`'s privacy-manifest reference.
 - For plural keys: every locale has every plural form required by CLDR for that locale.
 - Substitution token parity per key: `en` has N `%@` → all locales have N `%@` (or locale-specific reordering via `%1$@` / `%2$@`).
 - Spot-check 3-5 keys per locale visually in the simulator with `Scheme → Run → Options → App Language`.
@@ -147,7 +148,7 @@ For the xcstrings JSON schema (including the `"version"` field and plural variat
 - `Localizable.xcstrings` exists and each key has an entry for every declared locale (2 for the minimum set).
 - App Store Connect metadata is complete per locale (including screenshot captions).
 - Game Center / achievement display names are complete per locale.
-- `PrivacyInfo.xcprivacy` description itself doesn't need to be multi-locale, but the corresponding App Store privacy policy page does.
+- `PrivacyInfo.xcprivacy` has no localizable text; the Info.plist purpose strings in `InfoPlist.xcstrings` and the App Store privacy policy page do need every shipped locale.
 
 ## Related skills
 

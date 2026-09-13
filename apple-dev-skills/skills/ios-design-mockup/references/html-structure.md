@@ -192,27 +192,27 @@ One SVG layer covers the whole canvas. Each arrow is a path. Coordinate math: us
     <!-- triangle arrowhead -->
     <marker id="arrow-solid" viewBox="0 0 10 10" refX="9" refY="5"
             markerWidth="8" markerHeight="8" orient="auto">
-      <path d="M 0 0 L 10 5 L 0 10 z" fill="#007AFF"/>
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#0088FF"/>
     </marker>
     <marker id="arrow-dashed" viewBox="0 0 10 10" refX="9" refY="5"
             markerWidth="8" markerHeight="8" orient="auto">
-      <path d="M 0 0 L 10 5 L 0 10 z" fill="#FF9500"/>
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#FF8D28"/>
     </marker>
   </defs>
 
   <!-- push navigation: solid blue -->
   <path d="M 480 400 C 540 400, 540 400, 600 400"
-        fill="none" stroke="#007AFF" stroke-width="2"
+        fill="none" stroke="#0088FF" stroke-width="2"
         marker-end="url(#arrow-solid)"/>
-  <text x="540" y="390" font-size="12" fill="#007AFF" text-anchor="middle">
+  <text x="540" y="390" font-size="12" fill="#0088FF" text-anchor="middle">
     tap "Sign In"
   </text>
 
   <!-- modal present: dashed orange -->
   <path d="M 480 600 C 540 600, 540 600, 600 600"
-        fill="none" stroke="#FF9500" stroke-width="2" stroke-dasharray="6 4"
+        fill="none" stroke="#FF8D28" stroke-width="2" stroke-dasharray="6 4"
         marker-end="url(#arrow-dashed)"/>
-  <text x="540" y="590" font-size="12" fill="#FF9500" text-anchor="middle">
+  <text x="540" y="590" font-size="12" fill="#FF8D28" text-anchor="middle">
     tap "+" present
   </text>
 </svg>
@@ -222,9 +222,9 @@ One SVG layer covers the whole canvas. Each arrow is a path. Coordinate math: us
 
 | Transition type | Style | Color |
 |---|---|---|
-| push (NavigationLink) | solid | #007AFF blue |
-| modal present (sheet) | dashed | #FF9500 orange |
-| full-screen cover | dashed thick (3px) | #FF3B30 red |
+| push (NavigationLink) | solid | #0088FF blue |
+| modal present (sheet) | dashed | #FF8D28 orange |
+| full-screen cover | dashed thick (3px) | #FF383C red |
 | tab switch | double-headed solid | #8E8E93 gray |
 | dismiss / back | thin solid | #C7C7CC light gray |
 
@@ -257,11 +257,11 @@ For arrows that go up/down (different flow rows), compute both endpoints and rou
   </div>
   <div class="legend">
     <div class="legend-item">
-      <svg width="40" height="10"><line x1="0" y1="5" x2="36" y2="5" stroke="#007AFF" stroke-width="2"/></svg>
+      <svg width="40" height="10"><line x1="0" y1="5" x2="36" y2="5" stroke="#0088FF" stroke-width="2"/></svg>
       <span>push</span>
     </div>
     <div class="legend-item">
-      <svg width="40" height="10"><line x1="0" y1="5" x2="36" y2="5" stroke="#FF9500" stroke-width="2" stroke-dasharray="4 3"/></svg>
+      <svg width="40" height="10"><line x1="0" y1="5" x2="36" y2="5" stroke="#FF8D28" stroke-width="2" stroke-dasharray="4 3"/></svg>
       <span>modal</span>
     </div>
     <!-- etc -->
@@ -280,10 +280,10 @@ A sticky right-side panel (or below the canvas if width is constrained).
     <h3>Colors</h3>
     <div class="color-grid">
       <div class="color-swatch">
-        <div class="swatch" style="background: #007AFF"></div>
+        <div class="swatch" style="background: #0088FF"></div>
         <div class="swatch-meta">
           <div class="swatch-name">Tint / systemBlue</div>
-          <div class="swatch-hex">#007AFF</div>
+          <div class="swatch-hex">#0088FF</div>
           <div class="swatch-swiftui">Color.blue</div>
         </div>
       </div>

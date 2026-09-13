@@ -44,13 +44,15 @@ signing/export-key semantics. Does NOT own:
 
 ## Signing: two non-interactive paths
 
-`man xcodebuild` documents two ways to authenticate without Xcode's
-interactive Accounts UI (needed on a script/cron path, not just CI):
+`xcodebuild -help` documents two credential sources for `-allowProvisioningUpdates`:
+an account added in Xcode's Accounts settings, or an App Store Connect authentication
+key passed via the `-authenticationKey*` trio. Both paths below therefore pass the flag
+(needed on a script/cron path, not just CI):
 
 | Path | Flags | Use when |
 |---|---|---|
-| Automatic signing, managed by Apple | `-allowProvisioningUpdates` (+ `-allowProvisioningDeviceRegistration` if a new device needs registering) | Run on your own signed-in dev Mac; xcodebuild creates/updates profiles and certs as needed. |
-| API-key signing, no Apple ID session | `-authenticationKeyPath <p8> -authenticationKeyID <id> -authenticationKeyIssuerID <issuer>` | Unattended/scripted runs — reuse the same ASC API key from `asc-api-automation` / `build-time-secret-injection`, no interactive account needed. |
+| Automatic signing via your Xcode account | `-allowProvisioningUpdates` (+ `-allowProvisioningDeviceRegistration` if a new device needs registering) | Run on your own dev Mac with an account added in Xcode's Accounts settings; xcodebuild creates/updates profiles and certs as needed. |
+| API-key signing, no Apple ID session | `-allowProvisioningUpdates -authenticationKeyPath <p8> -authenticationKeyID <id> -authenticationKeyIssuerID <issuer>` | Unattended/scripted runs — reuse the same ASC API key from `asc-api-automation` / `build-time-secret-injection`, no Xcode account needed. |
 
 ## ExportOptions.plist: the common shape
 
@@ -101,10 +103,11 @@ key lives in a gitignored `secrets/` dir, rather than moving the real file.
 
 **`notarytool`** is not this path — it handles Developer-ID notarization
 (outside-the-App-Store distribution), unrelated to TestFlight/App Store
-uploads. There is also **no ASC REST endpoint for binary upload**
-(`asc-api-automation`'s own scope note): Xcode Cloud, Xcode Organizer,
-`xcodebuild -exportArchive` (`destination: upload`), `altool`, and Transporter
-are the only upload paths that exist.
+uploads. The ASC REST API also has an upload path — Build Uploads (create a
+`buildUploads` resource, reserve a `buildUploadFiles` entry, upload the file,
+then commit it) — but this skill still defaults to `altool`. The other paths
+are Xcode Cloud, Xcode Organizer, `xcodebuild -exportArchive`
+(`destination: upload`), and Transporter.
 
 ## Build-number coordination with Xcode Cloud
 
@@ -152,16 +155,18 @@ is in `references/evidence.md`.
    Cloud's own counter.
 5. Reaching for `xcrun notarytool` for a TestFlight upload — it's for
    Developer-ID notarization, a different distribution path entirely.
-6. Forgetting `ITSAppUsesNonExemptEncryption` on a new app — the build sits in
-   Processing pending a manual ASC compliance answer.
+6. Forgetting `ITSAppUsesNonExemptEncryption` on a new app — the build is
+   marked Missing Compliance until the export-compliance questions are answered
+   in ASC or via `PATCH /v1/builds/{id}` (`usesNonExemptEncryption`).
 
 ## Review Checklist
 
 - [ ] Archive uses a `generic/platform=...` destination, not a specific
       simulator/device.
 - [ ] Export uses `method: app-store-connect` (not the deprecated `app-store`).
-- [ ] Signing path is deliberate: `-allowProvisioningUpdates` (interactive
-      Mac) or `-authenticationKeyPath` trio (unattended).
+- [ ] Signing passes `-allowProvisioningUpdates` on every path, with a
+      deliberate credential source: the Xcode Accounts login (your dev Mac) or
+      the `-authenticationKeyPath` trio (unattended).
 - [ ] `destination: export` + a separate gated upload step, unless a one-step
       `upload` is a deliberate choice.
 - [ ] `CFBundleVersion` source can't collide with Xcode Cloud's `CI_BUILD_NUMBER`.

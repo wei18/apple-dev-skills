@@ -83,7 +83,7 @@ xcuserdata/
 |---|---|---|
 | 1. Local pre-commit | `lefthook` + `gitleaks` (via `mise`) | Catches staged diffs; can be bypassed with `--no-verify` |
 | 2. CI post-clone | Xcode Cloud `ci_post_clone.sh` runs `gitleaks` | Catches at PR time; fails the build; earliest stage is cheapest |
-| 3. GitHub Secret Scanning Alerts | GitHub platform (free on public repos) | Passive detection; alerts a common private-key / generic API-key pattern but does **not** auto-revoke it — Apple is not in GitHub's secret-scanning partner program, so any Apple-issued key (CloudKit, ASC, APNs) still needs a manual rotation |
+| 3. GitHub Secret Scanning Alerts | GitHub platform (free on public repos) | Passive detection; alerts a common private-key / generic API-key pattern — **only once Generic patterns is enabled** (Settings → Advanced Security → Secret Protection) — but does **not** auto-revoke it — Apple is not in GitHub's secret-scanning partner program, so any Apple-issued key (CloudKit, ASC, APNs) still needs a manual rotation |
 
 `lefthook.yml` example:
 
@@ -160,7 +160,7 @@ Every PR review additionally checks:
 
 - Three lines of defence are standard defence-in-depth, with complementary interception stages.
 - The rotate-first SOP reflects the reality that "git history is permanently reachable in forks" — cleaning history is **not** stopping the bleed.
-- GitHub's secret-scanning partner program auto-revokes tokens for its listed partners, but Apple is not one of them; the third line still catches a leaked Apple-issued key via GitHub's generic pattern alerts, it just doesn't revoke it for you — it's a free, must-enable layer regardless.
+- GitHub's secret-scanning partner program auto-revokes tokens for its listed partners, but Apple is not one of them; the third line still catches a leaked Apple-issued key via GitHub's generic pattern alerts once Generic patterns is enabled (Settings → Advanced Security → Secret Protection), it just doesn't revoke it for you — it's a free, must-enable layer regardless.
 
 ## Deviation considerations
 
@@ -174,7 +174,7 @@ Every PR review additionally checks:
 - `.mise.toml` includes gitleaks + lefthook.
 - `lefthook.yml` runs gitleaks pre-commit.
 - `ci_post_clone.sh` runs gitleaks with fail-on-detect.
-- GitHub Settings → Code security → Secret scanning alerts is enabled.
+- GitHub Settings → Advanced Security → Secret Protection: Generic patterns enabled.
 - `docs/setup.md` instructs `lefthook install` to activate hooks.
 - `PrivacyInfo.xcprivacy` is consistent with the public commitments.
 

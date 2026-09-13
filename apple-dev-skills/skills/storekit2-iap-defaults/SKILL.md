@@ -95,7 +95,9 @@ Everything above `LiveStoreKitBridge` talks only to `any StoreKitBridge` — zer
   first paywall visit — refunds/family-share revocations/Ask-to-Buy approvals
   can arrive while the user is anywhere in the app.
 - **`restorePurchases()` always calls `AppStore.sync()` first**, even when a
-  local cache looks empty — that's the 3.1.1 contract, not an optimization to
+  local cache looks empty — Apple's `sync()` docs position it as the forced
+  sync behind a user-initiated Restore Purchases control (Guideline 3.1.1
+  itself only asks for a restore mechanism), so it's not an optimization to
   skip:
 
 ```swift
@@ -125,9 +127,13 @@ it's what enables the last two rows, not a gap in unit-test coverage if absent.
   before you hit it (one real app: `.failed(reason: "product not found: <id>")`
   rather than a silent no-op). *Practice observed.*
 - A verified `Transaction.updates`/purchase-path switch on
-  `Product.PurchaseResult` still needs `@unknown default` — the compiler won't
-  warn when Apple adds a case; recheck on every OS-support bump. *Practice
-  observed.*
+  `Product.PurchaseResult` needs `@unknown default`, not a plain `default` —
+  without it Swift 6 mode fails to compile ("switch covers known cases, but
+  'Product.PurchaseResult' may have additional unknown values"; a warning in
+  Swift 5 mode), and a plain `default` would silence the warning a case Apple
+  adds later should raise ([Switching Over Future Enumeration
+  Cases](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/statements/#Switching-Over-Future-Enumeration-Cases));
+  recheck on every OS-support bump. *Compiled-verified* (Swift 6.3.2).
 - Post-purchase catalog refetch can come back empty even though the purchase
   succeeded (rare ASC catalog instability). Synthesizing a minimal entitled
   product (id + a locale-neutral placeholder price) beats `.failed` for a
@@ -172,7 +178,8 @@ signed-in sandbox tester.
 3. Starting the `Transaction.updates` listener lazily instead of at launch.
 4. Treating `products(for:)` returning `[]` as a thrown-error case.
 5. Skipping `AppStore.sync()` in `restorePurchases()` "because the cache is empty."
-6. No `@unknown default` on the `Product.PurchaseResult` switch.
+6. No `@unknown default` on the `Product.PurchaseResult` switch (Swift 6 mode
+   won't compile it), or a plain `default` that hides cases Apple adds later.
 7. Treating the `.storekit` file as unit-test infrastructure — it configures
    the interactive runtime and `StoreKitTest`, not the fake bridge.
 
@@ -184,11 +191,12 @@ signed-in sandbox tester.
 - [ ] `Transaction.updates` listener starts at app launch.
 - [ ] `finish()` is called after the entitlement is applied, on every path.
 - [ ] `restorePurchases()` always calls `sync()` before reading entitlements.
-- [ ] `Product.PurchaseResult`'s switch has an `@unknown default` arm.
+- [ ] `Product.PurchaseResult`'s switch has an `@unknown default` arm (not a
+      plain `default`).
 - [ ] A fake bridge covers purchase success/cancel/pending/failed and restore
       empty/non-empty in unit tests.
-- [ ] Restore Purchases is reachable from Settings (3.1.1 —
-      `app-store-review-rejections`).
+- [ ] A visible Restore Purchases control exists — this catalog's default
+      places it in Settings (3.1.1 — `app-store-review-rejections`).
 
 ## Related skills
 

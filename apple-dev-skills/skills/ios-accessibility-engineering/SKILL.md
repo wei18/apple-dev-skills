@@ -71,7 +71,7 @@ In UIKit: `UIAccessibility.post(notification: .announcement, argument: "Level co
 
 ## Touch targets
 
-- Apple HIG minimum: **44 × 44 pt**. A visually small button (e.g. a 20pt icon) passes if its hit region is padded to 44pt.
+- Apple HIG: **44 × 44 pt** is the iOS default control size (Buttons: a hit region of "at least 44x44 pt" as a general rule); the HIG Accessibility table's minimum is 28 × 28 pt. Ship 44. A visually small button (e.g. a 20pt icon) passes if its hit region is padded to 44pt.
 - `.contentShape(Rectangle())` enlarges the hit region for `.buttonStyle(.plain)` containers or custom `onTapGesture` views where Spacers don't automatically expand the hit area.
 - Voice Control and Switch Control rely on `accessibilityLabel` to identify targets by name; if two same-named buttons exist on screen, add `.accessibilityInputLabels(["Submit order", "Submit"])` to disambiguate.
 
@@ -100,11 +100,11 @@ idb screenshot --udid <udid> after-ax5.png
 # Tap through the UI with VoiceOver via idb ui tap / idb ui describe-all
 ```
 
-**CI a11y gate**: in XCUITest, call `try app.performAccessibilityAudit()` (iOS 17 / macOS 14 / Xcode 15+; narrow with `for:` to specific audit types such as `.dynamicType`, `.contrast`, `.hitRegion`) to fail CI on accessibility violations — this is Apple's own runtime audit gate. Supplement with `cvs-health/ios-swiftui-accessibility-techniques`'s `a11y-check`, a **static scanner** (not a runtime audit runner), as a complementary lint-layer check. Treat both as complements to, not replacements for, manual Accessibility Inspector review.
+**CI a11y gate**: in XCUITest, call `try app.performAccessibilityAudit()` (iOS 17 / macOS 14 / Xcode 15+; narrow with `for:` to specific audit types such as `.dynamicType`, `.contrast`, `.hitRegion`) to fail CI on accessibility violations — this is Apple's own runtime audit gate. Supplement with `cvs-health/ios-swiftui-accessibility-techniques`'s `a11y-check`, a **static scanner** (not a runtime audit runner), as a complementary lint-layer check. Treat both as complements to, not replacements for, manual Accessibility Inspector review. Xcode 27 / iOS 27 runtime, above this catalog's 26 floor: [`XCUIVoiceOverService`](https://developer.apple.com/documentation/xcuiautomation/xcuivoiceoverservice) (via `XCUIDevice`'s `voiceOverService`) drives VoiceOver from UI tests to validate focus, spoken output, and navigation.
 
 ## WCAG 2.2 mapping for App Review
 
-Ship to 44×44pt (HIG); 24px AA is the floor, not the target.
+Ship to 44×44pt (HIG iOS default control size); 24px AA is the floor, not the target.
 
 | WCAG criterion | What it requires | How it surfaces in iOS |
 |---|---|---|
@@ -112,7 +112,7 @@ Ship to 44×44pt (HIG); 24px AA is the floor, not the target.
 | 1.4.3 Contrast (minimum) | ≥ 4.5:1 for normal text, 3:1 for large text | Check in Accessibility Inspector |
 | 1.4.4 Resize text | Text reflows up to 200% without loss of content | Dynamic Type + `ViewThatFits` |
 | 2.5.8 Target size (Minimum) — **AA** | Interactive targets ≥ 24×24 CSS px (WCAG 2.2 new AA criterion) | `.contentShape` + padding; the **AA conformance gate** |
-| 2.5.5 Target size (Enhanced) — AAA | Interactive targets ≥ 44×44 CSS px (≈44pt on 1× devices) | Apple HIG minimum; stronger than AA — aim for this |
+| 2.5.5 Target size (Enhanced) — AAA | Interactive targets ≥ 44×44 CSS px (≈44pt on 1× devices) | Apple HIG iOS default control size (the HIG minimum is 28×28 pt); stronger than AA — aim for this |
 
 App Review does not formally audit against WCAG, but the Human Interface Guidelines cite these thresholds and reviewers reject apps that are obviously unusable with VoiceOver or at accessibility text sizes.
 

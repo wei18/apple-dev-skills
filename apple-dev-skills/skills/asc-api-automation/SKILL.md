@@ -18,7 +18,7 @@ This catalog's default way to drive App Store Connect from scripts and CI: an Ap
 
 Owns: token minting, curl conventions, and the endpoint cookbook below. Does NOT own:
 
-- **Building / uploading the binary** — there is no REST endpoint for `.ipa` upload; builds arrive in ASC via Xcode Cloud (→ `xcode-cloud-single-track-ci`), a local `xcodebuild -exportArchive` / `xcrun altool` run (→ `local-archive-export-upload`), Xcode Organizer, or Transporter. This skill picks up *after* the build exists in ASC.
+- **Building / uploading the binary** — builds arrive in ASC via Xcode Cloud (→ `xcode-cloud-single-track-ci`), a local `xcodebuild -exportArchive` / `xcrun altool` run (→ `local-archive-export-upload`), Xcode Organizer, Transporter, or the ASC API's Build Uploads resources (`POST /v1/buildUploads` + `buildUploadFiles` reserve / commit — not part of this cookbook). This skill picks up *after* the build exists in ASC.
 - **`.p8` key storage & leak prevention** → `build-time-secret-injection` (Layer 2 `secrets/.env`) + `apple-public-repo-security` (rotate-first SOP).
 - **What metadata will pass review** → `app-store-review-rejections`; this skill is *how* to submit, not *what*.
 
@@ -42,7 +42,7 @@ ASC_KEY_PATH=secrets/AuthKey_2X9R4HXF34.p8
 
 Claims (verified against Apple's *Generating tokens for API requests*, 2026-07): header `alg: ES256` (the only accepted algorithm), `kid`, `typ: JWT`; payload `iss` (**Issuer ID**, the UUID from Users and Access → Integrations — not your Team ID), `iat`, `exp` (invalid if more than 20 minutes ahead — **exception**: a token carrying `scope` and restricted to GET requests on allow-listed resources can live up to 6 months, per Apple's *Determine the Appropriate Token Lifetime* — but that allow-list is Xcode Cloud / Power-and-Performance resources only (Build Actions, Build Runs, Git References, Issues, macOS Versions, Products, Providers, Power and Performance Metrics and Logs, Pull Requests, Repositories, Test Results, Workflows, Xcode Versions); none of this cookbook's endpoints qualify, so release tooling always mints ≤ 20-minute tokens), `aud: "appstoreconnect-v1"`, optional `scope` (array of allowed requests like `"GET /v1/apps"` — pin single-purpose tokens to single endpoints).
 
-The script is `scripts/mint-asc-token.swift` (CryptoKit, zero dependencies).
+The script is bundled at `${CLAUDE_SKILL_DIR}/scripts/mint-asc-token.swift` (the `scripts/` folder next to this SKILL.md; CryptoKit, zero dependencies) — run it by that path, or copy it into your repo's `scripts/` first, which the example below assumes.
 
 ```bash
 source secrets/.env

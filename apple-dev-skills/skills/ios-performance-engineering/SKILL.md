@@ -69,7 +69,7 @@ xctrace record --template 'Time Profiler' --output trace.trace --time-limit 30s 
 
 `--launch -- command` must come last: everything after `--` is passed through to the launched process, so `--output` / `--time-limit` have to precede it or they get swallowed as app launch arguments instead of being read by `xctrace` itself.
 
-`xctrace` can drive any built-in or custom Instruments template headlessly and export the trace as a `.xctrace` bundle. Post-process with `xctrace export` to pull out human-readable XML. Wire this into a CI step on a dedicated Mac runner to catch regressions before they reach users.
+`xctrace` can drive any built-in or custom Instruments template headlessly and export the trace as a `.trace` file. Post-process with `xctrace export` to pull out human-readable XML. Wire this into a CI step on a dedicated Mac runner to catch regressions before they reach users.
 
 ## Hangs and hitches
 
@@ -119,7 +119,7 @@ Common traps: eager `CKContainer.default()` on the main thread (hangs until enti
 Large binaries increase download time and App Store review scrutiny. Primary levers:
 
 - **Dead code stripping** (`DEAD_CODE_STRIPPING = YES` in Xcode build settings, default on for Release). Removes unreachable functions and data sections.
-- **`-Osize`** (`SWIFT_OPTIMIZATION_LEVEL = -Osize`): optimises for binary size rather than speed. Typically 5–15% smaller than `-O` with negligible runtime impact for most app code.
+- **`-Osize`** (`SWIFT_OPTIMIZATION_LEVEL = -Osize`): optimises for binary size rather than speed. Typically 5–30% smaller than `-O`, with a runtime cost below 5% for most apps (Swift.org's 2018 Swift 4.1 measurements, [Code Size Optimization Mode in Swift 4.1](https://www.swift.org/blog/osize/)).
 - **Asset catalog / app thinning**: use asset catalog image sets with `@1x`/`@2x`/`@3x` variants and device-specific slices. The App Store strips variants irrelevant to the downloading device. Avoid embedding full-resolution assets in the bundle for cases where a downsampled or streamed version suffices.
 - **Link Map + Organizer**: use the **Link Map** (Build Settings: Write Link Map File = YES) and the Xcode Organizer's App Size report to identify which symbols contribute most to the binary. Tools such as Bloaty or the `nm` / `size` commands can post-process the link map to locate unexpectedly large third-party frameworks or generated code.
 - Avoid shipping unused localisation bundles from third-party SDKs: review resource bundle sizes with the Xcode Organizer's App Size report after each SDK update, and trim unused files at the source by tightening each SwiftPM target's `resources:` rule.
@@ -160,7 +160,7 @@ For server-side CI (where a physical display is unavailable), use `XCTCPUMetric`
 - `os_signpost` intervals added around any operation expected to take > 16 ms.
 - `MXMetricManagerSubscriber` registered in the composition root; payloads forwarded to the telemetry sink.
 - `XCTMetric` baseline committed for the primary performance-sensitive test; CI fails on regression.
-- No synchronous network or file I/O on the main thread (audited via the Hangs instrument, Main Thread Checker, and `os_signpost` around suspect call sites — Thread Sanitizer only detects data races and will not flag this).
+- No synchronous network or file I/O on the main thread (audited via the Hangs instrument, Time Profiler, and `os_signpost` around suspect call sites — Thread Sanitizer only detects data races and will not flag this).
 - Image assets decoded at display resolution, not source resolution.
 - Binary size measured with `-Osize` before each major release; asset catalog slices verified.
 

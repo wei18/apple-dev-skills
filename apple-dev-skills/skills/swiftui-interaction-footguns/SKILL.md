@@ -74,7 +74,7 @@ A class of bugs that look fine in code but break at runtime. These have shipped 
 
 ### Touch target minimums
 
-- Apple HIG: 44×44pt minimum. Buttons that look smaller due to compact text + tight padding fail accessibility audit even if visually balanced.
+- Apple HIG (Accessibility): iOS / iPadOS default control size 44×44pt, minimum 28×28pt (macOS 28×28 / 20×20; visionOS 60×60 / 28×28); this catalog targets 44 on iOS. Buttons that look smaller due to compact text + tight padding fail accessibility audit even if visually balanced.
 
 ### View identity & `if/else`
 
@@ -87,7 +87,7 @@ A class of bugs that look fine in code but break at runtime. These have shipped 
 ### `@Observable` + `@Bindable`
 
 - Reading an `@Observable` model via `let vm = …` does not establish a binding scope; passing `vm` into a child that needs `@Bindable var vm` requires the child to redeclare with `@Bindable`. Forgetting this silently breaks two-way bindings (TextField, Toggle).
-- **Swift 6 mode:** `@Observable` view-models accessed from a View `body` must themselves be `@MainActor`-isolated (or all accessed properties must be `nonisolated`). A non-isolated `@Observable` class causes "Sending 'X' risks causing data races" because `View.body` is `@MainActor`-isolated. **Fix:** annotate the view-model class with `@MainActor`.
+- **Swift 6 mode without the Xcode 26 template defaults** (MainActor default isolation / Approachable Concurrency): calling a nonisolated `async` method on a non-isolated view-model from `.task` (`.task { await vm.load() }`) fails with "sending 'self.vm' risks causing data races"; reading or writing the model's properties in `body` does not. **Fix:** annotate the view-model class with `@MainActor` (implicit under the Xcode 26 template defaults).
 
 ### View-model built inside a `navigationDestination` / factory closure
 

@@ -36,7 +36,7 @@ description: 'Swift 6 language mode with complete concurrency checking from the 
 ## Deviation considerations
 
 - **Migrating existing Swift 5 code**: switch to minimal or targeted concurrency checking and upgrade in stages; ramp up one file / module at a time, allowing `@preconcurrency` during transition.
-- **Significant third-party lag**: if a critical dep doesn't support it, drop the whole project to targeted and patch module by module.
+- **Significant third-party lag**: if a critical dep doesn't support it, put only the target that imports it in Swift 5 language mode (`.swiftLanguageMode(.v5)`; in Xcode, Swift 5 mode with `SWIFT_STRICT_CONCURRENCY = targeted`) and move it back to `.v6` once the dep catches up — don't drop the whole project: in Swift 6 mode strict concurrency is always `complete`, so setting `targeted` there does nothing.
 - **Teaching / demo projects**: if the goal is to demonstrate older API behaviour, keeping Swift 5 mode is fine.
 
 ## Related skills

@@ -171,8 +171,8 @@ doesn't, and drive all three states below separately; they exercise different co
 
 | State | How to induce | What diverges |
 |---|---|---|
-| Offline | Simulator airplane mode / network link conditioner mid-flow | Network calls fail fast — no connection to wait on |
-| Online, signed out | Sign out of the cloud account with network reachable | The same calls can **hang** (a real round-trip stalls waiting on an unauthenticated container that never resolves) — a pass under airplane mode can mask this |
+| Offline | Mid-flow, turn off the host Mac's network or use the host Mac's Network Link Conditioner (it applies to the whole Mac) — the Simulator uses the Mac's networking stack and has no separate airplane mode | Network calls fail fast — no connection to wait on |
+| Online, signed out | Sign out of the cloud account with network reachable | The same calls can **hang** (a real round-trip stalls waiting on an unauthenticated container that never resolves) — a pass while offline can mask this |
 | Online, signed in | Real signed-in test account in the simulator | Baseline correct behavior — account-gated features may by design show nothing when signed out; confirm the flow works signed in before flagging graceful degradation as a bug |
 
 - **Navigation / modals**: does the destination screen actually appear after a selection; does

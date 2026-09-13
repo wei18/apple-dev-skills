@@ -93,8 +93,8 @@ App target
 
 ### Pin parity across sibling apps (multi-app monorepos only)
 
-- `swift package resolve` **always** re-resolves to the newest version each dependency's range allows — it does not consult a sibling app's committed pins. Running it to "materialize" a fresh `Package.resolved` for a second app silently drifts its pins away from the first app's committed versions.
-- To give app B pin-parity with app A: **copy** A's committed `Package.resolved` to B and swap only the `originHash` (obtained from one throwaway resolve on B), preserving the file's JSON formatting; then verify `swift build` leaves the file byte-identical (no churn). Diff the **full** pin list against the reference, not just the one dependency a task happened to mention.
+- Without a committed `Package.resolved`, `swift package resolve` resolves to the newest version each dependency's range allows — it does not consult a sibling app's committed pins. Running it to "materialize" a fresh `Package.resolved` for a second app silently drifts its pins away from the first app's committed versions.
+- To give app B pin-parity with app A: **copy** A's committed `Package.resolved` to B and swap only the `originHash` (obtained from one throwaway resolve on B), preserving the file's JSON formatting; then verify `swift build` leaves the file byte-identical (no churn). Diff the **full** pin list against the reference, not just the one dependency a task happened to mention. Optionally run `swift package resolve --force-resolved-versions` to check the copied pins still satisfy B's manifest — that flag does not update `originHash`, so it doesn't replace the swap.
 
 ### Renaming a target or test directory
 
