@@ -1,6 +1,6 @@
 ---
 name: session-to-meeting-log
-description: Consolidate a Claude Code session JSONL log into a summary-only meeting record under meetings/ (decisions, rejected alternatives, hand-offs, open questions). Use when the user asks to turn a session into a meeting log, archive today's discussion, or extract a record from a .jsonl file; or when a long session is wrapping up before its context rolls. Not for in-flight notes during a subagent task (agent-impl-notes-log) and not for extracting recurring patterns across logs (methodology-pattern-extractor). Pass the invoker's `$CLAUDE_CODE_SESSION_ID` as the first argument; the fork has no conversation history to infer it from.
+description: Consolidate a Claude Code session JSONL log into a summary-only meeting record under meetings/ (decisions, rejected alternatives, hand-offs, open questions). Use when the user asks to turn a session into a meeting log, archive today's discussion, or extract a record from a .jsonl file; or when a long session is wrapping up before its context rolls. Not for in-flight notes during a subagent task (agent-impl-notes-log) and not for extracting recurring patterns across logs (methodology-pattern-extractor). Pass the invoker's `$CLAUDE_CODE_SESSION_ID` as the first argument; the fork has no conversation history, and its own-env fallback only works when that id resolves to exactly one transcript.
 context: fork
 agent: general-purpose
 argument-hint: "[session-id-or-path] [topic]"
