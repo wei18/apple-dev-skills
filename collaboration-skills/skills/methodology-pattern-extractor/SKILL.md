@@ -17,9 +17,9 @@ agent: general-purpose
 
 - All `meetings/*.md`
 - Corresponding session JSONL (optional, for filling in details) — see
-  `session-to-meeting-log`'s "Locating the session file" for the
-  `~/.claude/projects/<encoded-project-path>/<sessionId>.jsonl` layout and the
-  path-encoding rule; this skill has no `[session-id]` argument, so treat it as
+  `session-to-meeting-log`'s "Locating the session file" for finding the
+  `.jsonl` by id (`ls ~/.claude/projects/*/<sessionId>.jsonl`) rather than
+  computing the project directory; this skill has no `[session-id]` argument, so treat it as
   best-effort and skip it if the file isn't already known.
 - The existing `docs/methodology.md` (to avoid duplicate entries)
 

@@ -108,7 +108,8 @@ Commit to the project's `.claude/settings.json`:
 No submodule, no vendoring — Claude Code resolves the pinned `ref` on trust. **Caveat
 (since v2.1.195)**: auto-install-on-trust applies to plugins declared via a relative/
 `directory` source; a plugin whose source is *external* (`github`, `npm`, `url`,
-`git-subdir`) — like this one — is *enabled* in settings but each collaborator still has
+`git-subdir`) — like the aggregated github / git-subdir entries in §Aggregating —
+is *enabled* in settings but each collaborator still has
 to run the `claude plugin install` command Claude Code prints on first load. The
 **marketplace source** (`extraKnownMarketplaces` / `marketplace add`) — where this
 `marketplace.json` itself is fetched from — takes `ref` but not `sha`; for an
@@ -171,8 +172,9 @@ B1 or B2.**
 ### C. npm (flat, non-plugin install)
 
 `npx skills add` installs skills flatly — see README §C and `scripts/install-flat.sh`.
-It never reads `marketplace.json`, so any aggregated externals (the `github` /
-`git-subdir` entries below) are skipped. Use it for a single skill set with no
+It reads `marketplace.json` / `plugin.json`, but only follows locally-declared skill
+paths — it does not fetch the aggregated externals' remote `github` / `git-subdir`
+sources (below), so those are skipped. Use it for a single skill set with no
 aggregation needs, not for this catalog's full plugin set.
 
 ## Aggregating other skill repos (don't reinvent)
@@ -201,7 +203,7 @@ submodule only when you need to **vendor + pin** another repo's content into you
 - **Bare submodule of a multi-plugin repo (root has only `marketplace.json`) ≠ discovered.**
   Pair it with the `extraKnownMarketplaces` + `enabledPlugins` settings (Model B2) — or,
   if the submodule's own root has `plugin.json` instead, it self-loads on its own (Model D).
-- **Marketplace state is per-user** (`~/.claude/plugins/known_marketplaces.json`), but the **committed project `.claude/settings.json` declaration** is what makes it reproducible for everyone on trust. Marketplace names are checked against a reserved list (`claude-code-marketplace`, `anthropic-marketplace`, `agent-skills`, …) on every load — a name collision silently stops that marketplace from loading.
+- **Marketplace state is per-user** (`~/.claude/plugins/known_marketplaces.json`), but the **committed project `.claude/settings.json` declaration** is what makes it reproducible for everyone on trust. Marketplace names are checked against a reserved list (`claude-code-marketplace`, `anthropic-marketplace`, `agent-skills`, …) — adding a new marketplace under a reserved name is rejected outright, and Claude Code re-checks the name on every load, so an *existing* marketplace whose name later becomes reserved stops loading too, erroring with "is registered from an untrusted source" ([errors reference](https://code.claude.com/docs/en/errors#marketplace-is-registered-from-an-untrusted-source)). Fix: remove it and re-add from the official source, or rename it and have users re-add from yours.
 - **Token cost**: every enabled skill's description is always-on context — for the exact
   mechanism see the listing-budget reference doc under `skill-authoring-patterns`. `/doctor`
   and `/skill-doctor` show the actual per-session cost. `skillOverrides: "name-only"` only

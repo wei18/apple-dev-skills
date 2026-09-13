@@ -62,8 +62,8 @@ Pick one explicitly (or custom):
 
 ### 6. Impl notes (non-trivial tasks)
 
-Required when the task touches ≥2 files or adds new behavior (see `ai-collaboration-mode`'s
-M/L sizing); optional for a trivial one-file fix. Tell the sub-agent to open its running
+Required when the task touches ≥2 files or adds new behavior (this catalog's M/L task-sizing
+convention, if your workflow defines one); optional for a trivial one-file fix. Tell the sub-agent to open its running
 impl-notes file at the *start* of the task, not when it first hits trouble — early assumptions
 and scope calls are exactly what's invisible by the time a report is written.
 `agent-impl-notes-log` owns the file's format and routing; this contract is what makes it start

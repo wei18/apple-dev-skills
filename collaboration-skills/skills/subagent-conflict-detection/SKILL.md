@@ -26,13 +26,15 @@ Skip when: dispatching the first subagent in a session, or all prior subagents h
 ### Step 1 — inventory in-flight subagents
 
 ```bash
-git worktree list --porcelain | awk '/^worktree /{print $2}' | tail -n +2
+git worktree list --porcelain | grep '^worktree ' | cut -d' ' -f2- | tail -n +2
 ```
 
 Plain `git worktree list` is fine for a human to eyeball, but don't parse it: filtering
 on `[main]` breaks when the default branch isn't named `main`, and splitting on
-whitespace breaks on a path containing a space. `--porcelain` sidesteps both — `tail -n
-+2` drops the first (main-checkout) `worktree` line. For each remaining worktree path,
+whitespace breaks on a path containing a space — `cut -d' ' -f2-` keeps everything after
+the first space instead of splitting on every space, so it doesn't have that problem.
+`--porcelain` sidesteps the `[main]`-name issue — `tail -n +2` drops the first
+(main-checkout) `worktree` line. For each remaining worktree path,
 capture:
 - Branch checked out
 - Dirty files: `(cd <path> && git status --short)`
