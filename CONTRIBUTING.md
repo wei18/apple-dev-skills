@@ -87,8 +87,10 @@ Two gate rules `mise run check` enforces on the frontmatter `description`:
   `*`, `>`, `|`, `#`, `%`, `@`, `` ` ``, `!`), `" #"` (starts a YAML comment, silently
   truncating everything after it), a leading `"- "` (block-sequence indicator), or a
   trailing `":"` (mapping-value indicator) — each of these breaks or silently mis-parses
-  under a strict YAML parser. A quoted value must itself be valid YAML: no unescaped `"`
-  inside a double-quoted value, no unescaped `'` (use `''`) inside a single-quoted value.
+  under a strict YAML parser. A quoted value must itself be valid YAML: its opening quote
+  must close, with nothing after the closing quote but an optional ` # comment`; no
+  unescaped `"` inside a double-quoted value, no unescaped `'` (use `''`) inside a
+  single-quoted value. Indented continuation lines are checked as part of the value.
 
 ### 3. Report a field note (skill vs reality)
 
