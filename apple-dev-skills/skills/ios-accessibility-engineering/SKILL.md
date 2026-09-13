@@ -132,6 +132,7 @@ App Review does not formally audit against WCAG, but the Human Interface Guideli
 - `swiftui-interaction-footguns`: Dynamic Type / modal env footguns and the `minimumScaleFactor` pitfall in detail.
 - `swift-testing-baseline`: headless AX-tree limitation and why sim verification is the reliable gate.
 - `interactive-simulator-ux-audit`: the live-simulator drive/tap/screenshot loop this skill's verification steps rely on.
+- Official sources: when verifying or updating a factual or version-sensitive claim, read `references/official-docs.md`.
 
 ## External references
 

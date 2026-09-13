@@ -172,3 +172,4 @@ replaces them (see the test pyramid in `swift-testing-baseline`).
 - `swift-testing-baseline` — where E2E sits in the overall test pyramid.
 - `swiftui-navigation-architecture` — the navigation shape these tests typically assert against.
 - `swiftpm-modularization` — package/target layout that affects whether a dedicated scheme or a test plan is the right wiring.
+- Official sources: when verifying or updating a factual or version-sensitive claim, read `references/official-docs.md`.

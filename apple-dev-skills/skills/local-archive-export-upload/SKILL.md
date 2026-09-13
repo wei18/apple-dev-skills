@@ -103,11 +103,10 @@ key lives in a gitignored `secrets/` dir, rather than moving the real file.
 
 **`notarytool`** is not this path — it handles Developer-ID notarization
 (outside-the-App-Store distribution), unrelated to TestFlight/App Store
-uploads. The ASC REST API also has an upload path — Build Uploads (create a
-`buildUploads` resource, reserve a `buildUploadFiles` entry, upload the file,
-then commit it) — but this skill still defaults to `altool`. The other paths
-are Xcode Cloud, Xcode Organizer, `xcodebuild -exportArchive`
-(`destination: upload`), and Transporter.
+uploads. The ASC API's Build Uploads path also works (see
+`references/official-docs.md`), but this skill still defaults to `altool`.
+For the other upload paths (Xcode Cloud, Xcode Organizer, Transporter), read
+`references/official-docs.md`.
 
 ## Build-number coordination with Xcode Cloud
 
@@ -188,3 +187,4 @@ is in `references/evidence.md`.
   `.p8` and its issuer/key IDs live and how leaks are prevented.
 - `storekit2-iap-defaults` — this pipeline is how a build carrying that
   skill's IAP code reaches TestFlight.
+- Official sources: when verifying or updating a factual or version-sensitive claim, read `references/official-docs.md`.

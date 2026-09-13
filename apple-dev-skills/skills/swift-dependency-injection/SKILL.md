@@ -181,3 +181,4 @@ Both are valid; they solve the same problem with different ergonomics. Evaluate 
 - `swiftpm-modularization`: put each seam (protocol + fake) in its own target so test targets can import the fake without importing the live implementation.
 - `swift6-concurrency`: `Sendable` requirements, `@preconcurrency`, and actor-isolated types that affect dependency design.
 - `swift-testing-baseline`: shared fake targets (`<Project>KitTesting`), protocol injection for CloudKit / Game Center, and why integration tests never touch real networks.
+- Official sources: when verifying or updating a factual or version-sensitive claim, read `references/official-docs.md`.

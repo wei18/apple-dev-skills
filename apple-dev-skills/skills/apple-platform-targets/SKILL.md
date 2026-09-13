@@ -72,3 +72,4 @@ Then, per screen rather than per project: `swiftui-navigation-architecture`, `io
 - `swift6-concurrency`: language mode is independent of the deployment floor on Xcode 26; read it next in the kickoff order.
 - `xcode-cloud-single-track-ci`: CI Xcode version lock.
 - `mise-tool-management`: pins CLI tools, not Xcode itself.
+- Official sources: when verifying or updating a factual or version-sensitive claim, read `references/official-docs.md`.

@@ -64,7 +64,7 @@ Any proposal depending on external tools / APIs / third-party packages **must** 
 ```
 
 - Unconfirmed items **block Leader approval** — the section stays DRAFT until each item is Resolved.
-- Resolved items are checked off with their decision basis + date.
+- Resolved items are checked off with their decision basis + date. (`ci_post_clone.sh` above is a real Xcode Cloud hook name — see [Writing custom build scripts](https://developer.apple.com/documentation/xcode/writing-custom-build-scripts).)
 
 ### No implementation code before design + plan approved
 

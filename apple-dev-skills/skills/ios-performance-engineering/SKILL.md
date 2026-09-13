@@ -27,17 +27,12 @@ Never guess at a performance problem; profile first. Instruments ships with Xcod
 | Slow cold launch | App Launch | time to first committed frame |
 | Excessive SwiftUI re-renders | SwiftUI instrument | body invocation count, triggering property |
 
-Key templates in detail:
+Key templates, condensed (full walkthrough of each template's UI: `references/instruments-templates.md`):
 
-**Time Profiler** — samples the call stack at ~1 kHz. Reveals which functions consume CPU time. After recording, invert the call tree and hide system libraries to surface your own hot paths. A function taking >5 ms on the main thread in an interactive path is a candidate for offloading.
-
-**Allocations** — tracks every heap allocation. Use the "Generation" feature: take a snapshot before an action, perform the action repeatedly, take another snapshot, and diff. Any allocation that grew unboundedly across generations is a leak or an accumulation bug. The "Leaks" instrument detects reference cycles automatically but misses logical leaks (objects kept alive longer than needed).
-
-**SwiftUI instrument** — records View body invocation counts, `@State` change propagation, and diffing cost. Xcode 26 introduced a next-generation SwiftUI instrument that tracks the causes of each update. A body that fires more than expected usually means a dependency is too coarse (e.g. observing the whole model when only one field is needed). The instrument shows which property change triggered each body re-render.
-
-**Hangs instrument** (Xcode 14+) — captures main-thread spins longer than a configurable threshold (default 250 ms). Apple's tooling reports hangs starting at 250 ms; on-device hang detection can be tuned from 250 ms up to several seconds depending on the diagnostic. Pairs with the **App Launch** template for pre-first-frame blocking. The system also generates `MXHangDiagnostic` on-device (see MetricKit below).
-
-**Hitches** — a hitch occurs when a frame takes longer than one vsync interval to deliver, causing a visual stutter. On 60 Hz displays the budget is ~16.67 ms; on ProMotion (120 Hz) it halves to ~8.33 ms. Use the **Animation Hitches** instrument template (Hitches, Display, and Core Animation Commits tracks — the standalone "Core Animation" template no longer exists) to see committed frames and dropped frames. The `hitch rate` (ms of hitch per second of scrolling) is the standard metric: <5 ms/s is good; 5–10 ms/s is concerning (user notices interruptions); >10 ms/s is critical (greatly impacts UX) — per WWDC 2020 session 10077.
+- **Time Profiler**: a function taking >5 ms on the main thread in an interactive path is a candidate for offloading.
+- **Allocations**: the "Leaks" instrument detects reference cycles automatically but misses logical leaks (objects kept alive longer than needed).
+- **Hangs instrument** (Xcode 14+): default threshold **250 ms**.
+- **Hitches**: use the Animation Hitches template — the standalone "Core Animation" template no longer exists. Hitch rate (ms of hitch per second of scrolling): <5 ms/s is good; 5–10 ms/s is concerning; >10 ms/s is critical.
 
 ### `os_signpost` — annotate your own intervals
 
@@ -116,13 +111,12 @@ Common traps: eager `CKContainer.default()` on the main thread (hangs until enti
 
 ## Binary size
 
-Large binaries increase download time and App Store review scrutiny. Primary levers:
+Large binaries increase download time and App Store review scrutiny. Two primary levers:
 
 - **Dead code stripping** (`DEAD_CODE_STRIPPING = YES` in Xcode build settings, default on for Release). Removes unreachable functions and data sections.
-- **`-Osize`** (`SWIFT_OPTIMIZATION_LEVEL = -Osize`): optimises for binary size rather than speed. Typically 5–30% smaller than `-O`, with a runtime cost below 5% for most apps (Swift.org's 2018 Swift 4.1 measurements, [Code Size Optimization Mode in Swift 4.1](https://www.swift.org/blog/osize/)).
-- **Asset catalog / app thinning**: use asset catalog image sets with `@1x`/`@2x`/`@3x` variants and device-specific slices. The App Store strips variants irrelevant to the downloading device. Avoid embedding full-resolution assets in the bundle for cases where a downsampled or streamed version suffices.
-- **Link Map + Organizer**: use the **Link Map** (Build Settings: Write Link Map File = YES) and the Xcode Organizer's App Size report to identify which symbols contribute most to the binary. Tools such as Bloaty or the `nm` / `size` commands can post-process the link map to locate unexpectedly large third-party frameworks or generated code.
-- Avoid shipping unused localisation bundles from third-party SDKs: review resource bundle sizes with the Xcode Organizer's App Size report after each SDK update, and trim unused files at the source by tightening each SwiftPM target's `resources:` rule.
+- **`-Osize`** (`SWIFT_OPTIMIZATION_LEVEL = -Osize`): optimises for binary size rather than speed. Typically 5–30% smaller than `-O`, with a runtime cost below 5% for most apps.
+
+For asset catalog / app thinning, Link Map analysis, and trimming unused SDK resource bundles, read `references/official-docs.md`.
 
 ## MetricKit — field performance telemetry
 
@@ -171,3 +165,4 @@ For server-side CI (where a physical display is unavailable), use `XCTCPUMetric`
 - `swift6-concurrency`: moving work off `@MainActor` correctly requires understanding actor isolation, `Task.detached`, and `Sendable` constraints — the primary tool for eliminating main-thread hangs.
 - `swiftui-expert:swiftui-expert-skill` (aggregated external): for the **SwiftUI body-re-render** slice specifically, it ships an Instruments `.trace` analysis toolchain — prefer it for that profiling. This skill owns the broader surface (Time Profiler / Allocations / hangs / launch / memory / binary size / MetricKit / XCTMetric).
 - `apple-skills:guide-swiftui-performance-audit` (aggregated external): code-first SwiftUI review (view-update causes, layout thrash) with user-run Instruments; this skill owns measurement (Instruments/xctrace/MetricKit/XCTMetric) and the non-SwiftUI surface (launch, memory, binary size).
+- Official sources: when verifying or updating a factual or version-sensitive claim, read `references/official-docs.md`.

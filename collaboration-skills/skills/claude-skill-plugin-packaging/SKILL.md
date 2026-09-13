@@ -9,6 +9,8 @@ description: Package Claude Code skills as a plugin plus marketplace and install
 
 [Plugins](https://code.claude.com/docs/en/plugins) and [plugin marketplaces](https://code.claude.com/docs/en/plugin-marketplaces) are Claude Code's own distribution mechanism — a marketplace repo with `.claude-plugin/marketplace.json` gives "centralized discovery, version tracking, automatic updates". What the official docs don't spell out in one place is the depth-1 discovery trap and the install-model tradeoffs below — that's what this skill adds.
 
+- Official sources: when verifying or updating a factual or version-sensitive claim, read `references/official-docs.md`.
+
 ## When to invoke
 
 - You have skills in one repo and want them reusable across other repos/projects.
@@ -160,12 +162,13 @@ cd .claude/skills/their-plugin && git checkout v0.1.0 && cd -
 ```
 On the next session (after the project-scope trust dialog), it self-loads as
 `their-plugin@skills-dir` — no marketplace, no install step, no settings.json edit.
-Caveats: only resolves when Claude Code is launched from the session's primary working
-directory (no walk-up); and because a project-scope skills-dir plugin's content comes
-from the repository, its code-running components are gated further — MCP servers it
-declares go through the same per-server approval as a project `.mcp.json`, LSP servers
-start only after you trust the workspace, and background monitors do not load
-(personal-scope `~/.claude/skills/` plugins have none of these restrictions). **This repo's own root has only `marketplace.json`,
+Caveats: the same primary-working-directory / trust-dialog rule stated above applies
+(exact version gate: `references/official-docs.md`); and because a project-scope
+skills-dir plugin's content comes from the repository, its code-running components are
+gated further — MCP servers it declares go through the same per-server approval as a
+project `.mcp.json`, LSP servers start only after you trust the workspace, and
+background monitors do not load (personal-scope `~/.claude/skills/` plugins have none of
+these restrictions). **This repo's own root has only `marketplace.json`,
 not `plugin.json`, so a bare submodule of *this* repo does not self-load this way — use
 B1 or B2.**
 
@@ -190,13 +193,11 @@ each with its own source:
   { "name": "vendored-thing",     "source": { "source": "git-subdir", "url": "https://…", "path": "tools/plugin" } }
 ]
 ```
-Accepted plugin sources: relative `"./path"` (within the marketplace repo, must
-start with `./`; bare names are allowed under `metadata.pluginRoot`, ≥2.1.239),
-`github` (`repo`,`ref?`,`sha?`), `url` (git URL, `ref?`,`sha?`), `git-subdir`
-(`url`,`path`,`ref?`,`sha?`), `npm` (`package`,`version?`,`registry?`), `archive`
-(`url`,`sha256?`, ≥2.1.224), `command` (`command`,`timeout?`,`mode?`, ≥2.1.229). Use a
-submodule only when you need to **vendor + pin** another repo's content into yours
-(Model B2 or D above).
+Accepted plugin source types (relative path, `github`, `url`, `git-subdir`, `npm`, `archive`,
+`command`) and the exact fields and Claude Code version each requires drift with new
+releases — read `references/official-docs.md` rather than trusting a hardcoded list. Use a
+submodule only when you need to **vendor + pin** another repo's content into yours (Model B2
+or D above).
 
 ## Gotchas (verified)
 
@@ -211,10 +212,9 @@ submodule only when you need to **vendor + pin** another repo's content into you
   are not affected by `skillOverrides`. Manage those through `/plugin` instead."); for a
   plugin the only levers are disabling it via `/plugin`, or raising the consumer's
   `skillListingBudgetFraction`.
-- **Relative marketplace paths resolve for both git-based and local-directory marketplaces**
-  — they fail only when the marketplace was added by a direct URL to `marketplace.json`. A
-  `directory` source resolves against the *containing* repo's main checkout (including from
-  a worktree of it), independent of whether the target path is itself a git repo.
+- **Relative marketplace paths**: see B2 step 2 above for the exact resolution rule and its
+  one exception (direct-URL marketplaces) — [Create and distribute a plugin
+  marketplace](https://code.claude.com/docs/en/plugin-marketplaces#relative-paths).
 - **A skill/plugin `name` containing "claude"** loads fine in Claude Code — this skill's own
   name is proof, and `claude-hud`/`claude-mem` ship the same way — but is rejected by the
   platform Agent Skills spec's reserved-word rule. This only matters if the skill is ever

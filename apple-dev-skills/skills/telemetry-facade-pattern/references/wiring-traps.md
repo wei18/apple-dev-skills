@@ -3,7 +3,7 @@
 #### Wiring traps (hard-won — real project lessons)
 
 A sink that *exists as a type* is worth **zero** until it is in the **live** sinks
-array. Five traps, in the order they bit:
+array. Six traps, in the order they bit:
 
 1. **Existing-but-unwired = dead code.** Real-world example: a `GameCenterSink`
    and its achievement-evaluation logic were fully written but never added to
@@ -40,3 +40,18 @@ array. Five traps, in the order they bit:
    (`GKLeaderboard.submitScore`, `GKAchievement.report`), not just to the sink.
    Terminal GameKit/StoreKit calls are device-gated — verify on a real device +
    sandbox, never claim "done" from a green headless suite.
+6. **`MetricKitSink`'s base class depends on the OS version.** On OS 26 and
+   earlier, `MXMetricManagerSubscriber` inherits `NSObjectProtocol`, so
+   `MetricKitSink` must inherit `NSObject`, not be a struct — subscribe via
+   `MXMetricManager.shared.add(self)`; on receiving `MXMetricPayload`, broadcast
+   to other sinks. On OS 27+ (iOS, iPadOS, macOS, visionOS, Mac Catalyst),
+   `MXMetricManager` / `MXMetricManagerSubscriber` are deprecated — hold a
+   single `MetricManager()` instance instead and `for await report in
+   manager.metricReports` (don't create more than one instance; two concurrent
+   iterators only split the sequence). First choice for mutable subscription
+   state on either OS: `actor MetricKitSink: NSObject` with a `nonisolated func
+   didReceive` (matches the default `actor Telemetry` facade). A `final class`
+   `NSObject` subclass *can* conform to a `Sendable` sink protocol, but only
+   while every stored property is immutable — a `var` there fails with "stored
+   property … is mutable"; hold that state behind `@MainActor` or a `Mutex`, or
+   mark the class `@unchecked Sendable` and synchronise it yourself.

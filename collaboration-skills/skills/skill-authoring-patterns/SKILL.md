@@ -112,7 +112,7 @@ Keep `SKILL.md` scannable: decision logic, short paired WRONG/RIGHT snippets (on
 
 ## Naming & granularity
 
-- `name` is kebab-case; **our consistency gate requires `name` to equal the directory** (run `mise run check`) for clean cross-references and tooling. (Note: this is more than tooling hygiene — in a **plugin** skill, which is how every skill in this catalog ships, frontmatter `name` sets the *command's* last segment (`/plugin:name`), so a `name` ≠ directory mismatch silently renames the command a user types. Only for a personal/project skill does Claude Code derive the command from the directory and treat `name` as a mere label. Our gate keeps both paths identical.)
+- `name` is kebab-case; **our consistency gate requires `name` to equal the directory** (run `mise run check`) for clean cross-references and tooling. This is more than tooling hygiene: in a **plugin** skill — how every skill in this catalog ships — a `name` ≠ directory mismatch silently renames the command a user types; that's the failure our gate exists to block. For exactly how Claude Code derives a skill's command name in each install path, read `references/official-docs.md`.
 - **One surface area per skill.** First-party skills in this catalog use a "topic + stance" compound name — `storekit2-iap-defaults`, `swift6-concurrency`, `swiftui-navigation-architecture`, `cloudkit-schema-source-of-truth` — rather than the bare Kit name. Bare Kit names (`widgetkit`, `storekit`, `swift-concurrency`) are already taken by the aggregated `apple-skills` plugin, so the compound name is also what keeps the two catalogs from routing to the same command. For cross-cutting topics use a descriptive compound at the right altitude — `swiftui-navigation-architecture`, not the too-broad `swiftui` nor the too-narrow `swiftui-observable`.
 
 ## Reviewing a skill (CR)
@@ -153,3 +153,4 @@ When you CR a skill or a batch, apply the evidence-based, multi-lens doctrine (i
 - `superpowers:writing-skills` — **read first** for the general discipline this skill deliberately does not repeat.
 - `claude-skill-plugin-packaging` — packaging/distribution/discovery of the authored skill.
 - `subagent-review-cycles` — the round structure the evidence-based CR plugs into.
+- Official sources: when verifying or updating a factual or version-sensitive claim, read `references/official-docs.md`.

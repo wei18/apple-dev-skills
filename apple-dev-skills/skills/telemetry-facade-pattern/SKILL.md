@@ -48,7 +48,7 @@ telemetry.observe(.sessionCompleted(id: sessionId, durationMs: 12_345))
 |---|---|---|
 | `OSLogSink` | All events | Human-readable debug messages |
 | `TrackingSink` (default `NoOpTrackingSink`) | Business events | v1 has no third-party tracking but the protocol is reserved; future swaps require zero call-site changes |
-| `MetricKitSink` | OS 26 and earlier: subscribes via `MXMetricManager.shared.add(self)`; on receiving `MXMetricPayload`, broadcasts to other sinks. OS 27+ (iOS, iPadOS, macOS, visionOS, Mac Catalyst): `MXMetricManager` / `MXMetricManagerSubscriber` are deprecated — hold a single `MetricManager()` instance instead and `for await report in manager.metricReports` (don't create more than one instance; two concurrent iterators only split the sequence) | Performance / diagnostics persistence — on OS 26 and earlier, `MXMetricManagerSubscriber` inherits `NSObjectProtocol`, so `MetricKitSink` must inherit `NSObject`, not be a struct. First choice for mutable subscription state: `actor MetricKitSink: NSObject` with a `nonisolated func didReceive` (matches the default `actor Telemetry` facade). A `final class` `NSObject` subclass *can* conform to a `Sendable` sink protocol, but only while every stored property is immutable — a `var` there fails with "stored property … is mutable"; hold that state behind `@MainActor` or a `Mutex`, or mark the class `@unchecked Sendable` and synchronise it yourself |
+| `MetricKitSink` | OS 26 and earlier: `MXMetricManagerSubscriber` (≤26). OS 27+: hold a single `MetricManager()` instance (27+) | Performance / diagnostics persistence — base-class and actor-viability details: trap 6 in `references/wiring-traps.md` |
 | `GameCenterSink` (games) | Completion / achievement events | Submit score / unlock achievement |
 
 ```swift
@@ -63,10 +63,11 @@ public struct NoOpTrackingSink: TelemetrySink {
 - The App target's DI composition root injects sinks into the facade.
 - Sinks are **failure-isolated** (one sink throwing or timing out must not stop the others) but **not order-free**: the facade forwards in array order, and a sink that reads state another sink writes must come after it (see trap 2).
 
-For the five composition-root wiring traps (existing-but-unwired sinks, sink
-ordering, blocking I/O on the gameplay path, late-binding, and sink-fired vs
+For the six composition-root wiring traps (existing-but-unwired sinks, sink
+ordering, blocking I/O on the gameplay path, late-binding, sink-fired vs
 terminal-call-succeeded — `GKLeaderboard.submitScore` / `GKAchievement.report`
-never reached), read `references/wiring-traps.md`.
+never reached — and `MetricKitSink`'s OS-version-dependent base class), read
+`references/wiring-traps.md`.
 
 ## Rationale
 
@@ -100,3 +101,4 @@ never reached), read `references/wiring-traps.md`.
 - `oslog-logger-defaults`: the concrete `OSLogSink` implementation dependency.
 - `apple-three-piece-analytics`: each piece corresponds to one sink.
 - `swiftpm-modularization`: why `Telemetry` is its own target.
+- Official sources: when verifying or updating a factual or version-sensitive claim, read `references/official-docs.md`.

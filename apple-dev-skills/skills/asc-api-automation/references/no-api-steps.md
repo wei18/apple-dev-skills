@@ -7,7 +7,7 @@ Apple publishes no REST resource for them at all, so no amount of scripting clos
 budget a manual, one-time (or rarely-repeated) click in the ASC web UI.
 
 - **Verified ✓ — Agreements, Tax, and Banking (including accepting the Paid Apps Agreement).**
-  Apple's App Store Connect API topic index (`developer.apple.com/tutorials/data/documentation/AppStoreConnectAPI.md`,
+  Apple's App Store Connect API topic index (fetched per CONTRIBUTING.md's doc-JSON tip,
   checked 2026-09) lists every automatable area — App Store, TestFlight, Game Center,
   Provisioning, Xcode Cloud, Webhooks, Reporting, Users and Access, Alternative App
   Distribution — and "Agreements, Tax, and Banking" is absent from all of them; no

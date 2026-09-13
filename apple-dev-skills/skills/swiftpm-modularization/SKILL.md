@@ -118,3 +118,4 @@ App target
 - `apple-platform-targets`: Package `platforms:` aligned with App target.
 - `swift-testing-baseline`: test target framework and location.
 - `telemetry-facade-pattern`: why `Telemetry` is a standalone target.
+- Official sources: when verifying or updating a factual or version-sensitive claim, read `references/official-docs.md`.

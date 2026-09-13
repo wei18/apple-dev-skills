@@ -45,3 +45,4 @@ description: 'Swift 6 language mode with complete concurrency checking from the 
 - `swiftpm-modularization`: `swiftLanguageModes: [.v6]` sets the default for the whole package; individual targets can opt down with `swiftSettings: [.swiftLanguageMode(.v5)]` (available since swift-tools-version 6.0) — useful when migrating a legacy dependency without blocking the rest of the package.
 - `apple-skills:guide-swift-concurrency` (aggregated external): fixing the concurrent code itself — actors, structured concurrency, cancellation, strict-concurrency diagnostics. This skill stops at the build settings and the dependency boundary.
 - `apple-skills:swift-concurrency` (aggregated external): API reference for `async`/`await`, `Task`, `TaskGroup`, `AsyncSequence`.
+- Official sources: when verifying or updating a factual or version-sensitive claim, read `references/official-docs.md`.

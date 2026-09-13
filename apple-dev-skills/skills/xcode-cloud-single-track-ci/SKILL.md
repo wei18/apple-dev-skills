@@ -43,7 +43,7 @@ description: 'Use when setting up or changing CI for an Apple-platform project o
 | Need | Setting / source | Where it's set | Action |
 |---|---|---|---|
 | User-visible version | `MARKETING_VERSION` (→ `CFBundleShortVersionString`) | Project build settings | Bump deliberately per release |
-| Build number, new **iOS** app | `CI_BUILD_NUMBER` | Xcode Cloud (sequential integer per build, starting at `1`, independent of `CURRENT_PROJECT_VERSION`) | Nothing — e.g. `1.2.2 (1)` is a valid, unique version+build pair even after a prior manually-numbered `1.2.1 (42)` (iOS only — Apple's docs call that same pair *invalid* for a Mac app; see next row) |
+| Build number, new **iOS** app | `CI_BUILD_NUMBER` | Xcode Cloud (sequential integer per build, starting at `1`, independent of `CURRENT_PROJECT_VERSION`) | Nothing — a version+build pair lower than a prior manually-numbered build is still valid on iOS, even though Apple's docs call that same pattern *invalid* for a Mac app (see next row; worked example: `references/official-docs.md`) |
 | Build number, existing Mac app with a prior higher build | ASC's Xcode Cloud build-number counter | App Store Connect → app → **Xcode Cloud** tab → **Settings** → **Build Number** tab → **Edit** | Set the next build number above your last shipped one (macOS requires the build number to strictly increase *across* versions, not just be unique within one) |
 | Binary must carry the CI build number (e.g. crash-symbolication tooling that reads `CURRENT_PROJECT_VERSION`) | `agvtool new-version -all "$CI_BUILD_NUMBER"` in `ci_post_clone.sh` | Repo | Requires `VERSIONING_SYSTEM = apple-generic` (agvtool enabled) on the target |
 
@@ -108,3 +108,4 @@ When two PRs each pass pre-merge and merge back to back, **their combined result
 - `apple-platform-targets`: Xcode version lock.
 - `asc-api-automation`: release-side `versionString` and changelog automation, once the build exists in ASC — reuses this project's `MARKETING_VERSION` / `CI_BUILD_NUMBER`.
 - `local-archive-export-upload`: the manual fallback when Xcode Cloud is down or its quota is exhausted.
+- Official sources: when verifying or updating a factual or version-sensitive claim, read `references/official-docs.md`.

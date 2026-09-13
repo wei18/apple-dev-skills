@@ -186,3 +186,4 @@ Every PR review additionally checks:
 - `apple-three-piece-analytics`: "no third-party SDK" is one of the public commitments.
 - `build-time-secret-injection`: ship-in-binary identifiers (AdMob IDs via xcconfig) and CLI keys in `secrets/.env` — this skill only owns the leak-prevention lines of defence, not where those values live day to day.
 - `asc-api-automation`: what the ASC API `.p8` is *used* for once it is stored safely.
+- Official sources: when verifying or updating a factual or version-sensitive claim, read `references/official-docs.md`.

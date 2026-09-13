@@ -82,7 +82,7 @@ final class Router {
 Rules the shape encodes:
 
 - **Push with values** — `NavigationLink(value:)` or `router.path.append(...)`; never `NavigationLink(destination:)` in a path-managed stack (those pushes bypass `path`, desyncing back-stack, deep links, and restoration).
-- **`navigationDestination(for:)` on the stack's root content, outside lazy containers.** Apple's docs: "Do not put a navigation destination modifier inside a 'lazy' container, like `List` or `LazyVStack`. … Add the navigation destination modifier outside these containers so that the navigation stack can always see the destination."
+- **`navigationDestination(for:)` on the stack's root content, outside lazy containers.** Apple's docs ([navigationDestination(for:destination:)](https://developer.apple.com/documentation/swiftui/view/navigationdestination(for:destination:))): "Do not put a navigation destination modifier inside a 'lazy' container, like `List` or `LazyVStack`. … Add the navigation destination modifier outside these containers so that the navigation stack can always see the destination."
 - **Typed `[Route]` over `NavigationPath`** — pattern-matchable, exhaustively switched, `Codable` for free.
 - **Modal ≠ push** — presented flows hang off router optionals (`item:`-driven; one optional per presentation kind — sheet, cover, alert. Parallel `isPresented:` Bools race and can present blank); a presented flow is never a `Route` case. *Which* kind → next section.
 - **Router is `@MainActor`** (it is UI state; Swift 6 enforces it), routes are `Hashable + Codable` value types. On Xcode 26's default MainActor isolation (SE-0466) this is implicit for a new project's modules — keep the explicit annotation anyway so the class stays correct if the module later turns default isolation off.
@@ -193,3 +193,4 @@ Route both entry and exit through router methods (as above) so no view ever enco
 - `swift-dependency-injection` — how destination views get their services
 - `apple-platform-targets` — the iOS 26 / macOS 26 baseline this shape assumes
 - `ios-accessibility-engineering` — accessibility of the navigation chrome
+- Official sources: when verifying or updating a factual or version-sensitive claim, read `references/official-docs.md`.

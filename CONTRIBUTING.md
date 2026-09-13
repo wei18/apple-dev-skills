@@ -75,7 +75,11 @@ with `mise run check-externals -- --update` and commit the updated snapshot.
 
 Pick the plugin: Apple/Swift → `apple-dev-skills/skills/`, generic agent process →
 `collaboration-skills/skills/`. One dir per skill with a `SKILL.md` whose frontmatter
-`name:` equals the dir. Then update `README.md`'s Catalog table + the group `(N)` count,
+`name:` equals the dir. When verifying a factual or version-sensitive claim against an
+Apple Developer Documentation page that WebFetch can't extract text from (the pages are
+JS-rendered), fetch `https://developer.apple.com/tutorials/data/documentation/<path>.json`
+instead — it returns the same content as JSON (observed, undocumented). Then update
+`README.md`'s Catalog table + the group `(N)` count,
 the plugin's `plugin.json` description count, `scripts/check-consistency.py`'s `PLUGINS`
 constant, the matching plugin's `marketplace.json` description count, and README.md's
 "install only the N first-party skills" sentence — then run `mise run check`.

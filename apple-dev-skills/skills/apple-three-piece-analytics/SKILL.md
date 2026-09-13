@@ -72,3 +72,4 @@ Owns the source-selection decision and its PrivacyInfo/ATT consequence. Does NOT
 - `telemetry-facade-pattern`: the sink implementations for each piece.
 - `oslog-logger-defaults`: MetricKit payloads persist via OSLog.
 - `apple-public-repo-security`: "no PII / no third-party SDK" is one of the public-repo commitments.
+- Official sources: when verifying or updating a factual or version-sensitive claim, read `references/official-docs.md`.

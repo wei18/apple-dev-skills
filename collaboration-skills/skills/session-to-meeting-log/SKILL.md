@@ -117,3 +117,4 @@ Mode: <e.g. AI Collaboration Mode (Leader/Developer)>
 
 - `methodology-pattern-extractor`: meeting logs produced here are the input for methodology pattern extraction.
 - `backlog-routing-by-topic`: open questions that can be classified can also be routed to the matching file's §Backlog.
+- Official sources: when verifying or updating a factual or version-sensitive claim, read `references/official-docs.md`.

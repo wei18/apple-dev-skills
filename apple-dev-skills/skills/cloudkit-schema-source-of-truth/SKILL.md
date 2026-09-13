@@ -113,11 +113,12 @@ repeatedly without asking anyone.
    template (it includes the system `"___*"` fields and the `GRANT` block a hand-written file
    also needs).
 
-Other existing `cktool` subcommands/flags worth knowing about, not required for the core loop
-above: `import-schema --validate` combines steps 3+4 into one call; `export-schema
---output-file <path>` writes directly to a file instead of shell-redirecting stdout;
-`reset-schema` resets a container's Development environment to match Production **and deletes
-all Development data** — a "start clean and re-seed" tool, not part of the routine loop.
+For other `cktool` subcommands/flags not required for the core loop above (e.g. `import-schema
+--validate`, `export-schema --output-file <path>`), run `xcrun cktool help` / `xcrun cktool
+<subcommand> --help` — the offline, primary source, more current than any WWDC talk. One flag
+worth knowing without opening a shell: `reset-schema` resets a container's Development
+environment to match Production **and deletes all Development data** — a "start clean and
+re-seed" tool, not part of the routine loop.
 
 ## Idempotency
 
@@ -178,3 +179,4 @@ correspondingly irreversible, deliberately manual approval step.
 - `swift-testing-baseline` — gate live CloudKit/Game Center access behind a test-only suppression seam; constructing a live container or auth handler inside a test blocks the unentitled SwiftPM runner indefinitely (its "unentitled runner" section covers this landmine — this skill's schema is only ever tested against, never through a live container in CI).
 - `apple-public-repo-security` — why the management token is a stricter secret class than a build-time public identifier.
 - `build-time-secret-injection` — the general env-file-based secret pattern this workflow's token handling follows.
+- Official sources: when verifying or updating a factual or version-sensitive claim, read `references/official-docs.md`.

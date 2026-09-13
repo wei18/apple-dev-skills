@@ -10,6 +10,8 @@ allowed-tools: Bash(git worktree *) Bash(git status *) Bash(git log *) Bash(git 
 
 Claude Code's own isolation primitives are the [Subagents](https://code.claude.com/docs/en/subagents) feature ("each subagent runs in its own context window with a custom system prompt, specific tool access, and independent permissions") and `isolation:"worktree"`'s [base-branch selection](https://code.claude.com/docs/en/worktrees#choose-the-base-branch). Neither one checks whether a NEW dispatch's file scope overlaps an in-flight one, or whether the worktree base is stale — that pre-flight discipline is what this skill adds on top.
 
+- Official sources: when verifying or updating a factual or version-sensitive claim, read `references/official-docs.md`.
+
 ## When to invoke
 
 Before dispatching a new subagent via the Agent tool — especially with `isolation: "worktree"` — if ANY other subagent is currently running or has an active worktree.

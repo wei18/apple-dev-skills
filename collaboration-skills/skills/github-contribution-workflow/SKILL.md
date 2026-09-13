@@ -15,6 +15,8 @@ commands are `gh` + `git`.
 
 Claude Code's [Hooks](https://code.claude.com/docs/en/hooks) can intercept and block a tool call before it runs — e.g. a `PreToolUse` hook matching `Bash` can deny a `git push --force` or a bare `rm -rf`. Hooks enforce a hard gate at the tool layer; the `--no-verify` rule and CLEAN-before-merge convention below are conventions this skill asks the agent to follow voluntarily where no hook exists to enforce them.
 
+- Official sources: when verifying or updating a factual or version-sensitive claim, read `references/official-docs.md`.
+
 ## When to invoke
 
 - Opening or merging a PR; opening or commenting on an issue.

@@ -79,3 +79,4 @@ reply — Apple renumbers.
 - `storekit2-iap-defaults` — 3.1.1 implementation: the Remove-Ads IAP and its Restore Purchases control.
 - `monetization-sdk-integration` — 5.1.2 ATT / PrivacyInfo consequences of shipping AdMob.
 - `ai-translated-localization` — the L10n flow that keeps every shipped locale's metadata and ATT string complete.
+- Official sources: when verifying or updating a factual or version-sensitive claim, read `references/official-docs.md`.
