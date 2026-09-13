@@ -6,11 +6,11 @@ cd "$(git rev-parse --show-toplevel)"
 
 LOCALE="${1:?usage: gen-readme-zh.sh <locale>, e.g. zh-Hant}"
 case "$LOCALE" in
-  zh-Hant) LANG_NAME="Traditional Chinese (zh-Hant)" ;;
-  zh-Hans) LANG_NAME="Simplified Chinese (zh-Hans), using mainland-China terminology and simplified characters throughout" ;;
+  zh-Hant) LANG_NAME="Traditional Chinese (zh-Hant)"; TASK=readme-zh ;;
+  zh-Hans) LANG_NAME="Simplified Chinese (zh-Hans), using mainland-China terminology and simplified characters throughout"; TASK=readme-zh-hans ;;
   ja) LANG_NAME="natural, idiomatic Japanese (ja) written in polite desu/masu style throughout, using terminology
 and phrasing familiar to the Japanese iOS/Swift developer community (katakana or English mixed in the way
-Japanese technical writing conventionally does), with full-width punctuation (、。（）「」・)" ;;
+Japanese technical writing conventionally does), with full-width punctuation (、。（）「」・)"; TASK=readme-ja ;;
   *) echo "unsupported locale: $LOCALE (known: zh-Hant, zh-Hans, ja)" >&2; exit 1 ;;
 esac
 OUT="README.$LOCALE.md"
@@ -35,7 +35,7 @@ Output ONLY the translated markdown, nothing else." < README.md > "$TMP"
 else
   EMB="$(grep -oE '<!-- src-sha: [0-9a-f]+ -->' "$OUT" 2>/dev/null | grep -oE '[0-9a-f]{7,}' || true)"
   if [ "$EMB" != "$SHA" ]; then
-    echo "$OUT is stale; run 'mise run readme-zh' where 'claude' is on PATH" >&2
+    echo "$OUT is stale; run 'mise run $TASK' where 'claude' is on PATH" >&2
     exit 1
   fi
   echo "$OUT fresh (src-sha $SHA)"

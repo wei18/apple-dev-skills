@@ -67,7 +67,8 @@ def precheck_marketplace_mirrors():
         mirror = ROOT / mirror_name
         m = re.search(r"<!-- src-sha: ([0-9a-f]+) -->", mirror.read_text(encoding="utf-8"))
         if not m or m.group(1) != pre_sha:
-            die(f"{mirror_name} src-sha is stale vs README.md — run `mise run readme-zh` first, then re-run bump")
+            die(f"{mirror_name} src-sha is stale vs README.md — hand-mirror the changed lines + "
+                f"re-stamp src-sha (CONTRIBUTING §README mirrors) first, then re-run bump")
 
 
 def set_marketplace_version(version: str):

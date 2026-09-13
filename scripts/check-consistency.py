@@ -243,7 +243,8 @@ for mirror_name in MIRRORS:
     cur = subprocess.run(["git", "hash-object", "README.md"], cwd=ROOT,
                          capture_output=True, text=True, check=True).stdout.strip()
     if not m: fail(f"[{mirror_name}] no embedded src-sha")
-    elif m.group(1) != cur: fail(f"[{mirror_name}] stale — run `mise run {task}` (src-sha != README.md)")
+    elif m.group(1) != cur: fail(f"[{mirror_name}] stale (src-sha != README.md) — hand-mirror the changed "
+                                 f"lines + re-stamp src-sha (CONTRIBUTING §README mirrors)")
 
 # 5. marketplace JSON + subdir sources
 mp = ROOT / ".claude-plugin" / "marketplace.json"
