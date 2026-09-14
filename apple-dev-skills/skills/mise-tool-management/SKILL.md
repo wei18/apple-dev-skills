@@ -82,3 +82,4 @@ xcbeautify = "3" # pinned 2026-09
 
 - `xcode-cloud-single-track-ci`: `ci_scripts/` activates tools through mise.
 - `apple-public-repo-security`: gitleaks + lefthook installed through mise.
+- Official sources: when verifying or updating a factual or version-sensitive claim, read `references/official-docs.md`.

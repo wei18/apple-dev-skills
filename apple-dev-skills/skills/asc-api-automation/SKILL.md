@@ -144,3 +144,4 @@ sourcing, read `references/no-api-steps.md`.
 - `build-time-secret-injection` — where `ASC_KEY_ID` / `ASC_ISSUER_ID` / the `.p8` live (Layer 2 `secrets/.env`)
 - `apple-public-repo-security` — `.p8` leak prevention and the rotate-first SOP
 - `app-store-review-rejections` — *what* to submit so review passes; this skill is *how* to submit
+- Official sources: when verifying or updating a factual or version-sensitive claim, read `references/official-docs.md`.

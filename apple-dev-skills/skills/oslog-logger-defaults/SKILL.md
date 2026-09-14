@@ -43,6 +43,8 @@ Logger.engine.info("user \(userId, privacy: .public) loaded puzzle \(puzzleId, p
 
 ### What `.private` actually means (easily misunderstood)
 
+*Practice observed — none of the four official pages in `references/official-docs.md` state the debugger-attached or `OSLogStore` behavior below; this is derived from testing, not documented.*
+
 - `.private` content is **redacted wherever no debugger is attached** — this includes a TestFlight user viewing their own Console.app, not only "in someone else's sysdiagnose after release."
 - **When the local Xcode debugger is attached to a running process, private values are still visible.**
 - **`OSLogStore` does not bypass redaction**: in a TestFlight or production build, `OSLogStore` reading its own process still sees `<private>` in place of redacted values — only a process that Xcode itself launched gets unredacted output. `.private` is redaction, not encryption; never log raw PII even under `.private`.
@@ -66,3 +68,4 @@ Logger.engine.info("user \(userId, privacy: .public) loaded puzzle \(puzzleId, p
 - `apple-three-piece-analytics`: OSLog is an Apple-only path, in the same "no third-party" stance as ASC / MetricKit / GC.
 - `apple-public-repo-security`: `.private` corresponds to sysdiagnose redaction, but is still visible under a debugger — the safety reasoning for the public repo relies on this semantics.
 - `ios-performance-engineering`: `OSSignposter` / `os_signpost` intervals and Instruments profiling; this skill stops at `Logger`.
+- Official sources: when verifying or updating a factual or version-sensitive claim, read `references/official-docs.md`.

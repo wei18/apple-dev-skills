@@ -98,3 +98,4 @@ For the full sweep procedure, command, disposition rule, and anti-pattern, read 
 - `leader-developer-handoff-contract`: details the 6 required elements of every dispatch prompt.
 - `spec-phase-orchestration`: review cycles are usually embedded in the spec phase.
 - `methodology-pattern-extractor`: "round-1 cosmetic inline edit" is a codifiable pattern.
+- Official sources: when verifying or updating a factual or version-sensitive claim, read `references/official-docs.md`.

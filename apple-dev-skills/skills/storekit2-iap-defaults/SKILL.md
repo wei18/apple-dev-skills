@@ -144,16 +144,8 @@ it's what enables the last two rows, not a gap in unit-test coverage if absent.
   user may be in-session. `.background` deprioritizes it behind arbitrary
   work; one real app shipped `.background` first and upgraded to `.utility`
   after review. *Practice observed.*
-- The bridge/skeleton above typechecks clean under
-  `swiftc -swift-version 6 -typecheck` (Swift 6.3.2 / Xcode 26.5), 0
-  errors/warnings. *Compiled-verified.*
-- `Transaction.updates`, `.currentEntitlements`, `.finish()`,
-  `.revocationDate`, `AppStore.sync()`, `Product.products(for:)`,
-  `.purchase(options:)` (iOS/macOS/tvOS/watchOS; visionOS instead uses
-  `.purchase(confirmIn:options:)`), `.PurchaseResult`, `VerificationResult` — each
-  symbol's existence/signature confirmed against
-  `developer.apple.com/tutorials/data/documentation/storekit/...json`.
-  *Apple-doc-verified.*
+
+Provenance for the bridge/skeleton's verification claims: `references/official-docs.md`.
 
 ## Rationale
 
@@ -207,3 +199,4 @@ signed-in sandbox tester.
 - `swift-dependency-injection` — the general protocol-injection pattern this bridge instantiates.
 - `swift-testing-baseline` — where this bridge's fake fits this catalog's test stack.
 - `apple-skills:storekit` (aggregated external) — StoreKit 2 API reference incl. subscriptions, `SubscriptionStoreView`, renewal state — the part this skill does not cover.
+- Official sources: when verifying or updating a factual or version-sensitive claim, read `references/official-docs.md`.

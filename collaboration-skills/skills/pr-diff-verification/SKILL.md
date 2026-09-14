@@ -99,3 +99,4 @@ If git diff --stat shows different file count → investigate
 ## Related skills
 
 - `github-contribution-workflow` — routes diff-vs-commit verification here before push/PR; that skill owns the gh CLI mechanics, this one owns the post-commit sanity check.
+- Official sources: when verifying or updating a factual or version-sensitive claim, read `references/official-docs.md`.

@@ -147,3 +147,4 @@ Use this both when adding a new secret value and when auditing an existing imple
 - **REQUIRED background**: `apple-public-repo-security` — broader secret-leak prevention (gitleaks, lefthook, GitHub Secret Scanning)
 - **SIBLING**: `monetization-sdk-integration` — invoke together when wiring AdMob; this skill is the secret-handling layer
 - **SIBLING**: `asc-api-automation` — ASC API key handling (the `.p8`) once the key leaves the build and drives the REST API
+- Official sources: when verifying or updating a factual or version-sensitive claim, read `references/official-docs.md`.

@@ -9,6 +9,8 @@ description: Shape the prompt a Leader sends when dispatching a sub-agent (Devel
 
 Claude Code's [Subagents](https://code.claude.com/docs/en/subagents) feature already gives a dispatched agent "its own context window with a custom system prompt, specific tool access, and independent permissions" — but the platform doesn't require or shape what goes in the dispatch *prompt* itself. This skill is the discipline layer on top: the 6 elements a prompt must contain regardless of how well-configured the subagent's own definition is.
 
+- Official sources: when verifying or updating a factual or version-sensitive claim, read `references/official-docs.md`.
+
 ## When to invoke
 
 - About to dispatch a sub-agent (Developer / Designer / Code Reviewer / drafting agent).

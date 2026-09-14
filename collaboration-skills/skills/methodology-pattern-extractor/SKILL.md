@@ -7,6 +7,8 @@ agent: general-purpose
 
 # Methodology Pattern Extractor
 
+Runs via [`context: fork`](https://code.claude.com/docs/en/skills#run-skills-in-a-subagent) — the fork has no memory of the invoking conversation, so it rescans `meetings/*.md` fresh each time.
+
 ## When to invoke
 
 - The user says "update methodology", "extract a pattern", "I feel this flow has happened several times now".
@@ -20,7 +22,9 @@ agent: general-purpose
   `session-to-meeting-log`'s "Locating the session file" for finding the
   `.jsonl` by id (`ls ~/.claude/projects/*/<sessionId>.jsonl`) rather than
   computing the project directory; this skill has no `[session-id]` argument, so treat it as
-  best-effort and skip it if the file isn't already known.
+  best-effort and skip it if the file isn't already known. [Create custom subagents](https://code.claude.com/docs/en/sub-agents)
+  only documents this transcript location for subagent transcripts specifically — treat the
+  general-conversation case as unconfirmed.
 - The existing `docs/methodology.md` (to avoid duplicate entries)
 
 ## Rule: ≥ 3 sightings or it's not a pattern

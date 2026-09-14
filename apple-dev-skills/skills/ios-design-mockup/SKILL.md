@@ -93,8 +93,8 @@ These come from Apple's Human Interface Guidelines. The design must look unmista
 - **Standard iOS chrome (iOS 26 Liquid Glass)**:
   - NavBar: 44pt tall, large title style (34pt bold) or inline title (17pt semibold), glass (translucent + blurred) background
   - TabBar: floating Liquid Glass capsule inset from the bottom edge, not an edge-to-edge opaque bar — see `references/design-tokens.md`
-  - List rows: minimum 44pt tall, separator inset 16pt from left
-  - Touch targets: never smaller than 44 × 44 pt
+  - List rows: 44pt tall, separator inset 16pt from left
+  - Touch targets: 44 × 44 pt — the iOS [HIG default control size](https://developer.apple.com/design/human-interface-guidelines/accessibility), not the minimum (the HIG Accessibility table's minimum is 28 × 28 pt); ship 44
 - **Colors**: use semantic system colors (label, secondaryLabel, systemBackground, systemGroupedBackground, separator, tintColor). See `references/design-tokens.md`.
 - **Icons**: use inline SVG paths for common SF Symbols (see `references/sf-symbols.md`). For uncommon symbols, leave a placeholder box with the symbol name as text, e.g. `[icon: figure.run.circle]`.
 
@@ -161,3 +161,4 @@ Read `html-structure.md` before drawing your first screen. Read the other two as
 - `swiftui-navigation-architecture` — once a flow sketched here is approved, this is where the real navigation gets implemented; that skill produces working SwiftUI code, this one produces a static visual mockup only.
 
 Pre-code visual only. Auditing a built app → `interactive-simulator-ux-audit`; spec-level screen contracts → a screen-contract / spec skill if the project has one, otherwise `collaboration-skills:spec-phase-orchestration` §What.
+- Official sources: when verifying or updating a factual or version-sensitive claim, read `references/official-docs.md`.

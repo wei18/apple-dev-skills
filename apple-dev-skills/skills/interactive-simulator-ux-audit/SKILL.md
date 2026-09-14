@@ -233,3 +233,4 @@ doesn't model. Driving the actual Simulator is the only check that covers the se
 - `ios-accessibility-engineering` — Dynamic Type / VoiceOver checks that pair naturally with this audit loop.
 - `mise-tool-management` — the general non-Homebrew tool-install pattern behind the `idb` install step above and the `simslim` step in `references/simulator-fleet-sizing.md`.
 - `xcode-build-skill:xcode-build` / `apple-skills:simulator-utils` (aggregated externals) — plain build, launch, and screenshot commands; this skill is the fork-based audit loop on top of a build that already exists.
+- Official sources: when verifying or updating a factual or version-sensitive claim, read `references/official-docs.md`.

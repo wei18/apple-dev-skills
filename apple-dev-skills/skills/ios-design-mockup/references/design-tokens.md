@@ -87,7 +87,7 @@ These are iOS reference values; the system colors follow the HIG Color table as 
   --space-lg:  20px;
   --space-xl:  24px;
   --space-2xl: 32px;
-  --space-3xl: 44px;   /* minimum touch target */
+  --space-3xl: 44px;   /* default touch target (HIG Accessibility table's minimum is 28px) */
   --space-4xl: 64px;
 
   /* ===== Radius ===== */

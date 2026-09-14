@@ -155,6 +155,7 @@ For the xcstrings JSON schema (including the `"version"` field and plural variat
 - `apple-platform-targets`: xcstrings requires Xcode 15+; aligns with the deployment target's toolchain.
 - `collaboration-skills:spec-phase-orchestration`: "translation" should be an explicit step in `plan.md`.
 - `asc-api-automation`: uploading localized App Store metadata once the strings are final.
+- Official sources: when verifying or updating a factual or version-sensitive claim, read `references/official-docs.md`.
 
 ## Field notes
 

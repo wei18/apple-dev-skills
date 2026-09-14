@@ -98,7 +98,7 @@ pixels (above) is the only viable content gate.
 
 ## Rationale
 
-- swift-testing: Apple official, great Swift 6 support, more concise syntax (macros, `#expect`). Swift 6.2 / Xcode 26 add exit tests (`#expect(processExitsWith:)`, `#require(processExitsWith:)` — macOS/Linux/FreeBSD/OpenBSD/Windows only, **not supported on the iOS simulator**) for testing `precondition`/`fatalError` paths, and attachments (`Attachment.record(_:named:)`) for saving debug artifacts from a test run.
+- swift-testing: Apple official, great Swift 6 support, more concise syntax (macros, `#expect`). Swift 6.2 / Xcode 26 add exit tests for testing `precondition`/`fatalError` paths — macOS/Linux/FreeBSD/OpenBSD/Windows only, **not supported on the iOS simulator** — and attachments for saving debug artifacts from a test run; for the exact macro/API signatures, read `references/official-docs.md`.
 - Snapshots in git: PR reviewers see the visual diff directly and baselines are reproducible.
 - Protocol fakes: CI runs all tests without an iCloud account or Game Center sign-in, keeping the environment simple.
 
@@ -129,3 +129,4 @@ pixels (above) is the only viable content gate.
 - `cloudkit-schema-source-of-truth`: this skill's "unentitled runner" section is the seam that keeps live CloudKit/Game Center access — and the schema SSOT concerns it gates — out of the unentitled SwiftPM test run; use its test-doubles instead of a live container.
 - `host-driven-xcuitest-e2e`: the E2E tier at the top of this pyramid — launches the real app instead of running inside the unentitled SwiftPM test run.
 - `apple-skills:swift-testing` (external): `@Test` / `@Suite` / parameterized / exit-test syntax and XCTest migration; this skill only decides the stack and the CI isolation rule.
+- Official sources: when verifying or updating a factual or version-sensitive claim, read `references/official-docs.md`.
