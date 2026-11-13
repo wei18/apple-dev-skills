@@ -54,11 +54,9 @@ For each concrete claim, grep the stat output. If the claim mentions a path that
 | A named file (e.g. `Foo.swift:42`) is missing from the stat | Subagent's report claimed work that never got committed | Cherry-pick from a sibling branch, or re-apply the edit manually |
 | `git log --oneline` shows a different commit count than expected | Unintended squash, or a force-push from another branch overwrote this branch's commits (the "push wrong ref" footgun) | Re-dispatch the subagent with explicit recovery instructions |
 
-## Failure modes seen in practice
+## Failure modes
 
-**"Commit log claims work, diff doesn't show it" (general pattern)**: this class of mistake recurs when (a) `git commit --amend` after partial revert loses hunks but keeps the original message, (b) force-push from a stale branch overwrites newer commits, (c) subagent returns a structured "I committed X" report but the commits never made it to the branch ref due to worktree wipe before push. Each failure mode is caught by the same single check: `git show --stat --summary HEAD` vs. the commit body.
-
-**Real-world example — wrong ref pushed**: a subagent reported "1 commit a547d70 with all the changes"; Leader pushed `worktree-agent-XXX:feat/feature-phase1` and discovered post-push that the wrong ref was pushed (the worktree-agent ref was at main SHA; the actual feature commits were on a different local branch). Required force-push recovery from reflog.
+**"Commit log claims work, diff doesn't show it"**: this class of mistake recurs when (a) `git commit --amend` after partial revert loses hunks but keeps the original message, (b) force-push from a stale branch overwrites newer commits, (c) subagent returns a structured "I committed X" report but the commits never made it to the branch ref due to worktree wipe before push. Each failure mode is caught by the same single check: `git show --stat --summary HEAD` vs. the commit body. Before `git push origin <local-ref>:<branch>`, also confirm that the local ref holds the feature commits (see the wrong-ref anti-pattern below); recovering from a wrong-ref push takes a force-push from reflog.
 
 ## Anti-pattern this prevents
 

@@ -110,7 +110,7 @@ Arrows are drawn in **one absolutely-positioned SVG** that covers the entire can
 
 ## Design tokens panel — what must appear
 
-The tokens panel is what makes this skill different from "draw some screens". Be thorough:
+The tokens panel is what makes this skill different from "draw some screens". It contains:
 
 - **Colors**: every semantic color used in the screens, displayed as a swatch + hex + SwiftUI name. Group by Label / Fill / Background / System / Custom (if the spec specifies brand colors).
 - **Typography**: every text style used — Large Title, Title 1/2/3, Headline, Body, Callout, Subheadline, Footnote, Caption 1/2 — with size, weight, line height. Render each style as a sample line.
