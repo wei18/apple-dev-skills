@@ -90,19 +90,18 @@ A test target for the bridge ships `Fake<SdkName>Bridge` (actor or class). All u
 - Have a `script(...)` or per-call setter API for deterministic test outcomes
 - Not import the real SDK (zero hidden dependency)
 
-## Real-world incidents this skill encodes
+## Standing invariants
 
 ### Production ID swap safety
-- A Release build's `bannerAdUnitID` constant first used `fatalError("REPLACE_BEFORE_RELEASE: …")` as a transitional guard; it has since been replaced by xcconfig injection (→ `build-time-secret-injection`), which is the standing solution — the `fatalError` form is not a long-term answer on its own
-- A paired-flip checklist ensures Info.plist `GADApplicationIdentifier` + bridge constant are always updated together
+- A Release build's `bannerAdUnitID` comes from xcconfig injection (→ `build-time-secret-injection`); a `fatalError("REPLACE_BEFORE_RELEASE: …")` guard is only a transitional step.
+- Update Info.plist `GADApplicationIdentifier` and the bridge constant together (paired-flip checklist).
 
-### Real banner landed + SDK-view-crossing seam
-- The `BannerView` SwiftUI host shipped, crossing into the UI layer per the cross-boundary type invariant above. One shared `BannerSlotView` replaced per-app placeholder slots.
+### SDK-view-crossing seam
+- One shared `BannerSlotView` hosts the `BannerView` and crosses into the UI layer per the cross-boundary type invariant above.
 - ID split: `#if DEBUG` forces Google's universal test unit; Release reads the per-app prod id from `Bundle.main` via xcconfig.
 
 ### macOS conditional gating
-- Initial AdMob integration left `import GoogleMobileAds` ungated → macOS build broke
-- Fix: `canImport(GoogleMobileAds)` + Package.swift `condition: .when(platforms: [.iOS])` + macOS fallback uses `NoopAdProvider`
+- Gate with `canImport(GoogleMobileAds)` + Package.swift `condition: .when(platforms: [.iOS])`; the macOS fallback is `NoopAdProvider`. An ungated `import GoogleMobileAds` breaks the macOS build.
 
 ### lefthook parallel invocations — secondary effect
 - Multiple SDK installs can trigger concurrent `mise exec` invocations
