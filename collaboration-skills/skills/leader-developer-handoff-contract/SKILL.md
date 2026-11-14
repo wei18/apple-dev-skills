@@ -51,6 +51,13 @@ Pick one explicitly (or custom):
 - **Markdown section** (drop into a specified file's §)
 - **Decision text** (structured ACCEPT/REJECT/DEFER list)
 - **Finding list** (BLOCKER / MAJOR / MINOR)
+- **Implementation report** (for a change the sub-agent made), four fixed fields:
+  1. Files changed (path list).
+  2. Verification method and output (the commands run and their results).
+  3. Deviations from the dispatch ("none" if none).
+  4. Open issues ("none" if none).
+
+  A refactor also lists its commits (`git log --oneline`). Long output, such as a large diff or a full log, goes to a file and the report gives the path.
 
 **Bad**: "Report results"
 **Good**: "Return the complete §5 content as markdown, ready for the Leader to paste into `foundations.md`; no chit-chat"
@@ -61,6 +68,7 @@ Pick one explicitly (or custom):
 - For Developer: which tests must be green, which invariants must hold.
 - For Code Reviewer: review dimensions; CLI is forbidden for probing API/runtime behavior (build, run, simctl, trial-and-error); read-only search (grep, rg, git log, git show) is allowed; allowed tools (WebSearch).
 - For drafting agent: section structure, required subsections, required decisions.
+- For every role: state conditions as invariants, not counts (see `subagent-review-cycles` §Fresh-context acceptance check), and require evidence for every factual claim in the result. An absence claim carries its zero-hit search plus a positive control; history, attribution, and reachability claims carry the readings `subagent-review-cycles` §Evidence for claims lists.
 
 ### 6. Impl notes (non-trivial tasks)
 
@@ -90,7 +98,7 @@ You are a <role> dispatched by the Leader.
 <...>
 
 ## Return format
-<one of: code diff / markdown section / decision text / finding list>
+<one of: code diff / markdown section / decision text / finding list / implementation report>
 <exact shape>
 
 ## Verification criteria
@@ -138,7 +146,7 @@ Required if this task touches ≥2 files or adds new behavior: open `meetings/{d
 - All 6 elements present (scope / inputs / skills / return format / verification / impl-notes).
 - Scope corresponds to "one verifiable target", not "a basket of work".
 - Skill names spelled correctly, with plugin prefix.
-- Return format is one of the four explicit categories.
+- Return format is one of the five explicit categories.
 - Verification conditions are mechanically checkable.
 - Impl-notes slot included when the task touches ≥2 files or adds new behavior.
 
