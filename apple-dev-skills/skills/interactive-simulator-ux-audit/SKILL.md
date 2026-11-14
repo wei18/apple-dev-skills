@@ -163,6 +163,9 @@ because you're verifying each step, not because the math is guaranteed accurate.
 - **Reaching a hard-to-blind-tap end state** (a puzzle win, a multi-step checkout): if the app
   has a debug-only launch argument or hook that seeds a near-terminal state, use it rather than
   trying to solve the app's own logic via taps — that's testing your tapping, not the UX.
+- **Typing text, timed multi-tap gestures, a slow first command, or a notification banner**:
+  read `references/idb-input-quirks.md` first — `idb ui text` returns before it finishes
+  typing, and banners are not in the accessibility tree.
 
 ## What to probe (this is what snapshots miss)
 
