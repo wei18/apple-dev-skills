@@ -36,6 +36,11 @@ Checks
       (e.g. "28 first-party Apple/Swift skills") == the PLUGINS constant below.
   13. README.md's "install only the N first-party skills" sentence (flat-install
       caveat) has N == sum(PLUGINS.values()).
+  14. Each <plugin>/agents/<file>.md has frontmatter name == <file> and a description
+      of at most AGENT_DESC_MAX chars; every `${CLAUDE_PLUGIN_ROOT}/<path>` its body
+      points to exists in that plugin; README.md's Catalog and each mirror's
+      Catalog-equivalent name it (rules 2 and 9 cover agents as well as skills).
+      YAML validity of agent frontmatter is left to `claude plugin validate`.
 Stdlib only.
 """
 from __future__ import annotations
@@ -49,6 +54,7 @@ PLUGINS = {"apple-dev-skills": 28, "collaboration-skills": 12}
 EXTERNALS = {"apple-skills", "swiftui-expert", "swiftui-pro", "caveman", "ponytail", "i-have-adhd", "xcode-build-skill"}
 DESC_MAX = 800  # ceiling on frontmatter description length; which skill is currently
                 # longest shifts as skills are added — don't hardcode a name here
+AGENT_DESC_MAX = 400  # an agent description sits in the Agent tool's roster in every session
 errors: list[str] = []
 def fail(m): errors.append(m)
 
@@ -90,6 +96,10 @@ def closing_quote(v: str):
         i += 1
     return None
 
+def unquote(v: str) -> str:
+    """name/description are legitimately bare or quoted YAML: strip matching outer quotes."""
+    return v[1:-1] if len(v) >= 2 and v[0] in "'\"" and v[-1] == v[0] else v
+
 # 1. skill dirs + frontmatter
 all_skills: set[str] = set()
 for plugin, expected in PLUGINS.items():
@@ -102,10 +112,7 @@ for plugin, expected in PLUGINS.items():
         md = sdir / name / "SKILL.md"
         if not md.is_file(): fail(f"[skill] {plugin}/{name}: no SKILL.md"); continue
         fn = fm_field(md, "name")
-        # name is legitimately either bare or quoted YAML — strip matching outer quotes
-        # before comparing so `name: "foo"` isn't misreported as name != dir.
-        fn_bare = fn[1:-1] if fn and len(fn) >= 2 and fn[0] in "'\"" and fn[-1] == fn[0] else fn
-        if fn_bare != name: fail(f"[skill] {plugin}/{name}: frontmatter name={fn!r} != dir")
+        if unquote(fn or "") != name: fail(f"[skill] {plugin}/{name}: frontmatter name={fn!r} != dir")
         # 7. description length budget
         desc = fm_field(md, "description")
         # A block scalar (`description: >`) is already YAML-safe: everything after the
@@ -154,6 +161,19 @@ for plugin, expected in PLUGINS.items():
                     fail(f"[skill] {plugin}/{name}: description must be quoted "
                          f"(ends with ':' — a YAML mapping-value indicator)")
 
+# 14. agents/*.md: name == file stem, bounded description, plugin-root pointers resolve
+all_agents: set[str] = set()
+for plugin in PLUGINS:
+    for md in sorted((ROOT / plugin / "agents").glob("*.md")):
+        all_agents.add(md.stem)
+        fn = fm_field(md, "name")
+        if unquote(fn or "") != md.stem: fail(f"[agent] {plugin}/{md.name}: frontmatter name={fn!r} != file stem")
+        desc = unquote((fm_field(md, "description") or "").removeprefix(BLOCK_SCALAR))
+        if not desc: fail(f"[agent] {plugin}/{md.name}: no frontmatter description")
+        elif len(desc) > AGENT_DESC_MAX: fail(f"[agent] {plugin}/{md.name}: description {len(desc)} chars > {AGENT_DESC_MAX}")
+        for ref in re.findall(r"\$\{CLAUDE_PLUGIN_ROOT\}/([\w./-]+)", md.read_text(encoding="utf-8")):
+            if not (ROOT / plugin / ref.rstrip(".")).exists(): fail(f"[agent] {plugin}/{md.name}: points to missing {ref}")
+
 # helper: scope README Catalog section
 def scoped(text: str, *markers: str) -> str:
     for mk in markers:
@@ -170,7 +190,7 @@ if not sec:
     fail("[readme] no '## Catalog' section")
 else:
     tokens = set(re.findall(r"`([a-z0-9][a-z0-9-]+)`", sec))
-    missing = (all_skills | EXTERNALS) - tokens
+    missing = (all_skills | all_agents | EXTERNALS) - tokens
     if missing: fail(f"[readme] Catalog missing: {sorted(missing)}")
     g = [int(x) for x in re.findall(r"\((\d+)\)", sec)]
     for required in (*PLUGINS.values(), len(EXTERNALS)):
@@ -196,7 +216,7 @@ for mirror_name, heading in MIRRORS.items():
         fail(f"[{mirror_name}] no '{heading}' section")
         continue
     m_tokens = set(re.findall(r"`([a-z0-9][a-z0-9-]+)`", m_sec))
-    m_missing = (all_skills | EXTERNALS) - m_tokens
+    m_missing = (all_skills | all_agents | EXTERNALS) - m_tokens
     if m_missing: fail(f"[{mirror_name}] {heading} missing: {sorted(m_missing)}")
     mg = [int(x) for x in re.findall(r"[\(（](\d+)[\)）]", m_sec)]
     for required in (*PLUGINS.values(), len(EXTERNALS)):
@@ -293,5 +313,5 @@ if errors:
     print(f"FAIL — {len(errors)} error(s):", file=sys.stderr)
     for e in errors: print(f"  - {e}", file=sys.stderr)
     sys.exit(1)
-print(f"OK — 2 plugins ({'/'.join(map(str, PLUGINS.values()))}), catalog + counts + "
+print(f"OK — 2 plugins ({'/'.join(map(str, PLUGINS.values()))}), {len(all_agents)} agent(s), catalog + counts + "
       f"{len(MIRRORS)} README mirror(s) ({'/'.join(MIRRORS)}) consistent.")
