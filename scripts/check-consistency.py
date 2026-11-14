@@ -36,11 +36,12 @@ Checks
       (e.g. "28 first-party Apple/Swift skills") == the PLUGINS constant below.
   13. README.md's "install only the N first-party skills" sentence (flat-install
       caveat) has N == sum(PLUGINS.values()).
-  14. <plugin>/agents/ is flat. Each <file>.md there has frontmatter name == <file>; its
+  14. <plugin>/agents/ holds no .md file in a subdirectory. Each <file>.md there has
+      frontmatter name == <file>; its
       description passes the rule 7 + 10 checks with AGENT_DESC_MAX as the limit; every
       `${CLAUDE_PLUGIN_ROOT}/<path>` its body points to exists in that plugin, with no
-      `..` segment; the unbraced `$CLAUDE_PLUGIN_ROOT` form does not appear. Rules 7/10
-      are a quoting heuristic, not a YAML parser; `claude plugin validate` parses it.
+      `..` segment and no leading `/`; the unbraced `$CLAUDE_PLUGIN_ROOT` form does not appear. Rule 10
+      is a quoting heuristic, not a YAML parser; `claude plugin validate` parses it.
 Stdlib only.
 """
 from __future__ import annotations
@@ -169,7 +170,7 @@ for plugin, expected in PLUGINS.items():
         if unquote(fn or "") != name: fail(f"[skill] {plugin}/{name}: frontmatter name={fn!r} != dir")
         check_description(f"[skill] {plugin}/{name}", md, DESC_MAX)
 
-# 14. agents/*.md: name == file stem, bounded description, plugin-root pointers resolve
+# 14. agents/*.md (checks listed in the docstring)
 all_agents: set[str] = set()
 for plugin in PLUGINS:
     adir = ROOT / plugin / "agents"
@@ -189,8 +190,8 @@ for plugin in PLUGINS:
             fail(f"[agent] {plugin}/{md.name}: write ${{CLAUDE_PLUGIN_ROOT}} with braces — "
                  f"Claude Code does not substitute $CLAUDE_PLUGIN_ROOT")
         for ref in re.findall(r"\$\{CLAUDE_PLUGIN_ROOT\}/([\w./-]+)", body):
-            if ".." in ref.split("/"):
-                fail(f"[agent] {plugin}/{md.name}: pointer {ref} leaves the plugin ('..')")
+            if ref.startswith("/") or ".." in ref.split("/"):
+                fail(f"[agent] {plugin}/{md.name}: pointer {ref} leaves the plugin")
             # The path pattern also matches a sentence-ending period after the path.
             elif not (ROOT / plugin / ref.rstrip(".")).exists():
                 fail(f"[agent] {plugin}/{md.name}: points to missing {ref}")
