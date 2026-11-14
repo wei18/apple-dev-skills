@@ -63,7 +63,7 @@ Mint fresh per run; a job that outlives the token re-mints instead of extending 
 
 | Goal | Call |
 |---|---|
-| App's ASC id | `GET /v1/apps?filter[bundleId]=<bundle-id>` |
+| App's ASC id | `GET /v1/apps?filter[bundleId]=<bundle-id>`, then keep only the result whose `attributes.bundleId` equals `<bundle-id>` exactly (see Common Mistakes 11) |
 | Latest processed builds | `GET /v1/builds?filter[app]=<appId>&sort=-uploadedDate&limit=5` |
 | TestFlight what's-new | `GET /v1/builds/<id>/betaBuildLocalizations` → `PATCH /v1/betaBuildLocalizations/<locId>` with `attributes.whatsNew` |
 | Add build to a beta group | `POST /v1/betaGroups/<groupId>/relationships/builds` with `{"data":[{"type":"builds","id":"<buildId>"}]}` |
@@ -125,6 +125,8 @@ sourcing, read `references/no-api-steps.md`.
 8. **Admin-role key in CI** when App Manager or a `scope`d token suffices.
 9. **`.p8` committed to the repo** — stop and run the rotate-first SOP in `apple-public-repo-security`; storage layout per `build-time-secret-injection`.
 10. **Omitting `releaseType` on an `appStoreVersions` create/update** — the attribute has no documented default, so an unset value can leave a version on automatic release; it goes live the instant Apple approves it instead of waiting for a deliberate manual release. Set `releaseType: "MANUAL"` explicitly unless auto-release is intended.
+11. **Taking the first `filter[bundleId]` result** — the filter has been observed to match by prefix (2026-10): `com.example.app` also returns `com.example.app.dev`, so picking `data[0]` can upload to or submit the wrong app (ITMS-90055 on upload). Apple's reference does not document the match mode; always exact-match `attributes.bundleId` client-side.
+12. **Submitting with an empty `whatsNew`** — for an update to a live app, the review-submission flow was refused with 409 `ENTITY_ERROR.ATTRIBUTE.REQUIRED` while an `appStoreVersionLocalizations` entry had no `whatsNew` (observed once, 2026-10). Write it for every locale before submitting.
 
 ## Review Checklist
 
