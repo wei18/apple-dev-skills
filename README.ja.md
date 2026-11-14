@@ -101,6 +101,17 @@ Claude Codeのsession内で実行します。
 | `host-driven-xcuitest-e2e` | Tuist経由でアプリを起動しXCUITest E2Eを実行——専用scheme配線 + macOSウィンドウ座標でのクリック操作 |
 | `cloudkit-schema-source-of-truth` | バージョン管理された`.ckdb` + `cktool`によるDevelopmentへのexport／validate／import；ProductionはConsoleのみのユーザー管理ゲート |
 
+#### エージェント
+
+このpluginはsubagentを1つ同梱しています。独自のcontextで読み取り専用のツールだけを使って動き、
+指摘を報告するだけでファイルは編集しません。レビューの依頼に合えばClaudeが委任します。名前で
+呼び出すこともできます：Agentツールの`subagent_type`に`apple-dev-skills:swift-staff-reviewer`を
+指定するか、プロンプトに`@agent-apple-dev-skills:swift-staff-reviewer`と書きます。
+
+| エージェント | 一言でいうと |
+|---|---|
+| `swift-staff-reviewer` | Staffレベルで Swift/iOS の diff をレビュー —— concurrency、ライフサイクル、プラットフォームAPIの誤用、エラー処理、設計；指摘1件につき1行、重大度付き |
+
 ### collaboration-skills（12）—— harness engineering：ディスパッチ、レビュー、リリース
 
 | Skill | 一言でいうと |
@@ -206,6 +217,8 @@ scripts/install-flat.sh -g          # user-level; drop -g for project-level
 scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 ```
 
+経路Cはスキルのみをインストールします。`swift-staff-reviewer`エージェントを使うには、plugin（AまたはB）をインストールしてください。
+
 ## コントリビューション
 
 貢献する方法は3つあります：外部プラグインを**集約する**、ファーストパーティのスキルを
@@ -223,4 +236,4 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 `docs/superpowers/`にありました——現在は廃止され、git履歴として保存されています。
 `git log -- docs/`で見つけることができます。MIT——[LICENSE](LICENSE)を参照してください。
 
-<!-- src-sha: 9c2ed74a025bb2314871e69de61feea461050380 -->
+<!-- src-sha: 9e2e5f70f92177ae608b84af69af898441737b26 -->

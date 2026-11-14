@@ -92,6 +92,16 @@ marketplace 剛好跟它第一個 plugin 同名。
 | `host-driven-xcuitest-e2e` | 透過 Tuist 啟動 App 跑 XCUITest E2E —— 專用 scheme 接線 + macOS 視窗座標點擊驅動 |
 | `cloudkit-schema-source-of-truth` | 納入版控的 `.ckdb` + `cktool` 匯出／驗證／匯入到 Development；Production 是使用者自持、僅限 Console 的關卡 |
 
+#### Agent
+
+此 plugin 另附一個 subagent。它在自己的 context 中以唯讀工具執行，只回報問題、不改檔。
+審查情境符合時 Claude 會委派給它，也可以指名派工：以 `apple-dev-skills:swift-staff-reviewer`
+作為 Agent 工具的 `subagent_type`，或在提示中寫 `@agent-apple-dev-skills:swift-staff-reviewer`。
+
+| Agent | 一句話說明 |
+|---|---|
+| `swift-staff-reviewer` | Staff 等級的 Swift/iOS diff 審查 —— concurrency、生命週期、平台 API 誤用、錯誤處理、設計；每個問題一行，標注嚴重度 |
+
 ### collaboration-skills（12）—— harness engineering：派工、審查、出貨
 
 | Skill | 一句話說明 |
@@ -189,6 +199,8 @@ scripts/install-flat.sh -g          # user-level; drop -g for project-level
 scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 ```
 
+路徑 C 只安裝技能。要取得 `swift-staff-reviewer` agent，請安裝 plugin（A 或 B）。
+
 ## 貢獻
 
 三種幫忙方式：**彙整**一個外部 plugin、**新增**一個第一方技能、或**回報**一則現場筆記
@@ -202,4 +214,4 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 此處僅以引用方式呈現。催生本 repo 雙 plugin 結構的設計 spec 與計畫原本放在 `docs/superpowers/`
 —— 已退役、改由 git 歷史保存；用 `git log -- docs/` 可以找回。MIT —— 見 [LICENSE](LICENSE)。
 
-<!-- src-sha: 9c2ed74a025bb2314871e69de61feea461050380 -->
+<!-- src-sha: 9e2e5f70f92177ae608b84af69af898441737b26 -->
