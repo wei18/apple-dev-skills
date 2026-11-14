@@ -54,12 +54,13 @@ neither path is wired into pre-commit or CI — `mise run check` only verifies f
 **Aggregate, don't appropriate.** List good external plugins **by reference** in
 `marketplace.json` (they install from the author's repo, credited) — never copy or
 re-implement. Open an [aggregation issue](.github/ISSUE_TEMPLATE/aggregate-a-plugin.yml).
-Requirements: MIT-compatible license; a real `.claude-plugin/plugin.json` (root → `source: github`,
+Requirements: MIT-compatible license (a permissive license: MIT, BSD, or Apache-2.0); a real `.claude-plugin/plugin.json` (root → `source: github`,
 subdir → `git-subdir`); no overlap with an existing skill.
 
 `git-subdir` only works when the upstream repo ships a `.claude-plugin/plugin.json`
-*inside that subdirectory itself* — e.g. `swiftui-pro/.claude-plugin/plugin.json` in
-`twostraws/SwiftUI-Agent-Skill` — so a subdir source can point at it. Aggregating just
+*inside that subdirectory itself*, so a subdir source can point at it. No current external
+does: `twostraws/SwiftUI-Agent-Skill` did until 2026-10-26, when it moved its manifest to the
+repo root, and `swiftui-pro` is now a `source: github` entry. Aggregating just
 one skill folder out of a repo whose only manifest sits at the repo root (e.g.
 `caveman`, which has no `skills/<name>/.claude-plugin/plugin.json`) isn't possible
 without upstream adding one; it's all-or-nothing via `source: github` there.

@@ -144,13 +144,13 @@ level of detail.
 | [`apple-skills`](https://github.com/Prisma-Labs-Dev/apple-skills) | Prisma Labs (vabole), MIT | Broad Apple frameworks — SwiftUI, SwiftData, App Intents, WidgetKit, StoreKit, HealthKit, `apple-aso`, `hig` …; a SwiftUI performance audit guide that complements `ios-performance-engineering`'s Instruments/MetricKit measurement; also ships `xcuitest` (see below for how it lines up against this catalog's Simulator/XCUITest skills). A handful of its skills sit in `disabled-skills/` — kept in the repo but not loaded by agents |
 | [`swiftui-expert`](https://github.com/AvdLee/SwiftUI-Agent-Skill) | Antoine van der Lee (MIT) | SwiftUI patterns, Swift Charts, Liquid Glass, Instruments toolchain |
 | [`swiftui-pro`](https://github.com/twostraws/SwiftUI-Agent-Skill) | Paul Hudson (MIT) | SwiftUI pitfalls, deprecated-API watchlist, iOS 26 / Liquid Glass |
-| [`caveman`](https://github.com/JuliusBrussee/caveman) | JuliusBrussee (MIT) | Ultra-compressed communication mode — cuts ~65% of output tokens (author's measurement); ships `SessionStart`/`UserPromptSubmit` hooks (needs `node` on PATH, runs every prompt) (general agent behavior) |
+| [`caveman`](https://github.com/JuliusBrussee/caveman) | JuliusBrussee (Apache-2.0) | Ultra-compressed communication mode — cuts ~65% of output tokens (author's measurement); ships `SessionStart`/`UserPromptSubmit` hooks (needs `node` on PATH, runs every prompt) (general agent behavior) |
 | [`ponytail`](https://github.com/DietrichGebert/ponytail) | DietrichGebert (MIT) | "Lazy senior dev" mode — forces the simplest, shortest solution (general agent behavior) |
 | [`i-have-adhd`](https://github.com/ayghri/i-have-adhd) | Ayoub G. (MIT) | Always-on ADHD-friendly output mode — numbered steps, state restated each turn (general agent behavior) |
 | [`xcode-build-skill`](https://github.com/pzep1/xcode-build-skill) | pz (MIT) | `xcodebuild`/`xcrun simctl` CLI cheatsheet — schemes → simulators → build → install → launch → screenshot |
 
-`caveman`'s license: skills MIT; repo also ships a BSL-1.1 engine. `caveman` has since grown
-into a 20-skill suite; 4 of them (`caveman-discover`, `caveman-manage`,
+`caveman`'s license: Apache-2.0 for the whole repo since 3.0.0; earlier releases were MIT skills
+plus a BSL-1.1 engine. `caveman` has since grown into a 22-skill suite; 4 of them (`caveman-discover`, `caveman-manage`,
 `caveman-evidence-review`, `caveman-setup`) document the author's hosted Caveman Cloud commercial
 service.
 

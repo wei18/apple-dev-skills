@@ -136,13 +136,13 @@ swift-testing + snapshot、只用 OSLog、已知的运行时 bug 要避开）。
 | [`apple-skills`](https://github.com/Prisma-Labs-Dev/apple-skills) | Prisma Labs (vabole), MIT | 广泛的 Apple 框架 —— SwiftUI、SwiftData、App Intents、WidgetKit、StoreKit、HealthKit、`apple-aso`、`hig`……以及一份 SwiftUI 性能审计指南，与 `ios-performance-engineering` 的 Instruments / MetricKit 测量互补；另外还有 `xcuitest`（与本目录 Simulator／XCUITest 技能的分工见下方说明）。有一小部分技能放在 `disabled-skills/` —— 留在 repo 里但不会被 agent 加载 |
 | [`swiftui-expert`](https://github.com/AvdLee/SwiftUI-Agent-Skill) | Antoine van der Lee (MIT) | SwiftUI 模式、Swift Charts、Liquid Glass、Instruments 工具链 |
 | [`swiftui-pro`](https://github.com/twostraws/SwiftUI-Agent-Skill) | Paul Hudson (MIT) | SwiftUI 陷阱、deprecated API 观察清单、iOS 26 / Liquid Glass |
-| [`caveman`](https://github.com/JuliusBrussee/caveman) | JuliusBrussee (MIT) | 极度压缩的沟通模式 —— 省下约 65% 输出 token（作者自测）；会安装 `SessionStart`／`UserPromptSubmit` hook（需要 PATH 上有 `node`，每条 prompt 都会执行）（通用 agent 行为） |
+| [`caveman`](https://github.com/JuliusBrussee/caveman) | JuliusBrussee (Apache-2.0) | 极度压缩的沟通模式 —— 省下约 65% 输出 token（作者自测）；会安装 `SessionStart`／`UserPromptSubmit` hook（需要 PATH 上有 `node`，每条 prompt 都会执行）（通用 agent 行为） |
 | [`ponytail`](https://github.com/DietrichGebert/ponytail) | DietrichGebert (MIT) | “懒惰资深工程师”模式 —— 逼出最简单、最短的解法（通用 agent 行为） |
 | [`i-have-adhd`](https://github.com/ayghri/i-have-adhd) | Ayoub G. (MIT) | 常驻的 ADHD 友好输出模式 —— 编号步骤、每一轮重述状态（通用 agent 行为） |
 | [`xcode-build-skill`](https://github.com/pzep1/xcode-build-skill) | pz (MIT) | `xcodebuild`/`xcrun simctl` CLI 小抄 —— scheme → 模拟器 → build → install → launch → 截图 |
 
-`caveman` 的授权：技能本身 MIT；repo 另外还有一个 BSL-1.1 授权的 engine。`caveman` 之后已
-长成 20 个技能的套件；其中 4 个（`caveman-discover`、`caveman-manage`、
+`caveman` 的授权：3.0.0 起整个 repo 为 Apache-2.0；更早的版本是技能 MIT 加上 BSL-1.1 授权的
+engine。`caveman` 之后已长成 22 个技能的套件；其中 4 个（`caveman-discover`、`caveman-manage`、
 `caveman-evidence-review`、`caveman-setup`）在讲作者自家托管的 Caveman Cloud 商业服务。
 
 `i-have-adhd` 与 `caveman`（token 压缩）、`ponytail`（解法简化）不同，它塑形的是每次回答的
@@ -214,4 +214,4 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 此处仅以引用方式呈现。催生本 repo 双 plugin 结构的设计 spec 与计划原本放在 `docs/superpowers/`
 —— 已退役、改由 git 历史保存；用 `git log -- docs/` 可以找回。MIT —— 见 [LICENSE](LICENSE)。
 
-<!-- src-sha: e6b2ee9cd132e701e34a56e867fc817a04067037 -->
+<!-- src-sha: 1d263ebe89fcdfc0e3753303db4ee428d2762062 -->
