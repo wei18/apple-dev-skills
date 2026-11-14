@@ -170,6 +170,7 @@ replaces them (see the test pyramid in `swift-testing-baseline`).
 
 - `interactive-simulator-ux-audit` — the manual/exploratory sibling; find the bug there, pin it here.
 - `swift-testing-baseline` — where E2E sits in the overall test pyramid.
+- `parallel-agent-xcode-hygiene` — one simulator per `xcodebuild test` run, addressed by UDID, when other agent sessions share the Mac.
 - `swiftui-navigation-architecture` — the navigation shape these tests typically assert against.
 - `swiftpm-modularization` — package/target layout that affects whether a dedicated scheme or a test plan is the right wiring.
 - Official sources: when verifying or updating a factual or version-sensitive claim, read `references/official-docs.md`.

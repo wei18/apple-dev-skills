@@ -40,7 +40,8 @@ arguments and this file. When invoking (matches `argument-hint: "[udid] [flow]"`
 
 Target simulator UDID: `$0`; flow to audit: `$1`.
 
-- **`udid`** — the target **booted** simulator's identifier (`idb list-targets`). One
+- **`udid`** — the target **booted** simulator's identifier (`idb list-targets`), for a
+  simulator the calling session created and owns. One
   fork drives exactly one simulator; never omit this and let the fork boot/pick one
   implicitly — see "One booted simulator serializes all driving" under Gotchas, and
   the fleet-sizing note under Preflight below for running several forks in parallel.
@@ -104,8 +105,10 @@ and already give a usable answer for most cases.
   has one. A stale install silently invalidates every finding in the session — confirm you're
   testing the build you think you are before reporting anything as a bug.
 - Typical build: `xcodebuild -workspace <App>.xcworkspace -scheme <Scheme> -sdk iphonesimulator
-  -configuration Debug -destination 'platform=iOS Simulator,name=<device>' -derivedDataPath
-  build/sim build`, then `xcrun simctl install <udid> <App.app>`.
+  -configuration Debug -destination 'platform=iOS Simulator,id=<udid>' -derivedDataPath
+  build/sim build`, then `xcrun simctl install <udid> <App.app>`. `<udid>` is a simulator the
+  calling session created for this audit. A `name=<device>` destination can match another
+  session's simulator on a shared Mac → `parallel-agent-xcode-hygiene`.
 - **Build from a normal checkout, not an ephemeral agent worktree**, if your project keeps
   gitignored build secrets (API keys, provisioning config) outside version control. A worktree
   missing those files can make a Debug build crash at launch on a startup assertion — that's
@@ -232,6 +235,8 @@ doesn't model. Driving the actual Simulator is the only check that covers the se
 ## Related skills
 
 - `host-driven-xcuitest-e2e` — turn a finding from this audit into an automated, CI-runnable regression test.
+- `simulator-runtime-verification` — runtime checks this fork cannot run (push tokens, Universal Links, Keychain, `UserDefaults` seeding, upgrade installs) and the traps that fake their results.
+- `parallel-agent-xcode-hygiene` — creating the simulator this audit drives, addressing it by UDID, and deleting it afterwards on a Mac other agents share.
 - `swift-testing-baseline` — the static snapshot-testing layer this skill complements, not replaces.
 - `ios-accessibility-engineering` — Dynamic Type / VoiceOver checks that pair naturally with this audit loop.
 - `mise-tool-management` — the general non-Homebrew tool-install pattern behind the `idb` install step above and the `simslim` step in `references/simulator-fleet-sizing.md`.
