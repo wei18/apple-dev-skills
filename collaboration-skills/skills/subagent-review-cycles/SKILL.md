@@ -59,7 +59,26 @@ Every Code Reviewer dispatch prompt must include:
    - Logical consistency (internal contradictions, cross-section conflicts)
    - Completeness (missing edge case, error handling, prerequisite)
    - Efficiency (algorithm, CI / build / runtime cost)
-5. **Return format**: BLOCKER / MAJOR / MINOR three-level classification; each item with location (file + section) + suggestion. An **absence claim** ("the spec doesn't define this", "nothing covers this case") must include the grep/search command run and its zero-hit output — an absence claim with no evidence attached doesn't count as a finding.
+5. **Return format**: BLOCKER / MAJOR / MINOR three-level classification; each item with location (file + section) + suggestion. Every factual claim carries the evidence §Evidence for claims requires; a claim without it doesn't count as a finding.
+
+## Evidence for claims
+
+A finding, report, or verdict that asserts a fact carries the reading that produced it. A claim that could not be measured is labelled inferred. "Looks fine" is not evidence.
+
+| Claim | Evidence it needs |
+|---|---|
+| Absence ("no callers", "nothing references X", "the spec doesn't define this") | The search command and its zero-hit output, plus a **positive control**: the same command and pattern form, over the same scope, first hits something known to exist. Without the control the zero is not a reading, because a wrong path, flag, or pattern also returns zero. |
+| History ("X used to be here", "I removed X") | `git log -S'<text>'`, or `git grep -F '<text>' <rev>` per relevant revision. The current tree gives the same answer for "deleted" and "never existed", so it cannot settle a history claim. |
+| Attribution ("the other agent also verified this") | A pointer to the message or log where it did. With no pointer, write "only me". |
+| Reachability ("users can't reach this path") | A search reading at the construction and call sites, not the fact that the path was out of scope. |
+
+A mechanical search defaults to the whole repository, not the lines you changed. Only when no tool applies does a claim fall back to the label "read by hand, n files, m lines, no mechanical search". The label is a fallback, not an option: stating it does not make the evidence stronger.
+
+## Fresh-context acceptance check
+
+Before the Leader accepts a change an agent reports as done, a fresh subagent that did not produce it verifies each claim. This is a separate role from the Code Reviewer. It runs the project's tests and gates, because confirming that claimed checks pass is its job; the ban on probing API behaviour by trial and error still applies. It runs after the review rounds converge and is not itself a round; a REJECT goes back to the Developer as round N+1 under the same limit(N).
+
+For the dispatch, the rules for writing acceptance conditions, and the report format, read `references/fresh-context-acceptance.md`.
 
 ## Accept / Reject reply style
 
@@ -80,7 +99,8 @@ REJECT must cite specific evidence (API doc, prior decision, design constraint);
 
 ## Verification checklist
 
-- Every absence claim ("not defined", "no coverage") in a review finding cites the grep/search command and its zero-hit output — otherwise it doesn't count as a finding.
+- Every absence claim ("not defined", "no coverage") in a review finding cites the search command, its zero-hit output, and a positive control that hits with the same pattern form — otherwise it doesn't count as a finding.
+- A change reported as done gets a fresh-context acceptance check before the Leader accepts it.
 - Each round has an explicit dispatch prompt (all 5 items of §Dispatch contract for Code Reviewer present, on top of the 6 elements from `leader-developer-handoff-contract`).
 - Each review finding has an explicit accept / reject label + reason.
 - When limit(N) is reached without convergence, pause; don't keep iterating indefinitely.
