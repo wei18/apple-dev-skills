@@ -97,6 +97,17 @@ Full index in the tables below.
 | `host-driven-xcuitest-e2e` | Launch-the-app XCUITest E2E via Tuist — dedicated scheme wiring + macOS window-frame click driving |
 | `cloudkit-schema-source-of-truth` | Committed `.ckdb` + `cktool` export/validate/import to Development; Production is a user-owned Console-only gate |
 
+#### Agents
+
+The plugin also ships a subagent. It runs in its own context, has no Edit or Write tools,
+and is instructed not to modify files; it reports findings. Claude delegates to it when a review matches, or you
+dispatch it by name: `apple-dev-skills:swift-staff-reviewer` as the Agent tool's
+`subagent_type`, or `@agent-apple-dev-skills:swift-staff-reviewer` in a prompt.
+
+| Agent | One-liner |
+|---|---|
+| `swift-staff-reviewer` | Staff-level review of a Swift/iOS diff — concurrency, lifecycle, platform API misuse, error handling, design; one severity-tagged line per finding |
+
 ### collaboration-skills (12) — harness engineering: dispatch, review, ship
 
 | Skill | One-liner |
@@ -198,6 +209,8 @@ npx skills add wei18/apple-dev-skills --skill swift6-concurrency
 scripts/install-flat.sh -g          # user-level; drop -g for project-level
 scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 ```
+
+Path C installs skills. To get the `swift-staff-reviewer` agent, install the plugin (A or B).
 
 ## Contributing
 

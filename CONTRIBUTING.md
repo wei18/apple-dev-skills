@@ -105,6 +105,33 @@ Two gate rules `mise run check` enforces on the frontmatter `description`:
   unescaped `"` inside a double-quoted value, no unescaped `'` (use `''`) inside a
   single-quoted value. Indented continuation lines are checked as part of the value.
 
+#### First-party agents
+
+A plugin may also ship a subagent as `<plugin>/agents/<name>.md`; Claude Code discovers the
+directory without a `plugin.json` entry and addresses it as `<plugin>:<name>`. The bar is
+higher than for a skill. Add an agent only when the work needs its own context window and a
+fixed tool set, such as a reviewer that a caller launches in parallel with a diff; guidance
+the main session should follow belongs in a skill. Every enabled session pays for the agent's
+description in the Agent tool's roster and for its whole body on each dispatch, so keep both
+short. Rules `mise run check` enforces:
+- `agents/` is flat: no `.md` file in a subdirectory.
+- Frontmatter `name:` equals the file stem; `description` is at most 400 characters and
+  follows the same quoting rules as a skill description (above).
+- Every `${CLAUDE_PLUGIN_ROOT}/<path>` in the body exists inside the plugin (no `..`). Point
+  to a skill's `SKILL.md` this way instead of preloading it with `skills:`, so the agent
+  reads it only when needed. Write the braces: Claude Code does not substitute
+  `$CLAUDE_PLUGIN_ROOT`.
+- README.md's Catalog and each mirror list the agent by name, and each mirror's `src-sha` is
+  fresh: hand-mirror the Catalog row and re-stamp (see
+  [README mirrors](#readme-mirrors-hand-mirror-only-regenerate-is-a-manual-fallback)).
+
+Not gated, so do it by hand when you add an agent: update the prose that names the agents in
+the `plugin.json` and `marketplace.json` descriptions and README's "Path C" sentence.
+
+Grant the fewest `tools:` the job needs. Plugin agents ignore `hooks`, `mcpServers`,
+`permissionMode` and `initialPrompt`. The quoting rules are a heuristic; run
+`mise run validate` to catch frontmatter that does not parse.
+
 ### 3. Report a field note (skill vs reality)
 
 Hit a real-world incident where a skill's guidance was wrong, incomplete, or missing —
