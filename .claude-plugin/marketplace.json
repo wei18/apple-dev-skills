@@ -7,7 +7,7 @@
     {
       "name": "apple-dev-skills",
       "source": "./apple-dev-skills",
-      "description": "26 first-party Apple/Swift skills. Invoke explicitly with /apple-dev-skills:<skill>.",
+      "description": "28 first-party Apple/Swift skills. Invoke explicitly with /apple-dev-skills:<skill>.",
       "version": "2.1.0",
       "author": { "name": "Wei18" },
       "keywords": ["swift", "ios", "macos", "apple-platform", "claude-code", "agent-skills"],

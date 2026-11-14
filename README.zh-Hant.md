@@ -19,7 +19,7 @@ Claude Code 本身 —— 派工、審查、出貨）。每一支技能都是帶
 
 ```
 /plugin marketplace add wei18/apple-dev-skills
-/plugin install apple-dev-skills@apple-dev-skills          # 26 Apple/Swift skills
+/plugin install apple-dev-skills@apple-dev-skills          # 28 Apple/Swift skills
 /plugin install collaboration-skills@apple-dev-skills      # 12 harness-engineering skills
 ```
 
@@ -41,12 +41,12 @@ marketplace 剛好跟它第一個 plugin 同名。
 要指定某一支，用它的 slash command：`/apple-dev-skills:swift6-concurrency`。`/skills` 會列出
 已安裝的全部技能，以及每一支來自哪個 plugin。
 
-> 兩個 plugin 一起裝，會載入全部 38 條第一方描述 —— 超過 5,000 tokens，約是預設 1% 技能清單
+> 兩個 plugin 一起裝，會載入全部 40 條第一方描述 —— 超過 5,000 tokens，約是預設 1% 技能清單
 > 預算（200k context 模型下是 2,000 tokens）的 3 倍，還沒算外部 plugin。技能清單預算是
 > context window 的 1%（1M context 模型約 10,000 tokens，光裝兩個第一方 plugin 放得下 ——
 > 但外部 plugin 與你自己的技能也共用這份預算）；爆量時 Claude Code 會從最少被呼叫的技能開始砍描述；實務上通常
 > 就是還沒有呼叫紀錄的新安裝技能。執行 `/doctor` 檢查清單成本，太吃緊就調高 `skillListingBudgetFraction`
-> （例如 200k context 模型設 `0.04` —— 光這 38 支的名稱加描述就略超過 `0.03`），或透過 `/plugin` 停用不想用的 plugin。
+> （例如 200k context 模型設 `0.04` —— 光這 40 支的名稱加描述就略超過 `0.03`），或透過 `/plugin` 停用不想用的 plugin。
 
 ## 目錄
 
@@ -59,7 +59,7 @@ marketplace 剛好跟它第一個 plugin 同名。
 
 完整索引見下方表格。
 
-### apple-dev-skills（26）—— Apple/Swift
+### apple-dev-skills（28）—— Apple/Swift
 
 | Skill | 一句話說明 |
 |---|---|
@@ -87,6 +87,8 @@ marketplace 剛好跟它第一個 plugin 同名。
 | `swiftui-navigation-architecture` | SwiftUI 的型別化路由導航 —— 一個 `@Observable` router、`NavigationStack`、deep link、處理好 macOS 退路 |
 | `ios-design-mockup` | 從 spec 產出單檔 HTML iOS 設計 mockup —— iPhone 外框 + tokens |
 | `interactive-simulator-ux-audit` | 用 `idb`（tap/describe/screenshot）驅動已開機的 Simulator，抓 snapshot 抓不到的導航／modal／safe-area bug |
+| `simulator-runtime-verification` | 在 Simulator 上驗證 push token、Universal Links、Keychain、預先寫入的 `UserDefaults` 與升級安裝，並避開會造出假結果的陷阱 |
+| `parallel-agent-xcode-hygiene` | 多個 agent 共用一台 Mac：各自建立 simulator 並以 UDID 指定、每個 worktree 獨立 DerivedData、負載與剩餘空間關卡、用 `df` 證明清理完成 |
 | `host-driven-xcuitest-e2e` | 透過 Tuist 啟動 App 跑 XCUITest E2E —— 專用 scheme 接線 + macOS 視窗座標點擊驅動 |
 | `cloudkit-schema-source-of-truth` | 納入版控的 `.ckdb` + `cktool` 匯出／驗證／匯入到 Development；Production 是使用者自持、僅限 Console 的關卡 |
 
@@ -179,7 +181,7 @@ npx skills add wei18/apple-dev-skills --skill swift6-concurrency
 
 > **路徑 C 不包含彙整而來的外部 plugin。** `npx skills` 會讀取本 repo 的
 > `marketplace.json` / `plugin.json`，但只跟隨本地宣告的技能路徑。它不會抓取外部
-> plugin 的遠端 `github` / `git-subdir` 來源。所以上述指令只會安裝 38 個第一方技能 ——
+> plugin 的遠端 `github` / `git-subdir` 來源。所以上述指令只會安裝 40 個第一方技能 ——
 > 7 個外部 plugin 會被靜默略過。若要平鋪安裝整份目錄（含外部 plugin，從原作者的 repo 拉取）：
 
 ```bash
@@ -200,4 +202,4 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 此處僅以引用方式呈現。催生本 repo 雙 plugin 結構的設計 spec 與計畫原本放在 `docs/superpowers/`
 —— 已退役、改由 git 歷史保存；用 `git log -- docs/` 可以找回。MIT —— 見 [LICENSE](LICENSE)。
 
-<!-- src-sha: 3527a7481d663e8a6efebf5b488d995fb09cca1f -->
+<!-- src-sha: 9c2ed74a025bb2314871e69de61feea461050380 -->

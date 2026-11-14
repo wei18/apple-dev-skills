@@ -45,6 +45,8 @@ them. Does **not** own:
   `xcrun simctl` and Read, so it cannot run the `lldb`, `defaults`, `strings` or HTTP-server
   steps here.
 - Pinning a verified behaviour as a CI regression test → `host-driven-xcuitest-e2e`.
+- Creating, addressing and deleting the simulator, DerivedData per worktree, and build gates
+  when other agent sessions share the Mac → `parallel-agent-xcode-hygiene`.
 - Plain build, install and launch commands → `xcode-build-skill:xcode-build`.
 
 Placeholders used throughout: `<UDID>` (a simulator you created for this check), `<bundle-id>`
@@ -256,6 +258,8 @@ real sandbox device tokens.
   flow bugs; use this skill when the question is whether runtime state or a system integration
   works.
 - `host-driven-xcuitest-e2e` — turn a verified behaviour into a CI regression test.
+- `parallel-agent-xcode-hygiene` — create the `<UDID>` simulator these recipes use, keep it
+  to this session, and delete it with proof that the space came back.
 - `oslog-logger-defaults` — the `Logger` subsystem the upgrade check's `log stream` filters on.
 - `app-store-review-rejections` — the App Review side of ATT; its fresh-install ATT prompt
   check pairs with the permission reset above.

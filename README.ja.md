@@ -23,7 +23,7 @@ Claude Codeのsession内で実行します。
 
 ```
 /plugin marketplace add wei18/apple-dev-skills
-/plugin install apple-dev-skills@apple-dev-skills          # 26 Apple/Swift skills
+/plugin install apple-dev-skills@apple-dev-skills          # 28 Apple/Swift skills
 /plugin install collaboration-skills@apple-dev-skills      # 12 harness-engineering skills
 ```
 
@@ -48,13 +48,13 @@ Claude Codeのsession内で実行します。
 `/apple-dev-skills:swift6-concurrency`。`/skills`でインストール済みのスキル一覧と、それぞれが
 どのプラグイン由来かを確認できます。
 
-> 両方のプラグインをインストールすると、ファーストパーティの説明文が全38件——5,000
+> 両方のプラグインをインストールすると、ファーストパーティの説明文が全40件——5,000
 > トークン超——読み込まれます。これはデフォルトの1%スキル一覧予算（200kコンテキストモデルで
 > 2,000トークン）の約3倍で、外部プラグインを含めない数字です。スキル一覧の予算はcontext
 > windowの1%です（1Mコンテキストモデルなら約10,000トークンで、ファーストパーティの2プラグインだけなら
 > 収まります——ただし外部プラグインや自分のスキルも同じ予算を共有します）。溢れると、Claude Codeは呼び出し頻度が低いスキルから順に説明文を落とし
 > ます。実際には、まだ呼び出し履歴のない新しくインストールしたスキルがそれに当たりがちです。`/doctor`で一覧のコストを確認し、
-> 厳しければ`skillListingBudgetFraction`（例：200kコンテキストモデルなら`0.04`——この38件の名前と説明文だけで`0.03`をわずかに超えます）を上げるか、使わないpluginを
+> 厳しければ`skillListingBudgetFraction`（例：200kコンテキストモデルなら`0.04`——この40件の名前と説明文だけで`0.03`をわずかに超えます）を上げるか、使わないpluginを
 > `/plugin`から無効化してください。
 
 ## カタログ
@@ -68,7 +68,7 @@ Claude Codeのsession内で実行します。
 
 完全な索引は以下の表を参照してください。
 
-### apple-dev-skills（26）—— Apple/Swift
+### apple-dev-skills（28）—— Apple/Swift
 
 | Skill | 一言でいうと |
 |---|---|
@@ -96,6 +96,8 @@ Claude Codeのsession内で実行します。
 | `swiftui-navigation-architecture` | SwiftUI向けの型付きルートナビゲーション——`@Observable`router一つ、`NavigationStack`、ディープリンク、macOSフォールバックも対応済み |
 | `ios-design-mockup` | specから単一HTMLファイルのiOSデザインモックアップを生成——iPhoneフレーム + トークン |
 | `interactive-simulator-ux-audit` | `idb`（tap/describe/screenshot）で起動中のSimulatorを操作し、スナップショットでは見つからないナビゲーション／モーダル／safe-areaのバグを検出 |
+| `simulator-runtime-verification` | Simulator上でpushトークン、Universal Links、Keychain、事前投入した`UserDefaults`、アップグレードインストールを検証し、偽の結果を生む罠を避ける |
+| `parallel-agent-xcode-hygiene` | 複数のエージェントが1台のMacを共有：自前のsimulatorをUDIDで指定、worktreeごとのDerivedData、負荷と空き容量のゲート、`df`でクリーンアップを証明 |
 | `host-driven-xcuitest-e2e` | Tuist経由でアプリを起動しXCUITest E2Eを実行——専用scheme配線 + macOSウィンドウ座標でのクリック操作 |
 | `cloudkit-schema-source-of-truth` | バージョン管理された`.ckdb` + `cktool`によるDevelopmentへのexport／validate／import；ProductionはConsoleのみのユーザー管理ゲート |
 
@@ -195,7 +197,7 @@ npx skills add wei18/apple-dev-skills --skill swift6-concurrency
 > **経路Cには集約された外部プラグインは含まれません。** `npx skills`はこのrepoの
 > `marketplace.json` / `plugin.json`を読み込みますが、ローカルで宣言されたスキルのパスしか
 > 辿りません。外部プラグインのリモートの`github` / `git-subdir`ソースは取得しません。その
-> ため上記のコマンドは38のファーストパーティスキルしかインストールしません——7つの外部
+> ため上記のコマンドは40のファーストパーティスキルしかインストールしません——7つの外部
 > プラグインは黙って読み飛ばされます。カタログ全体（外部プラグインを含め、著者のrepoから
 > 取得）をフラットにインストールするには：
 
@@ -221,4 +223,4 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 `docs/superpowers/`にありました——現在は廃止され、git履歴として保存されています。
 `git log -- docs/`で見つけることができます。MIT——[LICENSE](LICENSE)を参照してください。
 
-<!-- src-sha: 3527a7481d663e8a6efebf5b488d995fb09cca1f -->
+<!-- src-sha: 9c2ed74a025bb2314871e69de61feea461050380 -->

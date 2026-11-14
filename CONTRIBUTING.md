@@ -89,7 +89,7 @@ Three more edit sites that list leaves out:
   re-stamp its src-sha — see [README mirrors](#readme-mirrors-hand-mirror-only-regenerate-is-a-manual-fallback).
 - **Quickstart comments**: the `# N` count on README.md's `/plugin install` lines (gate
   rule 3b), and the same comments in each mirror.
-- **Literals no gate checks**: README.md's "loads all 38 first-party descriptions"
+- **Literals no gate checks**: README.md's "loads all 40 first-party descriptions"
   (listing-budget note) and, when an external is added, Path C's "the 7 externals" —
   plus the matching sentences in the three mirrors.
 
