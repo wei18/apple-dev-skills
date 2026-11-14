@@ -121,7 +121,7 @@ swift-testing + snapshot、只用 OSLog、已知的运行时 bug 要避开）。
 
 | Plugin | 作者 | 涵盖范围 |
 |---|---|---|
-| [`apple-skills`](https://github.com/Prisma-Labs-Dev/apple-skills) | Prisma Labs (vabole), MIT | 广泛的 Apple 框架 —— SwiftUI、SwiftData、App Intents、WidgetKit、StoreKit、HealthKit、`apple-aso`、`hig`……以及一份 SwiftUI 性能审计指南，与 `ios-performance-engineering` 的 Instruments / MetricKit 测量互补；另外还有 `simulator-utils` 与 `xcuitest`（与本目录 Simulator／XCUITest 技能的分工见下方说明）。有一小部分技能放在 `disabled-skills/` —— 留在 repo 里但不会被 agent 加载 |
+| [`apple-skills`](https://github.com/Prisma-Labs-Dev/apple-skills) | Prisma Labs (vabole), MIT | 广泛的 Apple 框架 —— SwiftUI、SwiftData、App Intents、WidgetKit、StoreKit、HealthKit、`apple-aso`、`hig`……以及一份 SwiftUI 性能审计指南，与 `ios-performance-engineering` 的 Instruments / MetricKit 测量互补；另外还有 `xcuitest`（与本目录 Simulator／XCUITest 技能的分工见下方说明）。有一小部分技能放在 `disabled-skills/` —— 留在 repo 里但不会被 agent 加载 |
 | [`swiftui-expert`](https://github.com/AvdLee/SwiftUI-Agent-Skill) | Antoine van der Lee (MIT) | SwiftUI 模式、Swift Charts、Liquid Glass、Instruments 工具链 |
 | [`swiftui-pro`](https://github.com/twostraws/SwiftUI-Agent-Skill) | Paul Hudson (MIT) | SwiftUI 陷阱、deprecated API 观察清单、iOS 26 / Liquid Glass |
 | [`caveman`](https://github.com/JuliusBrussee/caveman) | JuliusBrussee (MIT) | 极度压缩的沟通模式 —— 省下约 65% 输出 token（作者自测）；会安装 `SessionStart`／`UserPromptSubmit` hook（需要 PATH 上有 `node`，每条 prompt 都会执行）（通用 agent 行为） |
@@ -136,8 +136,7 @@ swift-testing + snapshot、只用 OSLog、已知的运行时 bug 要避开）。
 `i-have-adhd` 与 `caveman`（token 压缩）、`ponytail`（解法简化）不同，它塑形的是每次回答的
 **结构**。
 
-`xcode-build-skill`（`xcodebuild`／`simctl` 循环）与 `apple-skills:simulator-utils`（`simctl`
-单次操作）是 CLI 参考手册；`interactive-simulator-ux-audit` 用 `idb` 做探索式审计；
+`xcode-build-skill`（`xcodebuild`／`simctl` 循环）是 CLI 参考手册；`interactive-simulator-ux-audit` 用 `idb` 做探索式审计；
 `host-driven-xcuitest-e2e` 接 Tuist scheme 跑 CI —— `apple-skills:xcuitest` 是它假设你已具备
 的 API 参考。
 
@@ -201,4 +200,4 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 此处仅以引用方式呈现。催生本 repo 双 plugin 结构的设计 spec 与计划原本放在 `docs/superpowers/`
 —— 已退役、改由 git 历史保存；用 `git log -- docs/` 可以找回。MIT —— 见 [LICENSE](LICENSE)。
 
-<!-- src-sha: ac1b46e5be82d60c7018134b6f773889443ab815 -->
+<!-- src-sha: 3527a7481d663e8a6efebf5b488d995fb09cca1f -->

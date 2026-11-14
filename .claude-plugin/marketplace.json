@@ -25,7 +25,7 @@
     {
       "name": "apple-skills",
       "source": { "source": "github", "repo": "Prisma-Labs-Dev/apple-skills" },
-      "description": "Aggregated (not authored here). Broad Apple-framework skills — SwiftUI, UIKit, Swift Testing, Concurrency, SwiftData, App Intents, WidgetKit, StoreKit, HealthKit, MapKit, TipKit, apple-aso, hig, simulator-utils, xcuitest, and more (a handful more ship disabled by default in disabled-skills/). By Prisma Labs (vabole), MIT.",
+      "description": "Aggregated (not authored here). Broad Apple-framework skills — SwiftUI, UIKit, Swift Testing, Concurrency, SwiftData, App Intents, WidgetKit, StoreKit, HealthKit, MapKit, TipKit, apple-aso, hig, xcuitest, and more (a handful more ship disabled by default in disabled-skills/). By Prisma Labs (vabole), MIT.",
       "author": { "name": "Prisma Labs (vabole)" },
       "category": "workflow"
     },

@@ -128,7 +128,7 @@ level of detail.
 
 | Plugin | Author | Covers |
 |---|---|---|
-| [`apple-skills`](https://github.com/Prisma-Labs-Dev/apple-skills) | Prisma Labs (vabole), MIT | Broad Apple frameworks — SwiftUI, SwiftData, App Intents, WidgetKit, StoreKit, HealthKit, `apple-aso`, `hig` …; a SwiftUI performance audit guide that complements `ios-performance-engineering`'s Instruments/MetricKit measurement; also ships `simulator-utils` and `xcuitest` (see below for how those line up against this catalog's Simulator/XCUITest skills). A handful of its skills sit in `disabled-skills/` — kept in the repo but not loaded by agents |
+| [`apple-skills`](https://github.com/Prisma-Labs-Dev/apple-skills) | Prisma Labs (vabole), MIT | Broad Apple frameworks — SwiftUI, SwiftData, App Intents, WidgetKit, StoreKit, HealthKit, `apple-aso`, `hig` …; a SwiftUI performance audit guide that complements `ios-performance-engineering`'s Instruments/MetricKit measurement; also ships `xcuitest` (see below for how it lines up against this catalog's Simulator/XCUITest skills). A handful of its skills sit in `disabled-skills/` — kept in the repo but not loaded by agents |
 | [`swiftui-expert`](https://github.com/AvdLee/SwiftUI-Agent-Skill) | Antoine van der Lee (MIT) | SwiftUI patterns, Swift Charts, Liquid Glass, Instruments toolchain |
 | [`swiftui-pro`](https://github.com/twostraws/SwiftUI-Agent-Skill) | Paul Hudson (MIT) | SwiftUI pitfalls, deprecated-API watchlist, iOS 26 / Liquid Glass |
 | [`caveman`](https://github.com/JuliusBrussee/caveman) | JuliusBrussee (MIT) | Ultra-compressed communication mode — cuts ~65% of output tokens (author's measurement); ships `SessionStart`/`UserPromptSubmit` hooks (needs `node` on PATH, runs every prompt) (general agent behavior) |
@@ -144,10 +144,9 @@ service.
 Unlike `caveman` (token compression) and `ponytail` (solution simplicity), `i-have-adhd` shapes
 the *structure* of every answer.
 
-`xcode-build-skill` (`xcodebuild`/`simctl` loop) and `apple-skills:simulator-utils` (`simctl`
-one-offs) are CLI references; `interactive-simulator-ux-audit` drives `idb` for exploratory
-audits; `host-driven-xcuitest-e2e` wires Tuist schemes for CI — `apple-skills:xcuitest` is the
-API reference it assumes.
+`xcode-build-skill` (`xcodebuild`/`simctl` loop) is a CLI reference; `interactive-simulator-ux-audit`
+drives `idb` for exploratory audits; `host-driven-xcuitest-e2e` wires Tuist schemes for CI —
+`apple-skills:xcuitest` is the API reference it assumes.
 
 `apple-skills` moved from the `vabole` personal account to the `Prisma-Labs-Dev` organization;
 this table lists the org's repo.
