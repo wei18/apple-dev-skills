@@ -103,8 +103,8 @@ Claude Codeのsession内で実行します。
 
 #### エージェント
 
-このpluginはsubagentを1つ同梱しています。独自のcontextで読み取り専用のツールだけを使って動き、
-指摘を報告するだけでファイルは編集しません。レビューの依頼に合えばClaudeが委任します。名前で
+このpluginはsubagentも同梱しています。独自のcontextで動き、EditとWriteのツールを持たず、
+ファイルを変更しないよう指示されています。指摘を報告するだけです。レビューの依頼に合えばClaudeが委任します。名前で
 呼び出すこともできます：Agentツールの`subagent_type`に`apple-dev-skills:swift-staff-reviewer`を
 指定するか、プロンプトに`@agent-apple-dev-skills:swift-staff-reviewer`と書きます。
 
@@ -236,4 +236,4 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 `docs/superpowers/`にありました——現在は廃止され、git履歴として保存されています。
 `git log -- docs/`で見つけることができます。MIT——[LICENSE](LICENSE)を参照してください。
 
-<!-- src-sha: 9e2e5f70f92177ae608b84af69af898441737b26 -->
+<!-- src-sha: b14f14cd671114b89b4294803ac5a66ad73e1b89 -->

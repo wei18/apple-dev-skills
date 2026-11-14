@@ -92,9 +92,9 @@ marketplace 剛好跟它第一個 plugin 同名。
 | `host-driven-xcuitest-e2e` | 透過 Tuist 啟動 App 跑 XCUITest E2E —— 專用 scheme 接線 + macOS 視窗座標點擊驅動 |
 | `cloudkit-schema-source-of-truth` | 納入版控的 `.ckdb` + `cktool` 匯出／驗證／匯入到 Development；Production 是使用者自持、僅限 Console 的關卡 |
 
-#### Agent
+#### Agents
 
-此 plugin 另附一個 subagent。它在自己的 context 中以唯讀工具執行，只回報問題、不改檔。
+此 plugin 另附 subagent。它在自己的 context 中執行，沒有 Edit 或 Write 工具，並被指示不得修改檔案；只回報問題。
 審查情境符合時 Claude 會委派給它，也可以指名派工：以 `apple-dev-skills:swift-staff-reviewer`
 作為 Agent 工具的 `subagent_type`，或在提示中寫 `@agent-apple-dev-skills:swift-staff-reviewer`。
 
@@ -214,4 +214,4 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 此處僅以引用方式呈現。催生本 repo 雙 plugin 結構的設計 spec 與計畫原本放在 `docs/superpowers/`
 —— 已退役、改由 git 歷史保存；用 `git log -- docs/` 可以找回。MIT —— 見 [LICENSE](LICENSE)。
 
-<!-- src-sha: 9e2e5f70f92177ae608b84af69af898441737b26 -->
+<!-- src-sha: b14f14cd671114b89b4294803ac5a66ad73e1b89 -->

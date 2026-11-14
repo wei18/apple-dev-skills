@@ -3,8 +3,8 @@
 
 Checks
   1. Each <plugin>/skills/<dir>/ has a SKILL.md whose frontmatter name == <dir>.
-  2. README.md Catalog contains every first-party skill (both plugins, 40) AND the
-     seven aggregated external plugin names (missing-direction only; extra kebab
+  2. README.md Catalog contains every first-party skill (both plugins, 40), every agent,
+     AND the seven aggregated external plugin names (missing-direction only; extra kebab
      tokens are tolerated by design — Catalog prose legitimately names other things).
   3. Counts present: the values 28/12/7 each appear among the Catalog's "(N)" group
      headers (set membership, not per-header association); the Install one-liner
@@ -21,7 +21,7 @@ Checks
   8. Each plugin's `.claude-plugin/plugin.json` "version" == the corresponding
      marketplace.json plugins[] entry "version" (the pair bump-version.py maintains).
   9. Each README mirror's own Catalog-equivalent section (scripts/mirrors.py) covers
-     the same first-party skills + externals as README.md's Catalog (mirrors check 2;
+     the same first-party skills, every agent + externals as README.md's Catalog (mirrors check 2;
      count regex also accepts full-width parens, since mirrors are hand-typed).
   10. Each SKILL.md frontmatter description that is not quoted must not contain
       ": " or start with a YAML indicator character (PR #42: an unquoted value
@@ -29,18 +29,18 @@ Checks
       is exempt: everything after the indicator is literal text. Indented continuation
       lines count as part of the value; a value that opens a quote must close it, with
       nothing after the closing quote but an optional ` # comment`.
-  11. Every skill named in the Catalog's journey anchor list (above the tables)
+  11. Every skill or agent named in the Catalog's journey anchor list (above the tables)
       exists — rule 2 only checks the missing direction, so a rename would leave a
       dead pointer there while the tables below stayed correct.
   12. Each first-party plugin's marketplace.json description leading number
       (e.g. "28 first-party Apple/Swift skills") == the PLUGINS constant below.
   13. README.md's "install only the N first-party skills" sentence (flat-install
       caveat) has N == sum(PLUGINS.values()).
-  14. Each <plugin>/agents/<file>.md has frontmatter name == <file> and a description
-      of at most AGENT_DESC_MAX chars; every `${CLAUDE_PLUGIN_ROOT}/<path>` its body
-      points to exists in that plugin; README.md's Catalog and each mirror's
-      Catalog-equivalent name it (rules 2 and 9 cover agents as well as skills).
-      YAML validity of agent frontmatter is left to `claude plugin validate`.
+  14. <plugin>/agents/ is flat. Each <file>.md there has frontmatter name == <file>; its
+      description passes the rule 7 + 10 checks with AGENT_DESC_MAX as the limit; every
+      `${CLAUDE_PLUGIN_ROOT}/<path>` its body points to exists in that plugin, with no
+      `..` segment; the unbraced `$CLAUDE_PLUGIN_ROOT` form does not appear. Rules 7/10
+      are a quoting heuristic, not a YAML parser; `claude plugin validate` parses it.
 Stdlib only.
 """
 from __future__ import annotations
@@ -68,7 +68,9 @@ def fm_field(p: Path, field: str):
     end = t.find("\n---", 3)
     if end == -1: return None
     fm = t[3:end]
-    m = re.search(rf"^{field}:\s*(.*?)\s*$", fm, re.MULTILINE)
+    # [ \t]*, not \s*: \s would cross the newline, so an empty `field:` would capture the
+    # next line as its value.
+    m = re.search(rf"^{field}:[ \t]*(.*?)[ \t]*$", fm, re.MULTILINE)
     if not m: return None
     head = m.group(1).strip()
     # The value continues on the indented lines that follow (a block scalar's body, or
@@ -82,7 +84,7 @@ def fm_field(p: Path, field: str):
         return BLOCK_SCALAR + cont
     # Plain / quoted scalars fold line breaks into spaces: return the whole value, so
     # rule 10 also sees a continuation line (e.g. one containing ': ').
-    return f"{head} {cont}" if cont else head
+    return " ".join(x for x in (head, cont) if x)
 
 def closing_quote(v: str):
     """Index of the quote that closes v's opening quote, or None if it never closes.
@@ -100,6 +102,58 @@ def unquote(v: str) -> str:
     """name/description are legitimately bare or quoted YAML: strip matching outer quotes."""
     return v[1:-1] if len(v) >= 2 and v[0] in "'\"" and v[-1] == v[0] else v
 
+def check_description(label: str, md: Path, max_len: int) -> None:
+    """Rules 7 + 10 (and rule 14 for agents): description present, within max_len,
+    and quoted wherever strict YAML needs it."""
+    desc = fm_field(md, "description")
+    # A block scalar (`description: >`) is already YAML-safe: everything after the
+    # indicator is literal text, so `: ` and indicator characters need no quoting.
+    block = bool(desc) and desc.startswith(BLOCK_SCALAR)
+    if block: desc = desc[len(BLOCK_SCALAR):]
+    if not desc:
+        fail(f"{label}: no frontmatter description"); return
+    opens_quote = not block and desc[0] in "'\""
+    quoted = False
+    if opens_quote:
+        close = closing_quote(desc)
+        if close is None:
+            fail(f"{label}: description opens a {desc[0]} quote that "
+                 f"never closes — breaks YAML parsing")
+        elif re.fullmatch(r"(\s+#.*)?\s*", desc[close + 1:]):
+            # A ` # comment` after the closing quote is legal YAML. Strip it only
+            # here, once the quote has closed — never on an unquoted value, where
+            # ` #` silently truncates (checked below).
+            desc, quoted = desc[:close + 1], True
+        else:
+            fail(f"{label}: description has text after its closing "
+                 f"{desc[0]} quote (unescaped quote inside, or a partly quoted value) "
+                 f"— breaks YAML parsing")
+    # 7. Length counts the value a consumer actually sees (quotes stripped), matching
+    # check-skills.py's parse_front() — otherwise a quoted description that needs
+    # quoting only because of a ': ' or indicator gets penalized twice for it.
+    shown = desc[1:-1] if quoted else desc
+    if not shown.strip():
+        fail(f"{label}: no frontmatter description"); return
+    desc_len = len(shown)
+    if desc_len > max_len:
+        fail(f"{label}: description {desc_len} chars > {max_len}")
+    # 10. description must survive a strict YAML parse — fm_field() returns the
+    # raw value (quotes intact, not stripped), so check quoting directly on it.
+    # A value that opens a quote was fully checked by closing_quote() above (an
+    # unescaped quote inside closes it early and leaves trailing text).
+    if not block and not opens_quote:
+        if ": " in desc or desc[0] in "[]{}&*>|#%@`!":
+            fail(f"{label}: description must be quoted (contains ': ' or a YAML indicator)")
+        if " #" in desc:
+            fail(f"{label}: description must be quoted "
+                 f"(contains ' #' — starts a YAML comment, silently truncating the value)")
+        if desc.startswith("- "):
+            fail(f"{label}: description must be quoted "
+                 f"(starts with '- ' — a YAML block-sequence indicator)")
+        if desc.endswith(":"):
+            fail(f"{label}: description must be quoted "
+                 f"(ends with ':' — a YAML mapping-value indicator)")
+
 # 1. skill dirs + frontmatter
 all_skills: set[str] = set()
 for plugin, expected in PLUGINS.items():
@@ -113,66 +167,35 @@ for plugin, expected in PLUGINS.items():
         if not md.is_file(): fail(f"[skill] {plugin}/{name}: no SKILL.md"); continue
         fn = fm_field(md, "name")
         if unquote(fn or "") != name: fail(f"[skill] {plugin}/{name}: frontmatter name={fn!r} != dir")
-        # 7. description length budget
-        desc = fm_field(md, "description")
-        # A block scalar (`description: >`) is already YAML-safe: everything after the
-        # indicator is literal text, so `: ` and indicator characters need no quoting.
-        block = bool(desc) and desc.startswith(BLOCK_SCALAR)
-        if block: desc = desc[len(BLOCK_SCALAR):]
-        if desc is None:
-            fail(f"[skill] {plugin}/{name}: no frontmatter description")
-        else:
-            opens_quote = not block and bool(desc) and desc[0] in "'\""
-            quoted = False
-            if opens_quote:
-                close = closing_quote(desc)
-                if close is None:
-                    fail(f"[skill] {plugin}/{name}: description opens a {desc[0]} quote that "
-                         f"never closes — breaks YAML parsing")
-                elif re.fullmatch(r"(\s+#.*)?\s*", desc[close + 1:]):
-                    # A ` # comment` after the closing quote is legal YAML. Strip it only
-                    # here, once the quote has closed — never on an unquoted value, where
-                    # ` #` silently truncates (checked below).
-                    desc, quoted = desc[:close + 1], True
-                else:
-                    fail(f"[skill] {plugin}/{name}: description has text after its closing "
-                         f"{desc[0]} quote (unescaped quote inside, or a partly quoted value) "
-                         f"— breaks YAML parsing")
-            # Length counts the value a consumer actually sees (quotes stripped), matching
-            # check-skills.py's parse_front() — otherwise a quoted description that needs
-            # quoting only because of a ': ' or indicator gets penalized twice for it.
-            desc_len = len(desc[1:-1]) if quoted else len(desc)
-            if desc_len > DESC_MAX:
-                fail(f"[skill] {plugin}/{name}: description {desc_len} chars > {DESC_MAX}")
-            # 10. description must survive a strict YAML parse — fm_field() returns the
-            # raw value (quotes intact, not stripped), so check quoting directly on it.
-            # A value that opens a quote was fully checked by closing_quote() above (an
-            # unescaped quote inside closes it early and leaves trailing text).
-            if desc and not block and not opens_quote:
-                if ": " in desc or desc[0] in "[]{}&*>|#%@`!":
-                    fail(f"[skill] {plugin}/{name}: description must be quoted (contains ': ' or a YAML indicator)")
-                if " #" in desc:
-                    fail(f"[skill] {plugin}/{name}: description must be quoted "
-                         f"(contains ' #' — starts a YAML comment, silently truncating the value)")
-                if desc.startswith("- "):
-                    fail(f"[skill] {plugin}/{name}: description must be quoted "
-                         f"(starts with '- ' — a YAML block-sequence indicator)")
-                if desc.endswith(":"):
-                    fail(f"[skill] {plugin}/{name}: description must be quoted "
-                         f"(ends with ':' — a YAML mapping-value indicator)")
+        check_description(f"[skill] {plugin}/{name}", md, DESC_MAX)
 
 # 14. agents/*.md: name == file stem, bounded description, plugin-root pointers resolve
 all_agents: set[str] = set()
 for plugin in PLUGINS:
-    for md in sorted((ROOT / plugin / "agents").glob("*.md")):
+    adir = ROOT / plugin / "agents"
+    for md in sorted(adir.rglob("*.md")):
+        rel = md.relative_to(adir)
+        if len(rel.parts) > 1:
+            # Claude Code loads agents/ recursively; the catalog keeps it flat so that
+            # name == file stem stays the one naming rule.
+            fail(f"[agent] {plugin}/agents/{rel}: agents/ must be flat — move it to agents/{md.name}")
+            continue
         all_agents.add(md.stem)
         fn = fm_field(md, "name")
         if unquote(fn or "") != md.stem: fail(f"[agent] {plugin}/{md.name}: frontmatter name={fn!r} != file stem")
-        desc = unquote((fm_field(md, "description") or "").removeprefix(BLOCK_SCALAR))
-        if not desc: fail(f"[agent] {plugin}/{md.name}: no frontmatter description")
-        elif len(desc) > AGENT_DESC_MAX: fail(f"[agent] {plugin}/{md.name}: description {len(desc)} chars > {AGENT_DESC_MAX}")
-        for ref in re.findall(r"\$\{CLAUDE_PLUGIN_ROOT\}/([\w./-]+)", md.read_text(encoding="utf-8")):
-            if not (ROOT / plugin / ref.rstrip(".")).exists(): fail(f"[agent] {plugin}/{md.name}: points to missing {ref}")
+        check_description(f"[agent] {plugin}/{md.name}", md, AGENT_DESC_MAX)
+        body = md.read_text(encoding="utf-8")
+        if re.search(r"\$CLAUDE_PLUGIN_ROOT\b", body):
+            fail(f"[agent] {plugin}/{md.name}: write ${{CLAUDE_PLUGIN_ROOT}} with braces — "
+                 f"Claude Code does not substitute $CLAUDE_PLUGIN_ROOT")
+        for ref in re.findall(r"\$\{CLAUDE_PLUGIN_ROOT\}/([\w./-]+)", body):
+            if ".." in ref.split("/"):
+                fail(f"[agent] {plugin}/{md.name}: pointer {ref} leaves the plugin ('..')")
+            # The path pattern also matches a sentence-ending period after the path.
+            elif not (ROOT / plugin / ref.rstrip(".")).exists():
+                fail(f"[agent] {plugin}/{md.name}: points to missing {ref}")
+
+catalog_names = all_skills | all_agents | EXTERNALS
 
 # helper: scope README Catalog section
 def scoped(text: str, *markers: str) -> str:
@@ -190,7 +213,7 @@ if not sec:
     fail("[readme] no '## Catalog' section")
 else:
     tokens = set(re.findall(r"`([a-z0-9][a-z0-9-]+)`", sec))
-    missing = (all_skills | all_agents | EXTERNALS) - tokens
+    missing = catalog_names - tokens
     if missing: fail(f"[readme] Catalog missing: {sorted(missing)}")
     g = [int(x) for x in re.findall(r"\((\d+)\)", sec)]
     for required in (*PLUGINS.values(), len(EXTERNALS)):
@@ -201,8 +224,8 @@ else:
     # missing" direction can't see a stale name in it — a renamed skill would
     # leave a dead pointer here while the tables below stayed correct.
     anchors = scoped(sec, "## Catalog").split("###")[0]
-    stale = {t for t in re.findall(r"`([a-z0-9][a-z0-9-]+)`", anchors)} - (all_skills | EXTERNALS)
-    if stale: fail(f"[readme] Catalog anchor list names no such skill: {sorted(stale)}")
+    stale = {t for t in re.findall(r"`([a-z0-9][a-z0-9-]+)`", anchors)} - catalog_names
+    if stale: fail(f"[readme] Catalog anchor list names no such skill or agent: {sorted(stale)}")
 
 # 9. Each mirror's own Catalog-equivalent section — same token coverage check as
 # above, mirrored: mirrors are hand-typed so a translator can silently drop/mistype
@@ -216,7 +239,7 @@ for mirror_name, heading in MIRRORS.items():
         fail(f"[{mirror_name}] no '{heading}' section")
         continue
     m_tokens = set(re.findall(r"`([a-z0-9][a-z0-9-]+)`", m_sec))
-    m_missing = (all_skills | all_agents | EXTERNALS) - m_tokens
+    m_missing = catalog_names - m_tokens
     if m_missing: fail(f"[{mirror_name}] {heading} missing: {sorted(m_missing)}")
     mg = [int(x) for x in re.findall(r"[\(（](\d+)[\)）]", m_sec)]
     for required in (*PLUGINS.values(), len(EXTERNALS)):

@@ -97,10 +97,10 @@ Full index in the tables below.
 | `host-driven-xcuitest-e2e` | Launch-the-app XCUITest E2E via Tuist — dedicated scheme wiring + macOS window-frame click driving |
 | `cloudkit-schema-source-of-truth` | Committed `.ckdb` + `cktool` export/validate/import to Development; Production is a user-owned Console-only gate |
 
-#### Agent
+#### Agents
 
-The plugin also ships one subagent. It runs in its own context with read-only tools and
-reports findings without editing. Claude delegates to it when a review matches, or you
+The plugin also ships a subagent. It runs in its own context, has no Edit or Write tools,
+and is instructed not to modify files; it reports findings. Claude delegates to it when a review matches, or you
 dispatch it by name: `apple-dev-skills:swift-staff-reviewer` as the Agent tool's
 `subagent_type`, or `@agent-apple-dev-skills:swift-staff-reviewer` in a prompt.
 
