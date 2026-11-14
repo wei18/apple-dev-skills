@@ -149,13 +149,13 @@ OSLogのみ、避けるべき既知の実行時バグ）。トピックが重な
 | [`apple-skills`](https://github.com/Prisma-Labs-Dev/apple-skills) | Prisma Labs (vabole), MIT | 幅広いAppleフレームワーク——SwiftUI、SwiftData、App Intents、WidgetKit、StoreKit、HealthKit、`apple-aso`、`hig`……に加え、SwiftUIパフォーマンス監査ガイドも収録。`ios-performance-engineering`のInstruments / MetricKit計測と相補的。さらに`xcuitest`も収録（このカタログのSimulator／XCUITestスキルとの役割分担は下記参照）。一部のスキルは`disabled-skills/`に置かれており、リポジトリには残るもののagentには読み込まれません |
 | [`swiftui-expert`](https://github.com/AvdLee/SwiftUI-Agent-Skill) | Antoine van der Lee (MIT) | SwiftUIパターン、Swift Charts、Liquid Glass、Instrumentsツールチェーン |
 | [`swiftui-pro`](https://github.com/twostraws/SwiftUI-Agent-Skill) | Paul Hudson (MIT) | SwiftUIの落とし穴、非推奨APIのウォッチリスト、iOS 26 / Liquid Glass |
-| [`caveman`](https://github.com/JuliusBrussee/caveman) | JuliusBrussee (MIT) | 超圧縮されたコミュニケーションモード——出力トークンを約65%削減（著者による計測）。`SessionStart`／`UserPromptSubmit`フックを追加インストール（PATH上に`node`が必要、毎回のプロンプトで実行）（汎用的なagentの振る舞い） |
+| [`caveman`](https://github.com/JuliusBrussee/caveman) | JuliusBrussee (Apache-2.0) | 超圧縮されたコミュニケーションモード——出力トークンを約65%削減（著者による計測）。`SessionStart`／`UserPromptSubmit`フックを追加インストール（PATH上に`node`が必要、毎回のプロンプトで実行）（汎用的なagentの振る舞い） |
 | [`ponytail`](https://github.com/DietrichGebert/ponytail) | DietrichGebert (MIT) | 「怠け者のシニア開発者」モード——最もシンプルで最短の解法を強制する（汎用的なagentの振る舞い） |
 | [`i-have-adhd`](https://github.com/ayghri/i-have-adhd) | Ayoub G. (MIT) | 常時ONのADHDフレンドリーな出力モード——番号付きステップ、毎ターン状態を再掲示（汎用的なagentの振る舞い） |
 | [`xcode-build-skill`](https://github.com/pzep1/xcode-build-skill) | pz (MIT) | `xcodebuild`/`xcrun simctl` CLIチートシート——scheme → simulator → build → install → launch → screenshot |
 
-`caveman`のライセンス：skills自体はMIT、repoにはBSL-1.1ライセンスのengineも含まれています。
-`caveman`はその後20スキルからなるスイートへと成長しました。そのうち4つ（`caveman-discover`、
+`caveman`のライセンス：3.0.0以降はrepo全体がApache-2.0です。それ以前のリリースはskillsがMIT、engineがBSL-1.1でした。
+`caveman`はその後22スキルからなるスイートへと成長しました。そのうち4つ（`caveman-discover`、
 `caveman-manage`、`caveman-evidence-review`、`caveman-setup`）は、著者自身がホストする商用
 サービスCaveman Cloudについて説明したものです。
 
@@ -236,4 +236,4 @@ scripts/install-flat.sh --dry-run   # preview the `npx skills add` commands
 `docs/superpowers/`にありました——現在は廃止され、git履歴として保存されています。
 `git log -- docs/`で見つけることができます。MIT——[LICENSE](LICENSE)を参照してください。
 
-<!-- src-sha: e6b2ee9cd132e701e34a56e867fc817a04067037 -->
+<!-- src-sha: 1d263ebe89fcdfc0e3753303db4ee428d2762062 -->
