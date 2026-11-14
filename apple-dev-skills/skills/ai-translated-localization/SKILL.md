@@ -94,7 +94,8 @@ After translation, set that locale's `stringUnit.state` to `translated` — `tra
 ### Step 3 — Tricky-case review (locale-specific gotchas)
 
 Lessons captured from real translation passes, to apply as a second-pass review after the bulk
-AI fan-out — per-locale gotchas for `ja`, `th`, `ko`, `es`, `zh-Hans`, and `en` are in
+AI fan-out — per-locale gotchas for `ja`, `th`, `ko`, `es`, `zh-Hans`, and `en`, plus
+source-string traps (number grouping in `String(localized:)`, xib extraction), are in
 `references/locale-gotchas.md`.
 
 ### Step 4 — Visual / glossary consistency

@@ -30,3 +30,7 @@ Lessons captured from real translation passes. Apply these as a second-pass revi
 **English (`en`):**
 - US English by default. UK spellings (`colour`, `centre`, `analyse`) only if explicitly targeted.
 - Sentence case for buttons and UI; Title Case only for proper nouns and app section headers.
+
+**Source strings (any locale; each observed once in one project, 2026-10, Xcode version not recorded):**
+- `String(localized: "… \(count) …")` with an `Int` interpolation formats the number for the locale, so `12345` renders as `12,345`. For IDs, years and other numbers that must not be grouped, interpolate `String(count)` instead.
+- xib and storyboard text was not extracted into the catalog while the project had a single locale; it appeared only once a second locale was added. Check xib coverage after adding the first non-source locale, not before.
