@@ -69,12 +69,12 @@ Order the middle by the topic's pedagogy, but keep these conventions. All four b
 are required for **new** skills; none of them are retrofitted onto pre-existing skills — the
 gaps in the "today" column are historical debt, not evidence the convention is optional:
 
-| Heading | Purpose | Retrofit status | Today (of 38 skills) |
+| Heading | Purpose | Retrofit status | Today (of 40 skills) |
 |---|---|---|---|
-| `## Rationale` | *why* this default was chosen. Unique to this catalog. | Not retrofitted | 20/38 |
-| `## Deviation considerations` | *when to override* the default, and the cost (e.g. "Drop to iOS 18 when an existing user base still runs it — every Liquid Glass API then needs an availability guard, and the pre-26 chrome must be snapshot-tested separately"). Also ours. | Not retrofitted | 22/38 |
-| `## Common Mistakes` | concrete, anti-pattern-named items ("Using `DateFormatter()` in `body`"), as many as are real — do not pad to a number. | Not retrofitted; older skills express this as inline anti-pattern sections instead. | 10/38 |
-| `## Review Checklist` | a `- [ ]` list at the **end**, runnable top-to-bottom. | Not retrofitted; older skills use a prose `## Verification checklist` instead. | 26/38 (incl. the older prose form; `mise run check`'s section matrix) |
+| `## Rationale` | *why* this default was chosen. Unique to this catalog. | Not retrofitted | 22/40 |
+| `## Deviation considerations` | *when to override* the default, and the cost (e.g. "Drop to iOS 18 when an existing user base still runs it — every Liquid Glass API then needs an availability guard, and the pre-26 chrome must be snapshot-tested separately"). Also ours. | Not retrofitted | 24/40 |
+| `## Common Mistakes` | concrete, anti-pattern-named items ("Using `DateFormatter()` in `body`"), as many as are real — do not pad to a number. | Not retrofitted; older skills express this as inline anti-pattern sections instead. | 12/40 |
+| `## Review Checklist` | a `- [ ]` list at the **end**, runnable top-to-bottom. | Not retrofitted; older skills use a prose `## Verification checklist` instead. | 28/40 (incl. the older prose form; `mise run check`'s section matrix) |
 
 - **`## Related skills`** — siblings by name.
 

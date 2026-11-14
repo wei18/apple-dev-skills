@@ -21,7 +21,7 @@ Inside a Claude Code session, run:
 
 ```
 /plugin marketplace add wei18/apple-dev-skills
-/plugin install apple-dev-skills@apple-dev-skills          # 26 Apple/Swift skills
+/plugin install apple-dev-skills@apple-dev-skills          # 28 Apple/Swift skills
 /plugin install collaboration-skills@apple-dev-skills      # 12 harness-engineering skills
 ```
 
@@ -43,14 +43,14 @@ Then just describe the task:
 To force one, use its slash command: `/apple-dev-skills:swift6-concurrency`. `/skills` lists
 what is installed and which plugin each skill came from.
 
-> Installing both plugins loads all 38 first-party descriptions — over 5,000 tokens, roughly 3×
+> Installing both plugins loads all 40 first-party descriptions — over 5,000 tokens, roughly 3×
 > the default 1% skill-listing budget (2,000 tokens on a 200k-context model) — before any
 > externals. The skill-listing budget is 1% of the context window (~10,000 tokens on a
 > 1M-context model, where the two first-party plugins alone fit — but externals and your own
 > skills share that same budget); when it overflows, Claude
 > Code drops descriptions starting with the skills you invoke least; in practice that tends
 > to mean freshly installed ones, which have no invocation history yet. Run `/doctor` to check the listing's cost, then raise `skillListingBudgetFraction`
-> (e.g. `0.04` on a 200k-context model — these 38 names + descriptions alone need just over
+> (e.g. `0.04` on a 200k-context model — these 40 names + descriptions alone need just over
 > `0.03`) if it's tight, or disable plugins you don't use via `/plugin`.
 
 ## Catalog
@@ -64,7 +64,7 @@ what is installed and which plugin each skill came from.
 
 Full index in the tables below.
 
-### apple-dev-skills (26) — Apple/Swift
+### apple-dev-skills (28) — Apple/Swift
 
 | Skill | One-liner |
 |---|---|
@@ -92,6 +92,8 @@ Full index in the tables below.
 | `swiftui-navigation-architecture` | Typed-route navigation for SwiftUI — one `@Observable` router, `NavigationStack`, deep links, macOS fallbacks handled |
 | `ios-design-mockup` | Single-file HTML iOS design mockup from a spec — iPhone frames + tokens |
 | `interactive-simulator-ux-audit` | Drive a booted Simulator with `idb` (tap/describe/screenshot) to catch nav/modal/safe-area bugs snapshots can't |
+| `simulator-runtime-verification` | Prove push tokens, Universal Links, Keychain, seeded `UserDefaults` and upgrade installs on a Simulator, and catch the traps that fake a result |
+| `parallel-agent-xcode-hygiene` | Several agents on one Mac — own simulator by UDID, per-worktree DerivedData, load and free-disk gates, cleanup proved with `df` |
 | `host-driven-xcuitest-e2e` | Launch-the-app XCUITest E2E via Tuist — dedicated scheme wiring + macOS window-frame click driving |
 | `cloudkit-schema-source-of-truth` | Committed `.ckdb` + `cktool` export/validate/import to Development; Production is a user-owned Console-only gate |
 
@@ -189,7 +191,7 @@ npx skills add wei18/apple-dev-skills --skill swift6-concurrency
 > **Path C does not include the aggregated externals.** `npx skills` reads this repo's
 > `marketplace.json` / `plugin.json`, but it only follows locally-declared skill paths. It
 > does not fetch the externals' remote `github` / `git-subdir` sources. So the commands above
-> install only the 38 first-party skills — the 7 externals are silently skipped. To
+> install only the 40 first-party skills — the 7 externals are silently skipped. To
 > flat-install the whole catalog (externals included, pulled from their authors' repos):
 
 ```bash

@@ -3,10 +3,10 @@
 
 Checks
   1. Each <plugin>/skills/<dir>/ has a SKILL.md whose frontmatter name == <dir>.
-  2. README.md Catalog contains every first-party skill (both plugins, 38) AND the
+  2. README.md Catalog contains every first-party skill (both plugins, 40) AND the
      seven aggregated external plugin names (missing-direction only; extra kebab
      tokens are tolerated by design — Catalog prose legitimately names other things).
-  3. Counts present: the values 26/12/7 each appear among the Catalog's "(N)" group
+  3. Counts present: the values 28/12/7 each appear among the Catalog's "(N)" group
      headers (set membership, not per-header association); the Install one-liner
      comments and each plugin.json's "N first-party" are checked exactly.
   4. Each README mirror (see mirrors.py for the current list) exists and its
@@ -33,7 +33,7 @@ Checks
       exists — rule 2 only checks the missing direction, so a rename would leave a
       dead pointer there while the tables below stayed correct.
   12. Each first-party plugin's marketplace.json description leading number
-      (e.g. "26 first-party Apple/Swift skills") == the PLUGINS constant below.
+      (e.g. "28 first-party Apple/Swift skills") == the PLUGINS constant below.
   13. README.md's "install only the N first-party skills" sentence (flat-install
       caveat) has N == sum(PLUGINS.values()).
 Stdlib only.
@@ -45,7 +45,7 @@ from pathlib import Path
 from mirrors import MIRRORS
 
 ROOT = Path(__file__).resolve().parent.parent
-PLUGINS = {"apple-dev-skills": 26, "collaboration-skills": 12}
+PLUGINS = {"apple-dev-skills": 28, "collaboration-skills": 12}
 EXTERNALS = {"apple-skills", "swiftui-expert", "swiftui-pro", "caveman", "ponytail", "i-have-adhd", "xcode-build-skill"}
 DESC_MAX = 800  # ceiling on frontmatter description length; which skill is currently
                 # longest shifts as skills are added — don't hardcode a name here
