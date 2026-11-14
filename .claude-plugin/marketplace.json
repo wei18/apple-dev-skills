@@ -2,13 +2,13 @@
   "name": "apple-dev-skills",
   "owner": { "name": "Wei18" },
   "description": "A curated catalog of skills for AI coding agents — first-party Apple/Swift and agent-collaboration skills, plus aggregated best-of-breed external plugins (credited to their authors)",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "plugins": [
     {
       "name": "apple-dev-skills",
       "source": "./apple-dev-skills",
       "description": "28 first-party Apple/Swift skills and a Staff-level Swift/iOS review agent. Invoke a skill with /apple-dev-skills:<skill>; dispatch the agent as apple-dev-skills:swift-staff-reviewer.",
-      "version": "2.1.0",
+      "version": "2.2.0",
       "author": { "name": "Wei18" },
       "keywords": ["swift", "ios", "macos", "apple-platform", "claude-code", "agent-skills"],
       "category": "workflow"
@@ -17,7 +17,7 @@
       "name": "collaboration-skills",
       "source": "./collaboration-skills",
       "description": "12 first-party AI-agent collaboration & process skills. Invoke explicitly with /collaboration-skills:<skill>.",
-      "version": "2.1.0",
+      "version": "2.2.0",
       "author": { "name": "Wei18" },
       "keywords": ["claude-code", "agent-skills", "ai-agents", "workflow", "collaboration"],
       "category": "workflow"
