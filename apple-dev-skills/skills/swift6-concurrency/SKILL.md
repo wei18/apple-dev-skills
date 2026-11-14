@@ -35,7 +35,7 @@ description: 'Swift 6 language mode with complete concurrency checking from the 
 
 ## Deviation considerations
 
-- **Migrating existing Swift 5 code**: switch to minimal or targeted concurrency checking and upgrade in stages; ramp up one file / module at a time, allowing `@preconcurrency` during transition.
+- **Migrating existing Swift 5 code**: switch to minimal or targeted concurrency checking and upgrade in stages; ramp up one file / module at a time, allowing `@preconcurrency` during transition. While the app target is still in Swift 5 mode, a Swift 6 test target does not check the app's own code, so a green CI run proves nothing about the app's isolation; review concurrency by hand until the app target moves to `.v6`. For runtime traps that compile cleanly in either mode (imported `async` overloads, `assumeIsolated` in singletons, order-dependent actors), read `references/isolation-traps.md`.
 - **Significant third-party lag**: if a critical dep doesn't support it, put only the target that imports it in Swift 5 language mode (`.swiftLanguageMode(.v5)`; in Xcode, Swift 5 mode with `SWIFT_STRICT_CONCURRENCY = targeted`) and move it back to `.v6` once the dep catches up — don't drop the whole project: in Swift 6 mode strict concurrency is always `complete`, so setting `targeted` there does nothing.
 - **Teaching / demo projects**: if the goal is to demonstrate older API behaviour, keeping Swift 5 mode is fine.
 

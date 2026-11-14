@@ -146,6 +146,7 @@ When you CR a skill or a batch, apply the evidence-based, multi-lens doctrine (i
 - [ ] (New skills) `Rationale` + `Deviation` present; code uses current APIs with version gates marked inline.
 - [ ] `Common Mistakes` are concrete and anti-pattern-named; no padding.
 - [ ] No project-specific workaround dressed up as general guidance.
+- [ ] No machine-specific paths or numbers (home or scratch directories, device models, core counts, load or free-disk thresholds); roots are derived at run time (`git rev-parse --show-toplevel`, `$MISE_DATA_DIR`) and thresholds are stated as parameters.
 - [ ] Every falsifiable API/version claim spot-checked against an authoritative source (cite it).
 
 ## Related skills

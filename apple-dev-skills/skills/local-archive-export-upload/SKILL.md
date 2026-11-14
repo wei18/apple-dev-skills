@@ -54,6 +54,11 @@ key passed via the `-authenticationKey*` trio. Both paths below therefore pass t
 | Automatic signing via your Xcode account | `-allowProvisioningUpdates` (+ `-allowProvisioningDeviceRegistration` if a new device needs registering) | Run on your own dev Mac with an account added in Xcode's Accounts settings; xcodebuild creates/updates profiles and certs as needed. |
 | API-key signing, no Apple ID session | `-allowProvisioningUpdates -authenticationKeyPath <p8> -authenticationKeyID <id> -authenticationKeyIssuerID <issuer>` | Unattended/scripted runs — reuse the same ASC API key from `asc-api-automation` / `build-time-secret-injection`, no Xcode account needed. |
 
+Two signing failures that look like credential problems but are keychain state (observed on one machine, 2026-10, Xcode version not recorded; not found in Apple's docs):
+
+- **Export signs locally instead of cloud-signing.** With automatic signing, `-exportArchive` was seen to use cloud-managed distribution signing only when no Apple Distribution certificate was in the keychain search list; a stale local one silently took over. Check `security find-identity -v -p codesigning` before blaming the key or profile.
+- **`errSecInternalComponent` while signing** came from a locked login keychain, not lost keys: `security show-keychain-info ~/Library/Keychains/login.keychain-db` answers "Unable to obtain authorization". Unlock it (`security unlock-keychain`) in the unattended job before `xcodebuild`.
+
 ## ExportOptions.plist: the common shape
 
 The full key set is printed by `xcodebuild -help` under "Available keys for

@@ -67,6 +67,8 @@ For each concrete claim, grep the stat output. If the claim mentions a path that
 
 This skill starts after commits exist; it does not prescribe commit granularity. It is the POST-commit verification step — confirms the commits that survived actually contain what the message claims.
 
+**Rewriting a branch into cleaner commits** (re-slicing, squashing fix-ups) must not change the end result: before the rewrite, save `git update-ref refs/backup/<branch> HEAD`; after it, `git rev-parse refs/backup/<branch>^{tree} HEAD^{tree}` must print the same tree twice (`git diff refs/backup/<branch> HEAD` is empty); only then push with `--force-with-lease`, never a bare `--force`.
+
 ## Heuristics for "what to check"
 
 The four symptom patterns are in the Step 3 table above — those are the cheap signals to

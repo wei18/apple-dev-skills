@@ -54,6 +54,7 @@ Then, per screen rather than per project: `swiftui-navigation-architecture`, `io
 - **Trigger**: education, enterprise intranet, or low-end markets with a large older-device pool.
 - **Cost**: everything above, plus the Swift 6 runtime-dependent features that need an iOS 18 runtime (full SE-0427 noncopyable-generics support) and iOS 18+ SwiftData fixes. Note what a lower floor does *not* cost: `@Observable` has been available since iOS 17.0, and Swift 6 language-mode checking is a compile-time toolchain feature independent of the deployment target.
 - **Advice**: record which APIs are off-limits and which behaviours need polyfills.
+- **Simulator cost**: a floor below what the current Mac can simulate means device-only verification. Observed 2026-11 on macOS 27 / Xcode 27.2: Apple's simulator download index marks the iOS 15 and 16 runtimes `maxHostVersion 26.99`, so they do not install; `xcodebuild -downloadPlatform iOS -buildVersion <v>` answers "not available for download" for 17.x and 18.x, and iOS 17.0 came only through Xcode Settings → Components. A point runtime can also support only some device types. Run `xcrun simctl list runtimes` and `xcrun simctl list devicetypes` before committing to the floor.
 
 ### Bump up to iOS 27 / macOS 27 (or newer)
 
@@ -66,6 +67,7 @@ Then, per screen rather than per project: `swiftui-navigation-architecture`, `io
 
 - `Package.swift` `platforms:` matches every App target's deployment target build setting.
 - The Xcode version is recorded in the README / `foundations.md` toolchain line and matches the Xcode Cloud workflow's Xcode setting (`.mise.toml` pins CLI tools, not Xcode — see `mise-tool-management`).
+- Before bumping a binary (xcframework) dependency, read the `// swift-compiler-version:` header of its `.swiftinterface`: an SDK built by a newer Swift raises your minimum Xcode (observed once: an SDK built with Swift 6.4 required Xcode 27). Update the toolchain line in the same PR.
 
 ## Related skills
 
